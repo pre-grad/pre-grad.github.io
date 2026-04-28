@@ -1144,6 +1144,115 @@ select.input {
   .ph-title { font-size: 32px; }
   .ph-emoji { font-size: 60px; }
 }
+/* =====================================================================
+   BOOTSTRAP BRIDGE · map legacy widgets to Bootstrap dark + utilities
+   ===================================================================== */
+:root {
+  --bs-body-bg: var(--bg);
+  --bs-body-color: var(--ink);
+  --bs-border-color: var(--line);
+  --bs-primary: var(--accent);
+}
+/* inputs/selects/textareas → Bootstrap form-control look */
+.input, select.input, textarea.input {
+  display: block;
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink);
+  background-color: var(--bg-input);
+  background-clip: padding-box;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r);
+  transition: border-color .12s ease-in-out, box-shadow .12s ease-in-out;
+}
+.input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); outline: none; }
+/* buttons → Bootstrap-ish */
+.btn, .db-tool-btn, .topbar-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  font-size: 13px; font-weight: 500;
+  border-radius: var(--r);
+  border: 1px solid var(--line-strong);
+  background: var(--bg-hover);
+  color: var(--ink);
+  transition: background .12s, border-color .12s, transform .05s;
+}
+.btn:hover, .db-tool-btn:hover, .topbar-btn:hover { background: var(--bg-active); border-color: var(--line-strong); }
+.btn:active, .db-tool-btn:active, .topbar-btn:active { transform: translateY(1px); }
+.btn.primary, .db-tool-btn.primary {
+  background: var(--accent); border-color: var(--accent); color: #fff;
+}
+.btn.primary:hover, .db-tool-btn.primary:hover { background: #1c6fbe; border-color: #1c6fbe; }
+.btn.danger { color: var(--c-red-fg); border-color: rgba(255,115,105,.35); }
+.btn.danger:hover { background: var(--c-red-bg); }
+/* filter-bar layout utilities */
+.db-toolbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; flex-wrap: wrap;
+}
+.db-toolbar-left { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; }
+.tk-search, .ap-search {
+  min-width: 240px; max-width: 360px; flex: 1;
+}
+.tk-search .input, .ap-search .input {
+  padding-left: 32px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff7a'><path d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: 10px center;
+  background-size: 14px 14px;
+}
+/* help text (explains buttons) */
+.help-row {
+  display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap;
+  margin-top: 8px; font-size: 12.5px; color: var(--ink-mute);
+}
+.help-row .help-card {
+  flex: 1 1 280px;
+  background: var(--bg-hover-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 10px 12px;
+  line-height: 1.55;
+}
+.help-row .help-card strong { color: var(--ink-strong); }
+.help-row .help-card .badge-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+
+/* Always-visible database search/filter panels */
+.filter-title {
+  display: flex; align-items: center; gap: 8px;
+  margin: 8px 0 8px;
+  color: var(--ink-strong);
+  font-size: 13px;
+  font-weight: 600;
+}
+.filter-title .hint {
+  color: var(--ink-mute);
+  font-weight: 400;
+  font-size: 12px;
+}
+.db-toolbar {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 10px;
+  margin: 8px 0 12px;
+}
+.db-toolbar-left { min-width: 0; }
+.tk-search, .ap-search { min-width: 280px; }
+.tk-search .input, .ap-search .input { min-height: 34px; }
+@media (max-width: 768px) {
+  .db-toolbar { display: block; }
+  .db-toolbar-left { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .tk-search, .ap-search { min-width: 0; max-width: none; width: 100%; }
+  .db-toolbar .db-tool-btn.primary { margin-top: 8px; width: 100%; justify-content: center; }
+}
+/* Bootstrap tables inherit, but keep our .tbl + .tag aesthetic */
+.tbl thead th { position: sticky; top: 0; background: var(--bg); z-index: 1; }
+/* Empty-state niceties */
+.empty { text-align: center; padding: 18px; color: var(--ink-mute); font-size: 13px; border: 1px dashed var(--line); border-radius: var(--r-md); }
+
 </style>
 </head>
 
@@ -1321,8 +1430,12 @@ select.input {
         <div class="page-divider"></div>
 
         <div class="db-views" id="tk-views"></div>
-        <div class="db-toolbar">
+        <div class="filter-title">🔍 Search & filter tasks <span class="hint">Use the box below or press Ctrl/Cmd+K.</span></div>
+        <div class="db-toolbar" id="taskFilterPanel">
           <div class="db-toolbar-left">
+            <div class="tk-search">
+              <input class="input" id="tk-search" type="search" placeholder="Search tasks by title or notes…" autocomplete="off" />
+            </div>
             <select class="input" id="tk-filterCat" style="width:auto">
               <option value="all">All categories</option>
               <option value="cv">CV</option>
@@ -1339,8 +1452,27 @@ select.input {
               <option value="done">Done</option>
               <option value="skipped">Skipped</option>
             </select>
+            <select class="input" id="tk-filterWeek" style="width:auto">
+              <option value="all">All weeks</option>
+              <option value="1">Week 1</option>
+              <option value="2">Week 2</option>
+              <option value="3">Week 3</option>
+              <option value="4">Week 4</option>
+              <option value="5">Week 5</option>
+              <option value="6">Week 6</option>
+              <option value="7">Week 7</option>
+              <option value="8">Week 8</option>
+            </select>
+            <select class="input" id="tk-filterDue" style="width:auto" title="Date filter">
+              <option value="all">Any date</option>
+              <option value="overdue">Overdue</option>
+              <option value="today">Due today</option>
+              <option value="week">Due this week</option>
+              <option value="nodate">No date</option>
+            </select>
+            <button class="btn" id="tk-clearFilters" type="button" title="Clear all filters">Clear</button>
           </div>
-          <button class="db-tool-btn primary" id="tk-newBtn">＋ New task</button>
+          <button class="db-tool-btn primary" id="tk-newBtn" data-action="new-task">＋ New task</button>
         </div>
 
         <div id="tk-body"></div>
@@ -1359,9 +1491,32 @@ select.input {
         <div class="page-divider"></div>
 
         <div class="db-views" id="ap-views"></div>
-        <div class="db-toolbar">
-          <div class="db-toolbar-left"></div>
-          <button class="db-tool-btn primary" id="ap-newBtn">＋ Log application</button>
+        <div class="filter-title">🔍 Search & filter applications <span class="hint">Search company, role, contact, source.</span></div>
+        <div class="db-toolbar" id="appFilterPanel">
+          <div class="db-toolbar-left">
+            <div class="ap-search">
+              <input class="input" id="ap-search" type="search" placeholder="Search company, role, contact, source…" autocomplete="off" />
+            </div>
+            <select class="input" id="ap-filterStatus" style="width:auto">
+              <option value="all">All statuses</option>
+              <option value="sent">Sent</option>
+              <option value="reply">Reply</option>
+              <option value="screen">Screen</option>
+              <option value="interview">Interview</option>
+              <option value="offer">Offer</option>
+              <option value="rejected">Rejected</option>
+              <option value="ghosted">Ghosted</option>
+            </select>
+            <select class="input" id="ap-filterPriority" style="width:auto">
+              <option value="all">Any priority</option>
+              <option value="Highest">Highest</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+            <button class="btn" id="ap-clearFilters" type="button">Clear</button>
+          </div>
+          <button class="db-tool-btn primary" id="ap-newBtn" data-action="new-app">＋ Log application</button>
         </div>
         <div id="ap-body"></div>
 
@@ -1592,9 +1747,10 @@ select.input {
    STATE
    ===================================================================== */
 const KEY = 'dxb-mission-v2';
-const SCHEMA_VERSION = 6;
+const SCHEMA_VERSION = 7;
 
 const DEFAULT_SETTINGS = {
+  // Template only. On first launch the real plan is generated from the start date you choose.
   planStart: '2026-04-27',
   planEnd: '2026-06-20',
   cvDeadline: '2026-05-04',
@@ -1611,6 +1767,20 @@ const DEFAULT_SETTINGS = {
   defaultTaskDueTime: '23:59',
   autoCatchupMax: 5,
 };
+
+const DATE_SETTING_KEYS = [
+  'planEnd', 'cvDeadline', 'awsExam', 'awsDeadline', 'deployDeadline', 'codingDeadline',
+  'travelStart', 'travelEnd', 'appsDeadline', 'dubaiHardDeadline', 'extensionCutoff'
+];
+
+function buildSettingsFromStart(startISO) {
+  const cleanStart = startISO || todayISO();
+  const out = { ...DEFAULT_SETTINGS, planStart: cleanStart };
+  for (const key of DATE_SETTING_KEYS) {
+    out[key] = addDays(cleanStart, dayDiff(DEFAULT_SETTINGS.planStart, DEFAULT_SETTINGS[key]));
+  }
+  return out;
+}
 
 function settings() { return state?.settings || DEFAULT_SETTINGS; }
 function planStart() { return settings().planStart || DEFAULT_SETTINGS.planStart; }
@@ -1872,7 +2042,27 @@ function seedDeadlineKey(cat) {
 function seedTargetDueDate(seed, index = null, s = settings()) {
   const anchor = seedMilestoneAnchor(seed, index);
   if (anchor) return s[anchor.key] || DEFAULT_SETTINGS[anchor.key] || null;
-  return seed?.due ? reflowSeedDueDate(seed, s) : null;
+  if (seed?.due) return reflowSeedDueDate(seed, s);
+  return seedWeekDistributedDate(seed, index, s);
+}
+
+function seedWeekDistributedDate(seed, index = null, s = settings()) {
+  if (!seed || !seed.week) return null;
+
+  // Week-only seed tasks used to float with dueDate:null. This makes the first-launch
+  // start date, Save Settings, and Force Reflow actually rebuild a complete dated schedule.
+  const weekStartIso = addDays(s.planStart || DEFAULT_SETTINGS.planStart, (Number(seed.week) - 1) * 7);
+
+  const peers = SEED_TASKS
+    .map((x, i) => ({ seed: x, i }))
+    .filter(x => x.seed.week === seed.week && !x.seed.due && !seedMilestoneAnchor(x.seed, x.i));
+
+  const pos = Math.max(0, peers.findIndex(x => x.i === index));
+  const count = Math.max(1, peers.length);
+
+  // Spread across Mon-Sat-ish, leaving room for Sunday review.
+  const offset = Math.min(5, Math.max(0, Math.round((pos / Math.max(1, count - 1)) * 5)));
+  return addDays(weekStartIso, offset);
 }
 
 function seedTargetTitle(seed, index = null) {
@@ -1936,11 +2126,12 @@ function makeDefaultTargets() {
   }));
 }
 
-function defaultState() {
+function defaultState(startISO = DEFAULT_SETTINGS.planStart, needsSetup = false) {
+  const generatedSettings = buildSettingsFromStart(startISO);
   return {
     schemaVersion: SCHEMA_VERSION,
-    settings: { ...DEFAULT_SETTINGS },
-    tasks: SEED_TASKS.map((t, i) => makeSeedTask(t, i, DEFAULT_SETTINGS)),
+    settings: generatedSettings,
+    tasks: SEED_TASKS.map((t, i) => makeSeedTask(t, i, generatedSettings)),
     applications: [],
     targetCompanies: makeDefaultTargets(),
     rituals: {},
@@ -1952,7 +2143,8 @@ function defaultState() {
       tasksView: 'table',
       appsView: 'table',
       reviewWeek: null,
-      calMonth: DEFAULT_SETTINGS.planStart.slice(0, 7),
+      calMonth: generatedSettings.planStart.slice(0, 7),
+      needsSetup,
     },
   };
 }
@@ -1985,6 +2177,7 @@ function migrateState(s) {
   s.ui.tasksView = s.ui.tasksView || 'table';
   s.ui.appsView = s.ui.appsView || 'table';
   s.ui.calMonth = s.ui.calMonth || s.settings.planStart.slice(0, 7);
+  s.ui.needsSetup = !!s.ui.needsSetup;
 
   const existing = Array.isArray(s.tasks) ? s.tasks : [];
   const bySeed = new Map();
@@ -2070,12 +2263,12 @@ let state = loadState();
 function loadState() {
   try {
     const raw = localStorage.getItem(KEY);
-    if (!raw) return defaultState();
+    if (!raw) return defaultState(todayISO(), true);
     const s = JSON.parse(raw);
-    if (!s.tasks) return defaultState();
+    if (!s.tasks) return defaultState(todayISO(), true);
     return migrateState(s);
   } catch {
-    return defaultState();
+    return defaultState(todayISO(), true);
   }
 }
 function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
@@ -2713,18 +2906,40 @@ function renderTasksDB() {
     </button>
   `).join('') + '<button class="db-add-view">+ Add view</button>';
 
-  // filter
-  const cat = $('#tk-filterCat').value;
-  const status = $('#tk-filterStatus').value;
+  // filters
+  const cat     = $('#tk-filterCat')?.value    || 'all';
+  const status  = $('#tk-filterStatus')?.value || 'all';
+  const week    = $('#tk-filterWeek')?.value   || 'all';
+  const due     = $('#tk-filterDue')?.value    || 'all';
+  const query   = ($('#tk-search')?.value || '').trim().toLowerCase();
   let list = state.tasks.slice();
-  if (cat !== 'all') list = list.filter(t => t.category === cat);
+  if (cat    !== 'all') list = list.filter(t => t.category === cat);
   if (status !== 'all') list = list.filter(t => t.status === status);
+  if (week   !== 'all') list = list.filter(t => Number(t.week) === Number(week));
+  if (query) list = list.filter(t =>
+    (t.title || '').toLowerCase().includes(query) ||
+    (t.notes || '').toLowerCase().includes(query)
+  );
+  if (due !== 'all') {
+    const today = todayISO();
+    const w = getCurrentWeek() || 1;
+    const range = weekRange(w);
+    list = list.filter(t => {
+      if (due === 'nodate')  return !t.dueDate;
+      if (due === 'overdue') return taskIsOverdue(t) && t.status !== 'done';
+      if (due === 'today')   return t.dueDate === today;
+      if (due === 'week')    return t.dueDate && t.dueDate >= range.start && t.dueDate <= range.end;
+      return true;
+    });
+  }
+  $('#tk-count').textContent = `${list.length} / ${state.tasks.length} tasks`;
 
   const view = state.ui.tasksView;
   if (view === 'table') $('#tk-body').innerHTML = renderTasksTable(list);
   else if (view === 'board') $('#tk-body').innerHTML = renderTasksBoard(list);
   else if (view === 'calendar') $('#tk-body').innerHTML = renderTasksCalendar(list);
   else if (view === 'by-week') $('#tk-body').innerHTML = renderTasksByWeek(list);
+  if (!list.length) $('#tk-body').innerHTML = `<div class="empty">No tasks match the current filters.</div>`;
 }
 
 function renderTasksTable(list) {
@@ -2929,17 +3144,29 @@ function renderAppsDB() {
     </button>
   `).join('') + '<button class="db-add-view">+ Add view</button>';
 
+  const q = ($('#ap-search')?.value || '').trim().toLowerCase();
+  const fs = $('#ap-filterStatus')?.value || 'all';
+  const fp = $('#ap-filterPriority')?.value || 'all';
+  const matches = a => {
+    if (fs !== 'all' && a.status !== fs) return false;
+    if (fp !== 'all' && (a.priority || 'Medium') !== fp) return false;
+    if (!q) return true;
+    return [a.company, a.role, a.contact, a.source, a.nextAction]
+      .some(v => (v || '').toLowerCase().includes(q));
+  };
+  const filtered = state.applications.filter(matches);
+
   if (state.ui.appsView === 'table') {
-    $('#ap-body').innerHTML = renderAppsTable() + renderTargetCompaniesTable() + renderApplicationBranchPanel();
+    $('#ap-body').innerHTML = renderAppsTable(filtered) + renderTargetCompaniesTable() + renderApplicationBranchPanel();
   } else {
-    $('#ap-body').innerHTML = renderAppsBoard() + renderTargetCompaniesTable() + renderApplicationBranchPanel();
+    $('#ap-body').innerHTML = renderAppsBoard(filtered) + renderTargetCompaniesTable() + renderApplicationBranchPanel();
   }
 }
 
-function renderAppsTable() {
-  const list = state.applications.slice().reverse();
+function renderAppsTable(src) {
+  const list = (src || state.applications).slice().reverse();
   if (!list.length) {
-    return `<div class="empty">No applications logged. Start with Tier 1 grad programmes — Revolut, CBD, Big-4. They have hard deadlines.</div>`;
+    return `<div class="empty">No applications match. Start with Tier 1 grad programmes — Revolut, CBD, Big-4 — or clear your filters.</div>`;
   }
   return `
     <div class="tbl-wrap">
@@ -2983,12 +3210,13 @@ function renderAppsTable() {
   `;
 }
 
-function renderAppsBoard() {
+function renderAppsBoard(src) {
   const cols = ['sent','reply','screen','interview','offer','rejected','ghosted'];
+  const pool = src || state.applications;
   return `
     <div class="board">
       ${cols.map(col => {
-        const items = state.applications.filter(a => a.status === col);
+        const items = pool.filter(a => a.status === col);
         const meta = APP_STATUS_META[col];
         return `
           <div class="board-col">
@@ -3324,7 +3552,7 @@ function renderSettings() {
   renderBackupStatus();
   $('#settings-dates').innerHTML = `
     <div class="block h2">Dynamic plan settings</div>
-    <div class="block text" style="color:var(--ink-mute)">These values drive the planner. <strong>Save settings</strong> updates countdowns, mission scores, overdue logic, exact milestone tasks, and non-manual seed tasks. Milestones are hard-anchored: AWS exam → AWS exam target date, travel → travel start, CV final → CV deadline, deploy final → deployment deadline, coding final → coding deadline. Browser localStorage persists the whole state.</div>
+    <div class="block text" style="color:var(--ink-mute)">These values drive the planner. On first launch, the app asks for your real Week 1 start date and generates every date from that anchor. <strong>Save settings</strong> updates countdowns, mission scores, overdue logic, exact milestone tasks, and non-manual seed tasks. <strong>Force reflow</strong> rebuilds the full original schedule from the current dates, including week-only tasks that used to float without dates. Browser localStorage persists the whole state.</div>
     <div class="tbl-wrap">
       <table class="tbl">
         <tbody>
@@ -3350,9 +3578,13 @@ function renderSettings() {
       <button class="btn primary" data-action="save-settings">Save settings + update dynamic tasks</button>
       <button class="btn" data-action="reschedule-seed-tasks">Force reflow all seed-task dates</button>
     </div>
+    <div class="help-row">
+      <div class="help-card"><strong><span class="badge-dot" style="background:var(--c-green-fg)"></span>Save settings + update dynamic tasks</strong><br>Safe/default button. Updates the plan rules, exact milestone anchors, and non-manual seed tasks from the current Week 1 start/deadlines. It protects dates you manually chose on normal tasks.</div>
+      <div class="help-card"><strong><span class="badge-dot" style="background:var(--c-orange-fg)"></span>Force reflow all seed-task dates</strong><br>Strong rebuild button. Rebuilds every original/seed task date from your current Week 1 start and deadlines, including week-only tasks. It may overwrite manual date edits on original/seed tasks, but it does not delete custom tasks, applications, companies, or reviews.</div>
+    </div>
     <div class="block callout warn">
       <div class="callout-icon">⚠️</div>
-      <div class="callout-body"><strong>Save settings</strong> is the safe button: it updates dynamic deadlines while protecting manual dates on normal tasks. <strong>Force reflow</strong> is the stronger button: it rebuilds every original/seed task date from the current deadlines, so manual date edits on seed tasks may be overwritten. User-added custom tasks are not deleted. Export JSON before major changes if you care about rollback.</div>
+      <div class="callout-body">Export a JSON backup before major deadline changes. The planner now has two layers: milestone tasks are exact anchors, while normal seed tasks are generated from your Week 1 start, week number, and category/deadline rules.</div>
     </div>
     <div class="block h3">Milestone anchors</div>
     <div class="block bullet"><div class="b-text">AWS exam task follows <code class="inline">AWS CP exam target date</code>, not the old May 25 text.</div></div>
@@ -3383,7 +3615,7 @@ function saveSettingsFromForm() {
   rescheduleSeedTasks(false);
   save();
   rerender();
-  alert('Settings saved. Safe dynamic update applied: countdowns, scores, anchored milestones, and non-manual seed dates updated. Manual dates on normal tasks were protected.');
+  alert('Settings saved. Safe dynamic update applied: countdowns, scores, anchored milestones, and non-manual seed dates were regenerated from your current Week 1 start/deadlines. Manual dates on normal tasks were protected.');
 }
 
 function saveReviewFromForm() {
@@ -3806,6 +4038,8 @@ function openModal(title, bodyHTML, onOk) {
   $('#m-title').textContent = title;
   $('#m-body').textContent = '';
   $('#m-form').innerHTML = bodyHTML;
+  const cancel = document.getElementById('m-cancel');
+  if (cancel) cancel.textContent = 'Cancel';
   modalOnOk = onOk;
   $('#modalBg').classList.add('open');
   setTimeout(() => $('#m-form input,#m-form select')[0]?.focus(), 50);
@@ -3901,7 +4135,7 @@ document.addEventListener('click', (e) => {
       case 'carry-forward-week': carryForwardWeek(Number(action.dataset.week)); break;
       case 'close-review-week': closeReviewWeek(Number(action.dataset.week)); break;
       case 'generate-catchup': generateCatchupTasks(); break;
-      case 'reschedule-seed-tasks': rescheduleSeedTasks(true); save(); rerender(); alert('Force reflow complete. Original/seed task dates were rebuilt from your current settings. Milestones now match their exact setting dates. Custom user-added tasks were not deleted.'); break;
+      case 'reschedule-seed-tasks': rescheduleSeedTasks(true); save(); rerender(); alert('Force reflow complete. Every original/seed task date was rebuilt from your current Week 1 start/deadlines. Milestones match their exact setting dates. Custom user-added tasks were not deleted.'); break;
       case 'del-app': delApp(id); break;
       case 'edit-app': openAppEdit(id); break;
       case 'push-task': pushTask(id); closeDrawer(); break;
@@ -3913,7 +4147,20 @@ document.addEventListener('click', (e) => {
   // sidebar action
   const sbAct = e.target.closest('.sb-action');
   if (sbAct) {
-    if (sbAct.dataset.act === 'newTask') newTask();
+    if (sbAct.dataset.act === 'search') {
+      state.ui.tasksView = 'table';
+      save();
+      showPage('tasks');
+      setTimeout(() => {
+        const search = document.getElementById('tk-search');
+        if (search) {
+          search.scrollIntoView({ block: 'center', behavior: 'smooth' });
+          search.focus();
+          search.select?.();
+        }
+      }, 80);
+    }
+    else if (sbAct.dataset.act === 'newTask') newTask();
     else if (sbAct.dataset.page) showPage(sbAct.dataset.page);
     return;
   }
@@ -4004,6 +4251,21 @@ document.addEventListener('blur', (e) => {
 
 /* Enter key on title prevents newline */
 document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    state.ui.tasksView = 'table';
+    save();
+    showPage('tasks');
+    setTimeout(() => {
+      const search = document.getElementById('tk-search');
+      if (search) {
+        search.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        search.focus();
+        search.select?.();
+      }
+    }, 80);
+    return;
+  }
   if (e.target.matches('.ph-title') && e.key === 'Enter') {
     e.preventDefault();
     e.target.blur();
@@ -4012,9 +4274,29 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') { closeModal(); closeDrawer(); }
 });
 
-/* filter change */
-['tk-filterCat','tk-filterStatus'].forEach(id => {
+/* filter change — Tasks */
+['tk-filterCat','tk-filterStatus','tk-filterWeek','tk-filterDue'].forEach(id => {
   document.getElementById(id)?.addEventListener('change', renderTasksDB);
+});
+document.getElementById('tk-search')?.addEventListener('input', renderTasksDB);
+document.getElementById('tk-clearFilters')?.addEventListener('click', () => {
+  ['tk-filterCat','tk-filterStatus','tk-filterWeek','tk-filterDue'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = 'all';
+  });
+  const s = document.getElementById('tk-search'); if (s) s.value = '';
+  renderTasksDB();
+});
+/* filter change — Applications */
+['ap-filterStatus','ap-filterPriority'].forEach(id => {
+  document.getElementById(id)?.addEventListener('change', renderAppsDB);
+});
+document.getElementById('ap-search')?.addEventListener('input', renderAppsDB);
+document.getElementById('ap-clearFilters')?.addEventListener('click', () => {
+  ['ap-filterStatus','ap-filterPriority'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = 'all';
+  });
+  const s = document.getElementById('ap-search'); if (s) s.value = '';
+  renderAppsDB();
 });
 
 /* quickAdd button */
@@ -4202,10 +4484,11 @@ function verifyCurrentSave() {
 function resetData() {
   if (!confirm('Reset to the original seeded 8-week plan? This deletes your check marks, manual tasks, applications, reviews, and settings in this browser. Export first if you care about rollback.')) return;
   if (!confirm('Final warning: reset cannot be undone without a backup JSON. Continue?')) return;
-  state = defaultState();
+  state = defaultState(todayISO(), true);
   save();
   rerender();
-  alert('Planner reset to the original plan.');
+  showFirstLaunchSetup();
+  alert('Planner reset. Choose the new Week 1 start date to regenerate the plan.');
 }
 
 function deleteLocalData() {
@@ -4213,10 +4496,11 @@ function deleteLocalData() {
   const typed = prompt('Type DELETE to wipe this browser copy.');
   if (typed !== 'DELETE') return;
   localStorage.removeItem(KEY);
-  state = defaultState();
+  state = defaultState(todayISO(), true);
   save();
   rerender();
-  alert('Local saved data was deleted, then the app reloaded a fresh default planner state so the page can keep running. Restore from backup if needed.');
+  showFirstLaunchSetup();
+  alert('Local saved data was deleted. Choose a Week 1 start date, or restore from backup if needed.');
 }
 
 function renderBackupStatus() {
@@ -4235,6 +4519,56 @@ function renderBackupStatus() {
 
 document.querySelector('.topbar-btn[data-act="export"]')?.addEventListener('click', exportData);
 
+function applyPlanStartDate(startISO) {
+  if (!startISO) return false;
+  const generated = buildSettingsFromStart(startISO);
+  state.settings = {
+    ...generated,
+    appTarget: Number(state.settings?.appTarget || generated.appTarget || 60),
+    defaultTaskDueTime: state.settings?.defaultTaskDueTime || generated.defaultTaskDueTime || '23:59',
+    autoCatchupMax: Number(state.settings?.autoCatchupMax || generated.autoCatchupMax || 5),
+  };
+
+  // First launch must regenerate all original plan tasks from the chosen Week 1 date.
+  state.tasks = SEED_TASKS.map((t, i) => makeSeedTask(t, i, state.settings));
+  state.applications = state.applications || [];
+  state.targetCompanies = state.targetCompanies?.length ? state.targetCompanies : makeDefaultTargets();
+  state.rituals = state.rituals || {};
+  state.weeklyReviews = state.weeklyReviews || {};
+  state.metrics = state.metrics || { lastActiveDate: null, streak: 0, callbacks: 0, lastBackupAt: null, lastRestoreAt: null };
+  state.ui = { ...(state.ui || {}), currentPage: 'today', calMonth: startISO.slice(0, 7), reviewWeek: 1, needsSetup: false };
+  save();
+  rerender();
+  showPage('today');
+  return true;
+}
+
+function showFirstLaunchSetup() {
+  openModal('Set your Week 1 start date', `
+    <div class="block callout info">
+      <div class="callout-icon">🎯</div>
+      <div class="callout-body">
+        <strong>This is the anchor for the whole planner.</strong><br>
+        Pick the date that should count as Week 1 Day 1. The app will regenerate CV, AWS, deployment, coding, applications, travel, weekly review dates, and all seed-task due dates from that start date.
+      </div>
+    </div>
+    <label class="sect-h">Week 1 Day 1</label>
+    <input class="input" id="firstStartDate" type="date" value="${todayISO()}" />
+    <div class="help-row">
+      <div class="help-card"><strong>Example</strong><br>If you choose 2026-04-28, then Week 1 runs Apr 28 → May 4 and every seeded task/deadline shifts from there.</div>
+      <div class="help-card"><strong>Persistence</strong><br>Your chosen date and all generated tasks are saved in browser localStorage. Export JSON weekly for backup.</div>
+    </div>
+  `, () => {
+    const start = document.getElementById('firstStartDate')?.value;
+    if (!start) { alert('Choose a Week 1 start date.'); return false; }
+    applyPlanStartDate(start);
+    alert('Plan generated from ' + start + '. All seeded dates now use this as Week 1 Day 1.');
+    return true;
+  });
+  const cancel = document.getElementById('m-cancel');
+  if (cancel) cancel.textContent = 'Choose later';
+}
+
 /* =====================================================================
    BOOT
    ===================================================================== */
@@ -4246,6 +4580,7 @@ function safeClockTick() {
 setInterval(safeClockTick, 60000);
 renderSidebar();
 showPage(state.ui.currentPage || 'today');
+if (state.ui?.needsSetup) setTimeout(showFirstLaunchSetup, 150);
 </script>
 </body>
 </html>
