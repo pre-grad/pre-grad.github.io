@@ -1382,7 +1382,9 @@ select.input {
         <h1 class="ph-title">Weekly Review</h1>
         <div class="ph-meta">
           <div class="ph-meta-row"><div class="label">📅 Week</div><div id="rv-week">—</div></div>
+          <div class="ph-meta-row"><div class="label">🕒 Local now</div><div id="rv-now">—</div></div>
           <div class="ph-meta-row"><div class="label">📊 Health</div><div id="rv-health">—</div></div>
+          <div class="ph-meta-row"><div class="label">🗃 Review state</div><div id="rv-state">—</div></div>
         </div>
         <div class="page-divider"></div>
         <div id="rv-body"></div>
@@ -1521,14 +1523,22 @@ select.input {
         <h1 class="ph-title">Settings</h1>
         <div class="page-divider"></div>
 
-        <div class="block h2">Backup &amp; restore</div>
-        <div class="block text">Everything (settings, tasks, applications, target companies, weekly reviews, completion state, streak) lives in <code class="inline">localStorage</code> under <code class="inline">dxb-mission-v2</code>. Export to JSON to back up or sync between devices.</div>
-        <div class="row" style="margin:12px 0">
-          <button class="btn" id="exportBtn">↓ Export JSON</button>
-          <button class="btn" id="importBtn">↑ Import JSON</button>
-          <input type="file" id="importInput" style="display:none" accept="application/json" />
+        <div class="block h2">Backup, restore &amp; delete</div>
+        <div class="block text">Everything (settings, tasks, applications, target companies, weekly reviews, completion state, streak) lives in <code class="inline">localStorage</code> under <code class="inline">dxb-mission-v2</code>. This section gives you a real full-state backup and restore path for GitHub Pages: export JSON, import that JSON later, or deliberately wipe this browser's saved copy.</div>
+        <div id="backupStatus" class="block callout info" style="margin:10px 0"></div>
+        <div class="row wrap" style="margin:12px 0">
+          <button class="btn primary" id="exportBtn">↓ Export full backup</button>
+          <button class="btn" id="importBtn">↑ Restore from backup</button>
+          <button class="btn" id="copyBackupBtn">⧉ Copy raw backup JSON</button>
+          <button class="btn" id="verifyBackupBtn">✓ Verify current save</button>
+          <input type="file" id="importInput" style="display:none" accept="application/json,.json" />
           <div class="spacer"></div>
-          <button class="btn danger" id="resetBtn">⟲ Reset all data</button>
+          <button class="btn danger" id="resetBtn">⟲ Reset to original plan</button>
+          <button class="btn danger" id="deleteLocalBtn">🗑 Delete local saved data</button>
+        </div>
+        <div class="block callout danger">
+          <div class="callout-icon">🧯</div>
+          <div class="callout-body"><strong>Do not rely on browser storage alone.</strong> Export every Sunday after weekly review. Restoring replaces the entire planner state with the imported JSON. Delete/reset actions are irreversible unless you exported first.</div>
         </div>
 
         <div id="settings-dates"></div>
@@ -1582,7 +1592,7 @@ select.input {
    STATE
    ===================================================================== */
 const KEY = 'dxb-mission-v2';
-const SCHEMA_VERSION = 4;
+const SCHEMA_VERSION = 5;
 
 const DEFAULT_SETTINGS = {
   planStart: '2026-04-27',
@@ -1855,12 +1865,13 @@ function defaultState() {
     targetCompanies: makeDefaultTargets(),
     rituals: {},
     weeklyReviews: {},
-    metrics: { lastActiveDate: null, streak: 0, callbacks: 0 },
+    metrics: { lastActiveDate: null, streak: 0, callbacks: 0, lastBackupAt: null, lastRestoreAt: null },
     ui: {
       currentPage: 'today',
       expandedPages: { plan: true, reference: false },
       tasksView: 'table',
       appsView: 'table',
+      reviewWeek: null,
       calMonth: DEFAULT_SETTINGS.planStart.slice(0, 7),
     },
   };
@@ -1887,7 +1898,7 @@ function migrateState(s) {
   }));
   s.rituals = s.rituals || {};
   s.weeklyReviews = s.weeklyReviews || {};
-  s.metrics = s.metrics || { lastActiveDate: null, streak: 0, callbacks: 0 };
+  s.metrics = { lastActiveDate: null, streak: 0, callbacks: 0, lastBackupAt: null, lastRestoreAt: null, ...(s.metrics || {}) };
   s.metrics.callbacks = s.applications.filter(x => ['reply','screen','interview','offer'].includes(x.status)).length;
   s.ui = { ...base.ui, ...(s.ui || {}) };
   s.ui.expandedPages = { ...base.ui.expandedPages, ...(s.ui.expandedPages || {}) };
@@ -2135,8 +2146,7 @@ function getTodayQueue() {
   return { overdue, todayDue, weekPending, week };
 }
 
-function countRitualsDoneThisWeek(cat = null) {
-  const week = getCurrentWeek();
+function countRitualsDoneForWeek(week, cat = null) {
   const r = weekRange(week || 1);
   let count = 0;
   for (const [date, dayItems] of Object.entries(state.rituals || {})) {
@@ -2152,6 +2162,10 @@ function countRitualsDoneThisWeek(cat = null) {
     }
   }
   return count;
+}
+
+function countRitualsDoneThisWeek(cat = null) {
+  return countRitualsDoneForWeek(getCurrentWeek() || 1, cat);
 }
 
 function getHealth(catId) {
@@ -2960,14 +2974,92 @@ function renderApplicationBranchPanel() {
 /* =====================================================================
    RENDER · REVIEW + SETTINGS
    ===================================================================== */
-function renderReview() {
-  const week = getCurrentWeek() || 1;
-  const range = weekRange(week);
-  const tasks = state.tasks.filter(t => t.week === week);
-  const done = tasks.filter(t => t.status === 'done').length;
-  const overdue = state.tasks.filter(t => taskIsOverdue(t)).length;
-  const key = 'week-' + week;
+function getSelectedReviewWeek() {
+  const current = getCurrentWeek() || 1;
+  const w = Number(state.ui.reviewWeek || current);
+  return Math.max(1, Math.min(8, Number.isFinite(w) ? w : current));
+}
+
+function weeklyAppTarget(week) {
+  const goals = { 1: 0, 2: 5, 3: 5, 4: 5, 5: 5, 6: 7, 7: 10, 8: 10 };
+  return goals[week] ?? 5;
+}
+
+function reviewKey(week) { return 'week-' + week; }
+
+function appsInWeek(week) {
+  const r = weekRange(week);
+  return state.applications.filter(a => (a.dateApplied || '') >= r.start && (a.dateApplied || '') <= r.end);
+}
+
+function tasksForReviewWeek(week) {
+  const r = weekRange(week);
+  return state.tasks.filter(t => t.week === week || (t.dueDate && t.dueDate >= r.start && t.dueDate <= r.end));
+}
+
+function weekStats(week) {
+  const r = weekRange(week);
+  const tasks = tasksForReviewWeek(week);
+  const unique = [...new Map(tasks.map(t => [t.id, t])).values()];
+  const done = unique.filter(t => t.status === 'done').length;
+  const skipped = unique.filter(t => t.status === 'skipped').length;
+  const pending = unique.filter(t => t.status === 'pending').length;
+  const overdue = unique.filter(t => taskIsOverdue(t)).length;
+  const taskPct = unique.length ? done / unique.length : 1;
+  const appCount = appsInWeek(week).length;
+  const appGoal = weeklyAppTarget(week);
+  const appPct = appGoal ? Math.min(1, appCount / appGoal) : 1;
+  const ritualCount = countRitualsDoneForWeek(week, 'coding');
+  const ritualGoal = week <= 7 ? 5 : 0;
+  const ritualPct = ritualGoal ? Math.min(1, ritualCount / ritualGoal) : 1;
+  const score = Math.round((taskPct * 0.6 + appPct * 0.2 + ritualPct * 0.2) * 100);
+  return { week, range: r, tasks: unique, total: unique.length, done, skipped, pending, overdue, taskPct, appCount, appGoal, appPct, ritualCount, ritualGoal, ritualPct, score };
+}
+
+function scoreBand(score) {
+  if (score >= 85) return { label: 'strong', color: 'green' };
+  if (score >= 70) return { label: 'acceptable', color: 'blue' };
+  if (score >= 50) return { label: 'weak', color: 'orange' };
+  return { label: 'bad', color: 'red' };
+}
+
+function reviewReminderForCurrentWeek() {
+  const current = getCurrentWeek() || 1;
+  const key = reviewKey(current);
   const review = state.weeklyReviews[key] || {};
+  const now = nowLocal();
+  const day = now.getDay(); // Sunday = 0
+  const hour = now.getHours();
+  const r = weekRange(current);
+  const today = todayISO();
+
+  if (review.closedAt) {
+    return { tone: 'success', icon: '✓', text: `Week ${current} is closed. Last closed: ${review.closedLocal || fmtDate(today)}.` };
+  }
+  if (today > r.end) {
+    return { tone: 'danger', icon: '⚠️', text: `Week ${current} is over and not closed. Do the review before adding more tasks.` };
+  }
+  if (day === 0 && hour >= 18) {
+    return { tone: 'danger', icon: '⏰', text: 'Sunday review is due now. Save notes, carry forward slipped tasks, then mark the week closed.' };
+  }
+  if (day === 0) {
+    return { tone: 'warn', icon: '🧾', text: 'Sunday review day. Do not let this become another vague planning session — close the week with evidence.' };
+  }
+  return { tone: 'info', icon: '🕒', text: `Review engine is live from your browser clock: ${nowLocalLabel()}. The Sunday reminder appears automatically.` };
+}
+
+function renderReview() {
+  const currentWeek = getCurrentWeek() || 1;
+  if (!state.ui.reviewWeek) state.ui.reviewWeek = currentWeek;
+  const week = getSelectedReviewWeek();
+  const range = weekRange(week);
+  const stats = weekStats(week);
+  const prev = week > 1 ? weekStats(week - 1) : null;
+  const key = reviewKey(week);
+  const review = state.weeklyReviews[key] || {};
+  const band = scoreBand(stats.score);
+  const reminder = reviewReminderForCurrentWeek();
+
   const healthTags = getOutcomes().map(o => {
     const h = getHealth(o.id);
     const band = h.status === 'on-track' ? 'blue' : (h.status === 'ahead' ? 'green' : (h.status === 'at-risk' ? 'orange' : 'red'));
@@ -2975,28 +3067,141 @@ function renderReview() {
   }).join(' ');
 
   $('#rv-week').innerHTML = `Week ${week} · ${fmtDate(range.start)} → ${fmtDate(range.end)}`;
+  $('#rv-now').textContent = nowLocalLabel();
   $('#rv-health').innerHTML = healthTags;
+  $('#rv-state').innerHTML = review.closedAt ? `<span class="tag green">closed</span>` : `<span class="tag ${week < currentWeek ? 'orange' : 'blue'}">${week < currentWeek ? 'archive/open' : 'current/open'}</span>`;
+
   $('#rv-body').innerHTML = `
-    <div class="stats-row">
-      <div class="stat"><div class="lbl">Week tasks done</div><div class="val">${done}<span class="unit">/${tasks.length}</span></div></div>
-      <div class="stat"><div class="lbl">Overdue</div><div class="val">${overdue}</div></div>
-      <div class="stat"><div class="lbl">Apps sent</div><div class="val">${state.applications.length}<span class="unit">/${appTarget()}</span></div></div>
-      <div class="stat"><div class="lbl">Coding rituals this week</div><div class="val">${countRitualsDoneThisWeek('coding')}</div></div>
+    ${renderReviewSelector(week, currentWeek)}
+
+    <div class="block callout ${reminder.tone}">
+      <div class="callout-icon">${reminder.icon}</div>
+      <div class="callout-body">${escapeHTML(reminder.text)}</div>
     </div>
 
-    <div class="block callout ${overdue ? 'danger' : 'success'}">
-      <div class="callout-icon">${overdue ? '⚠️' : '✓'}</div>
-      <div class="callout-body">${overdue ? `You have ${overdue} overdue task(s). Clear or deliberately reschedule them before adding new work.` : 'No overdue tasks. Keep the daily loop boring and consistent.'}</div>
+    <div class="stats-row">
+      <div class="stat"><div class="lbl">Completion score</div><div class="val">${stats.score}<span class="unit">/100</span></div><div><span class="tag ${band.color}">${band.label}</span></div></div>
+      <div class="stat"><div class="lbl">Week tasks done</div><div class="val">${stats.done}<span class="unit">/${stats.total}</span></div></div>
+      <div class="stat"><div class="lbl">Apps this week</div><div class="val">${stats.appCount}<span class="unit">/${stats.appGoal}</span></div></div>
+      <div class="stat"><div class="lbl">Coding rituals</div><div class="val">${stats.ritualCount}<span class="unit">/${stats.ritualGoal || '—'}</span></div></div>
     </div>
+
+    ${renderWeekComparison(stats, prev)}
+
+    <div class="block callout ${stats.overdue ? 'danger' : 'success'}">
+      <div class="callout-icon">${stats.overdue ? '⚠️' : '✓'}</div>
+      <div class="callout-body">${stats.overdue ? `This selected week has ${stats.overdue} overdue task(s). Carry them forward or deliberately cut them — do not pretend they disappeared.` : 'No overdue tasks inside this selected week.'}</div>
+    </div>
+
+    ${review.closedAt ? `<div class="block callout success"><div class="callout-icon">🔒</div><div class="callout-body">Closed at ${escapeHTML(review.closedLocal || review.closedAt)} with score ${review.scoreSnapshot ?? stats.score}/100. You can still edit notes, but the closure snapshot remains as evidence.</div></div>` : ''}
 
     ${reviewField(key, 'shipped', 'What shipped this week?', 'Actual proof only: sent apps, completed modules, deployed URL, cleaned repo, passed exam.')}
     ${reviewField(key, 'slipped', 'What slipped?', 'Be honest. No vague excuses. What did not get done?')}
     ${reviewField(key, 'cut', 'What gets cut or descoped?', 'If behind, cut polish before cutting outcomes.')}
     ${reviewField(key, 'next', 'Tomorrow’s first action', 'One concrete action you can start without thinking.')}
 
-    <div class="row" style="margin-top:14px">
+    <div class="row wrap" style="margin-top:14px">
       <button class="btn primary" data-action="save-review" data-week="${key}">Save weekly review</button>
+      <button class="btn" data-action="carry-forward-week" data-week="${week}">Carry forward slipped tasks</button>
+      <button class="btn" data-action="close-review-week" data-week="${week}">Mark week closed</button>
       <button class="btn" data-action="generate-catchup">Generate catch-up tasks</button>
+    </div>
+
+    ${renderSlippedTasksPanel(week)}
+    ${renderReviewHistory(week)}
+  `;
+}
+
+function renderReviewSelector(selectedWeek, currentWeek) {
+  return `
+    <div class="row wrap" style="margin-bottom:14px">
+      <select class="input" id="rv-week-select" style="width:220px">
+        ${Array.from({ length: 8 }, (_, i) => i + 1).map(w => {
+          const r = weekRange(w);
+          const label = `Week ${w} · ${fmtDate(r.start)} → ${fmtDate(r.end)}${w === currentWeek ? ' · current' : ''}`;
+          return `<option value="${w}" ${w === selectedWeek ? 'selected' : ''}>${escapeHTML(label)}</option>`;
+        }).join('')}
+      </select>
+      <button class="btn" data-action="review-current-week">Jump to current week</button>
+      <span class="tag ${selectedWeek === currentWeek ? 'blue' : 'gray'}">browser week: ${currentWeek}</span>
+    </div>
+  `;
+}
+
+function renderWeekComparison(stats, prev) {
+  if (!prev) {
+    return `<div class="block callout info"><div class="callout-icon">📊</div><div class="callout-body">No previous week to compare yet. This is your baseline.</div></div>`;
+  }
+  const scoreDelta = stats.score - prev.score;
+  const taskDelta = stats.done - prev.done;
+  const appDelta = stats.appCount - prev.appCount;
+  const ritualDelta = stats.ritualCount - prev.ritualCount;
+  const tone = scoreDelta >= 0 ? 'success' : 'warn';
+  const signed = n => `${n >= 0 ? '+' : ''}${n}`;
+  return `
+    <div class="block callout ${tone}">
+      <div class="callout-icon">↔</div>
+      <div class="callout-body">
+        <strong>Compared with Week ${stats.week - 1}:</strong>
+        score ${signed(scoreDelta)}, tasks ${signed(taskDelta)}, apps ${signed(appDelta)}, coding rituals ${signed(ritualDelta)}.
+        ${scoreDelta < 0 ? 'Direction is worse. Fix the system, not your mood.' : 'Direction is stable or better. Keep execution boring.'}
+      </div>
+    </div>
+  `;
+}
+
+function renderSlippedTasksPanel(week) {
+  const currentWeek = getCurrentWeek() || 1;
+  const slipped = tasksForReviewWeek(week).filter(t => t.status !== 'done' && (week < currentWeek || taskIsOverdue(t) || t.status === 'skipped'));
+  if (!slipped.length) return `<div class="block h3">Slipped tasks</div><div class="empty">No slipped tasks detected for this week.</div>`;
+  return `
+    <div class="block h3">Slipped tasks</div>
+    ${slipped.map(t => `
+      <div class="block todo ${t.status === 'done' ? 'done' : ''}">
+        <div class="checkbox-wrap"><button class="checkbox ${t.status === 'done' ? 'checked' : ''}" data-action="toggle" data-id="${t.id}"></button></div>
+        <div class="todo-text">
+          <div>${escapeHTML(t.title)}</div>
+          <div class="todo-row-meta">
+            <span class="tag ${CAT_META[t.category]?.color || 'gray'}">${CAT_META[t.category]?.name || t.category}</span>
+            <span class="tag gray">${t.dueDate ? taskDueLabel(t) : 'no due date'}</span>
+            ${taskIsOverdue(t) ? `<span class="tag red">${missedByLabel(t)}</span>` : ''}
+            <button class="db-tool-btn" data-action="carry-task" data-id="${t.id}">carry to today</button>
+          </div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function renderReviewHistory(selectedWeek) {
+  return `
+    <div class="block h2" style="margin-top:28px">Review history</div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr><th>Week</th><th>Range</th><th>Score</th><th>Tasks</th><th>Apps</th><th>Coding</th><th>State</th><th></th></tr>
+        </thead>
+        <tbody>
+          ${Array.from({ length: 8 }, (_, i) => i + 1).map(w => {
+            const st = weekStats(w);
+            const rv = state.weeklyReviews[reviewKey(w)] || {};
+            const b = scoreBand(st.score);
+            const isSelected = w === selectedWeek;
+            return `
+              <tr class="${isSelected ? 'done' : ''}">
+                <td><span class="tag ${isSelected ? 'blue' : 'gray'}">Week ${w}</span></td>
+                <td style="font-size:13px;color:var(--ink-mute)">${fmtDate(st.range.start)} → ${fmtDate(st.range.end)}</td>
+                <td><span class="tag ${b.color}">${st.score}/100</span></td>
+                <td style="font-size:13px;color:var(--ink-mute)">${st.done}/${st.total}</td>
+                <td style="font-size:13px;color:var(--ink-mute)">${st.appCount}/${st.appGoal}</td>
+                <td style="font-size:13px;color:var(--ink-mute)">${st.ritualCount}/${st.ritualGoal || '—'}</td>
+                <td>${rv.closedAt ? '<span class="tag green">closed</span>' : (rv.updatedAt ? '<span class="tag blue">saved</span>' : '<span class="tag gray">empty</span>')}</td>
+                <td><button class="db-tool-btn" data-action="select-review-week" data-week="${w}">Open</button></td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
     </div>
   `;
 }
@@ -3010,6 +3215,7 @@ function reviewField(key, field, label, placeholder) {
 
 function renderSettings() {
   const s = settings();
+  renderBackupStatus();
   $('#settings-dates').innerHTML = `
     <div class="block h2">Dynamic plan settings</div>
     <div class="block text" style="color:var(--ink-mute)">These values now drive the algorithm. Change dates here, save, and seed-task deadlines can be regenerated from the new plan start. Browser localStorage persists the whole state.</div>
@@ -3073,14 +3279,82 @@ function saveSettingsFromForm() {
 function saveReviewFromForm() {
   const first = $('[data-review-key]');
   if (!first) return;
-  const key = first.dataset.reviewKey;
+  saveReviewFromFormForWeek(Number(first.dataset.reviewKey.split('-')[1]) || getSelectedReviewWeek());
+  save();
+  rerender();
+  alert('Weekly review saved.');
+}
+
+function selectReviewWeek(week) {
+  state.ui.reviewWeek = Math.max(1, Math.min(8, Number(week) || (getCurrentWeek() || 1)));
+  save();
+  renderReview();
+}
+
+function saveReviewFromFormForWeek(week) {
+  const key = reviewKey(week);
   state.weeklyReviews[key] = state.weeklyReviews[key] || {};
   $$(`[data-review-key="${key}"]`).forEach(el => {
     state.weeklyReviews[key][el.dataset.reviewField] = el.value;
   });
   state.weeklyReviews[key].updatedAt = todayISO();
-  save();
-  alert('Weekly review saved.');
+  state.weeklyReviews[key].updatedLocal = nowLocalLabel();
+  return key;
+}
+
+function carryTaskForward(id) {
+  const t = state.tasks.find(x => x.id === id);
+  if (!t) return;
+  const currentWeek = getCurrentWeek() || 1;
+  const stamp = nowLocalLabel();
+  t.week = currentWeek;
+  t.dueDate = todayISO();
+  t.dueTime = oneHourFromNowTime();
+  t.manualDue = true;
+  if (t.status === 'skipped') t.status = 'pending';
+  t.notes = `${t.notes || ''}\n[${stamp}] Carried forward to today from weekly review.`.trim();
+  save(); rerender();
+}
+
+function carryForwardWeek(week) {
+  const currentWeek = getCurrentWeek() || 1;
+  const selected = Math.max(1, Math.min(8, Number(week) || currentWeek));
+  const slipped = tasksForReviewWeek(selected).filter(t => t.status !== 'done' && (selected < currentWeek || taskIsOverdue(t) || t.status === 'skipped'));
+  if (!slipped.length) {
+    alert('No slipped tasks found for this selected week.');
+    return;
+  }
+  if (!confirm(`Carry ${slipped.length} slipped task(s) into today? This will move their due date to today with a due time about one hour from now.`)) return;
+  const dueTime = oneHourFromNowTime();
+  const stamp = nowLocalLabel();
+  for (const t of slipped) {
+    t.week = currentWeek;
+    t.dueDate = todayISO();
+    t.dueTime = dueTime;
+    t.manualDue = true;
+    if (t.status === 'skipped') t.status = 'pending';
+    t.notes = `${t.notes || ''}\n[${stamp}] Carried forward from Week ${selected} review.`.trim();
+  }
+  save(); rerender();
+  alert(`${slipped.length} slipped task(s) carried forward to today.`);
+}
+
+function closeReviewWeek(week) {
+  const selected = Math.max(1, Math.min(8, Number(week) || (getCurrentWeek() || 1)));
+  const stats = weekStats(selected);
+  const openSlips = tasksForReviewWeek(selected).filter(t => t.status !== 'done' && (selected < (getCurrentWeek() || 1) || taskIsOverdue(t) || t.status === 'skipped'));
+  if (openSlips.length && !confirm(`This week still has ${openSlips.length} slipped task(s). Close anyway? Better move/cut them first.`)) return;
+  const key = saveReviewFromFormForWeek(selected);
+  state.weeklyReviews[key].closedAt = nowLocal().toISOString();
+  state.weeklyReviews[key].closedLocal = nowLocalLabel();
+  state.weeklyReviews[key].scoreSnapshot = stats.score;
+  state.weeklyReviews[key].statsSnapshot = {
+    total: stats.total, done: stats.done, skipped: stats.skipped, pending: stats.pending,
+    overdue: stats.overdue, appCount: stats.appCount, appGoal: stats.appGoal,
+    ritualCount: stats.ritualCount, ritualGoal: stats.ritualGoal,
+  };
+  save(); rerender();
+  alert(`Week ${selected} closed with score ${stats.score}/100.`);
 }
 
 function generateCatchupTasks() {
@@ -3511,6 +3785,11 @@ document.addEventListener('click', (e) => {
       case 'log-target-app': logTargetApplication(id); break;
       case 'save-settings': saveSettingsFromForm(); break;
       case 'save-review': saveReviewFromForm(); break;
+      case 'select-review-week': selectReviewWeek(Number(action.dataset.week)); break;
+      case 'review-current-week': selectReviewWeek(getCurrentWeek() || 1); break;
+      case 'carry-task': carryTaskForward(id); break;
+      case 'carry-forward-week': carryForwardWeek(Number(action.dataset.week)); break;
+      case 'close-review-week': closeReviewWeek(Number(action.dataset.week)); break;
       case 'generate-catchup': generateCatchupTasks(); break;
       case 'reschedule-seed-tasks': rescheduleSeedTasks(true); save(); rerender(); alert('Seed tasks rescheduled from your current plan start.'); break;
       case 'del-app': delApp(id); break;
@@ -3554,11 +3833,18 @@ document.addEventListener('click', (e) => {
   // export / import
   if (e.target.id === 'exportBtn') exportData();
   if (e.target.id === 'importBtn') $('#importInput').click();
+  if (e.target.id === 'copyBackupBtn') copyRawBackupJSON();
+  if (e.target.id === 'verifyBackupBtn') verifyCurrentSave();
   if (e.target.id === 'resetBtn') resetData();
+  if (e.target.id === 'deleteLocalBtn') deleteLocalData();
 });
 
 /* drawer change events for selects */
 document.addEventListener('change', (e) => {
+  if (e.target.id === 'rv-week-select') {
+    selectReviewWeek(Number(e.target.value));
+    return;
+  }
   const a = e.target.closest('[data-action]');
   if (!a) return;
   const id = a.dataset.id;
@@ -3668,14 +3954,73 @@ function skipTask(id) {
   save(); rerender();
 }
 
-/* export / import */
-function exportData() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+/* backup / restore / delete */
+function backupStats() {
+  const raw = localStorage.getItem(KEY) || '';
+  return {
+    savedBytes: raw.length,
+    tasks: state.tasks?.length || 0,
+    doneTasks: (state.tasks || []).filter(t => t.status === 'done').length,
+    apps: state.applications?.length || 0,
+    targets: state.targetCompanies?.length || 0,
+    reviews: Object.keys(state.weeklyReviews || {}).length,
+    lastBackupAt: state.metrics?.lastBackupAt || null,
+    lastRestoreAt: state.metrics?.lastRestoreAt || null,
+  };
+}
+
+function createBackupPayload() {
+  return {
+    app: 'Mission Dubai Planner',
+    key: KEY,
+    schemaVersion: SCHEMA_VERSION,
+    exportedAt: new Date().toISOString(),
+    localExportedAt: new Date().toLocaleString(),
+    browserDate: todayISO(),
+    stats: backupStats(),
+    state,
+  };
+}
+
+function downloadJSON(obj, filename) {
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = `mission-dubai-${todayISO()}.json`;
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
   a.click();
+  a.remove();
   URL.revokeObjectURL(url);
+}
+
+function exportData() {
+  state.metrics = { lastActiveDate: null, streak: 0, callbacks: 0, lastBackupAt: null, lastRestoreAt: null, ...(state.metrics || {}) };
+  state.metrics.lastBackupAt = new Date().toISOString();
+  save();
+  const payload = createBackupPayload();
+  payload.stats.lastBackupAt = state.metrics.lastBackupAt;
+  downloadJSON(payload, `mission-dubai-full-backup-${todayISO()}.json`);
+  renderBackupStatus();
+}
+
+function extractRestorableState(parsed) {
+  // Accept both the new full-backup envelope and older raw state exports.
+  const candidate = parsed && parsed.state ? parsed.state : parsed;
+  if (!candidate || typeof candidate !== 'object') throw new Error('Backup file is not a JSON object.');
+  if (!Array.isArray(candidate.tasks)) throw new Error('Backup is missing tasks[].');
+  if (!candidate.settings || typeof candidate.settings !== 'object') throw new Error('Backup is missing settings.');
+  return candidate;
+}
+
+function restoreFromParsedJSON(parsed) {
+  const candidate = extractRestorableState(parsed);
+  const migrated = migrateState(candidate);
+  migrated.metrics = { lastActiveDate: null, streak: 0, callbacks: 0, lastBackupAt: null, lastRestoreAt: null, ...(migrated.metrics || {}) };
+  migrated.metrics.lastRestoreAt = new Date().toISOString();
+  state = migrated;
+  save();
+  rerender();
 }
 
 document.getElementById('importInput')?.addEventListener('change', (e) => {
@@ -3684,19 +4029,83 @@ document.getElementById('importInput')?.addEventListener('change', (e) => {
   const r = new FileReader();
   r.onload = (ev) => {
     try {
-      const d = JSON.parse(ev.target.result);
-      if (!d.tasks) throw 0;
-      state = migrateState(d);
-      save(); rerender(); alert('Imported.');
-    } catch { alert('Invalid file.'); }
+      const parsed = JSON.parse(ev.target.result);
+      const candidate = extractRestorableState(parsed);
+      const summary = `Restore this backup?\n\nTasks: ${(candidate.tasks || []).length}\nApplications: ${(candidate.applications || []).length}\nWeekly reviews: ${Object.keys(candidate.weeklyReviews || {}).length}\n\nThis replaces the current planner state in this browser.`;
+      if (!confirm(summary)) return;
+      restoreFromParsedJSON(parsed);
+      alert('Backup restored.');
+    } catch (err) {
+      alert('Invalid backup file: ' + (err?.message || 'Could not read JSON.'));
+    } finally {
+      e.target.value = '';
+    }
   };
   r.readAsText(file);
 });
 
+async function copyRawBackupJSON() {
+  const payload = createBackupPayload();
+  const text = JSON.stringify(payload, null, 2);
+  try {
+    await navigator.clipboard.writeText(text);
+    alert('Full backup JSON copied to clipboard. Paste it somewhere safe.');
+  } catch {
+    prompt('Clipboard blocked. Copy this full backup JSON manually:', text);
+  }
+}
+
+function verifyCurrentSave() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) throw new Error('No local save found.');
+    const parsed = JSON.parse(raw);
+    const candidate = extractRestorableState(parsed);
+    const migrated = migrateState(candidate);
+    const stats = {
+      tasks: migrated.tasks.length,
+      applications: migrated.applications.length,
+      weeklyReviews: Object.keys(migrated.weeklyReviews || {}).length,
+      targetCompanies: migrated.targetCompanies.length,
+    };
+    alert(`Current local save is readable.\n\nTasks: ${stats.tasks}\nApplications: ${stats.applications}\nWeekly reviews: ${stats.weeklyReviews}\nTarget companies: ${stats.targetCompanies}`);
+  } catch (err) {
+    alert('Current local save failed verification: ' + (err?.message || 'unknown error'));
+  }
+}
+
 function resetData() {
-  if (!confirm('Wipe all data and re-seed the original 8-week plan? This deletes your check marks and applications.')) return;
+  if (!confirm('Reset to the original seeded 8-week plan? This deletes your check marks, manual tasks, applications, reviews, and settings in this browser. Export first if you care about rollback.')) return;
+  if (!confirm('Final warning: reset cannot be undone without a backup JSON. Continue?')) return;
   state = defaultState();
-  save(); rerender();
+  save();
+  rerender();
+  alert('Planner reset to the original plan.');
+}
+
+function deleteLocalData() {
+  if (!confirm('Delete ALL saved Mission Dubai data from this browser? Export first unless you intentionally want to lose it.')) return;
+  const typed = prompt('Type DELETE to wipe this browser copy.');
+  if (typed !== 'DELETE') return;
+  localStorage.removeItem(KEY);
+  state = defaultState();
+  save();
+  rerender();
+  alert('Local saved data was deleted, then the app reloaded a fresh default planner state so the page can keep running. Restore from backup if needed.');
+}
+
+function renderBackupStatus() {
+  const el = document.getElementById('backupStatus');
+  if (!el) return;
+  const st = backupStats();
+  const kb = Math.max(1, Math.round(st.savedBytes / 1024));
+  el.innerHTML = `
+    <div class="callout-icon">💾</div>
+    <div class="callout-body">
+      <strong>Current browser save:</strong> ${kb} KB · ${st.tasks} tasks (${st.doneTasks} done) · ${st.apps} applications · ${st.targets} targets · ${st.reviews} weekly reviews.<br>
+      <strong>Last export:</strong> ${st.lastBackupAt ? new Date(st.lastBackupAt).toLocaleString() : 'never recorded'} · <strong>Last restore:</strong> ${st.lastRestoreAt ? new Date(st.lastRestoreAt).toLocaleString() : 'never'}.
+    </div>
+  `;
 }
 
 document.querySelector('.topbar-btn[data-act="export"]')?.addEventListener('click', exportData);
@@ -3704,6 +4113,12 @@ document.querySelector('.topbar-btn[data-act="export"]')?.addEventListener('clic
 /* =====================================================================
    BOOT
    ===================================================================== */
+function safeClockTick() {
+  const active = document.activeElement;
+  if (active && (active.matches('textarea,input,select') || active.getAttribute('contenteditable') === 'true')) return;
+  if (['today','mission','tasks','review'].includes(state.ui.currentPage)) renderPage(state.ui.currentPage);
+}
+setInterval(safeClockTick, 60000);
 renderSidebar();
 showPage(state.ui.currentPage || 'today');
 </script>
