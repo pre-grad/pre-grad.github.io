@@ -1592,7 +1592,7 @@ select.input {
    STATE
    ===================================================================== */
 const KEY = 'dxb-mission-v2';
-const SCHEMA_VERSION = 5;
+const SCHEMA_VERSION = 6;
 
 const DEFAULT_SETTINGS = {
   planStart: '2026-04-27',
@@ -1798,6 +1798,13 @@ const SEED_TASKS = [
   { title: 'Graduation ceremony — network with classmates\' parents and faculty', cat: 'travel', week: 8 },
   { title: 'HW Dubai career services drop-in', cat: 'travel', week: 8 },
   { title: 'Walk-in: Dtec Silicon Oasis · In5 Tech · AstroLabs · Impact Hub', cat: 'travel', week: 8 },
+
+  // DYNAMIC MILESTONES — these are anchored directly to editable Settings dates.
+  // They are appended instead of inserted so existing backups keep their original seed indexes.
+  { title: 'MILESTONE: CV / LinkedIn / GitHub live', cat: 'cv', week: 1, anchor: 'cvDeadline' },
+  { title: 'MILESTONE: dissertation deployed publicly', cat: 'deploy', week: 7, anchor: 'deployDeadline' },
+  { title: 'MILESTONE: coding fluency checkpoint', cat: 'coding', week: 7, anchor: 'codingDeadline' },
+  { title: 'MILESTONE: application target reached', cat: 'apps', week: 8, anchor: 'appsDeadline' },
 ];
 
 function getRitualsForWeek(W) {
@@ -1827,18 +1834,91 @@ function getRitualsForWeek(W) {
 }
 
 /* state shape + persistence migration */
+function seedMilestoneAnchor(seed, index = null) {
+  if (!seed) return null;
+  const title = String(seed.title || '');
+  const direct = seed.anchor || null;
+  const map = {
+    cvDeadline:       { key: 'cvDeadline',       title: 'MILESTONE: CV / LinkedIn / GitHub live' },
+    awsExam:          { key: 'awsExam',          title: 'TAKE the AWS CP exam' },
+    deployDeadline:   { key: 'deployDeadline',   title: 'MILESTONE: dissertation deployed publicly' },
+    codingDeadline:   { key: 'codingDeadline',   title: 'MILESTONE: coding fluency checkpoint' },
+    appsDeadline:     { key: 'appsDeadline',     title: 'MILESTONE: application target reached' },
+    travelStart:      { key: 'travelStart',      title: 'Travel to Dubai' },
+  };
+  if (direct && map[direct]) return { ...map[direct], source: 'explicit' };
+  if (/TAKE\s+the\s+AWS\s+CP\s+exam/i.test(title)) return { ...map.awsExam, source: 'detected' };
+  if (/^Travel\s+to\s+Dubai$/i.test(title)) return { ...map.travelStart, source: 'detected' };
+  return null;
+}
+
+function taskMilestoneAnchor(task) {
+  if (!task || !Number.isInteger(task.seedIndex)) return null;
+  return seedMilestoneAnchor(SEED_TASKS[task.seedIndex], task.seedIndex);
+}
+
+function seedDeadlineKey(cat) {
+  return ({
+    cv: 'cvDeadline',
+    aws: 'awsDeadline',
+    deploy: 'deployDeadline',
+    apps: 'appsDeadline',
+    coding: 'codingDeadline',
+    travel: 'travelStart',
+    planning: 'planEnd',
+  })[cat] || 'planEnd';
+}
+
+function seedTargetDueDate(seed, index = null, s = settings()) {
+  const anchor = seedMilestoneAnchor(seed, index);
+  if (anchor) return s[anchor.key] || DEFAULT_SETTINGS[anchor.key] || null;
+  return seed?.due ? reflowSeedDueDate(seed, s) : null;
+}
+
+function seedTargetTitle(seed, index = null) {
+  const anchor = seedMilestoneAnchor(seed, index);
+  return anchor ? anchor.title : seed.title;
+}
+
+function weekNumberFromDate(iso, s = settings()) {
+  if (!iso) return 1;
+  const d = dayDiff(s.planStart || DEFAULT_SETTINGS.planStart, iso);
+  if (d < 0) return 1;
+  return Math.max(1, Math.min(8, Math.floor(d / 7) + 1));
+}
+
+function reflowSeedDueDate(seed, s = settings()) {
+  if (!seed?.due) return null;
+  const key = seedDeadlineKey(seed.cat);
+  const oldStart = DEFAULT_SETTINGS.planStart;
+  const newStart = s.planStart || DEFAULT_SETTINGS.planStart;
+  const oldEnd = DEFAULT_SETTINGS[key] || DEFAULT_SETTINGS.planEnd;
+  const newEnd = s[key] || DEFAULT_SETTINGS[key] || s.planEnd || DEFAULT_SETTINGS.planEnd;
+  const oldSpan = Math.max(1, dayDiff(oldStart, oldEnd));
+  const oldOffset = Math.max(0, dayDiff(oldStart, seed.due));
+  const ratio = Math.max(0, Math.min(1, oldOffset / oldSpan));
+  const newSpan = Math.max(1, dayDiff(newStart, newEnd));
+  const proposed = addDays(newStart, Math.round(ratio * newSpan));
+  if (dayDiff(proposed, newStart) > 0) return newStart;
+  if (dayDiff(newEnd, proposed) > 0) return newEnd;
+  return proposed;
+}
+
 function makeSeedTask(t, i, s = DEFAULT_SETTINGS) {
+  const anchor = seedMilestoneAnchor(t, i);
   const dueOffset = t.due ? dayDiff(DEFAULT_SETTINGS.planStart, t.due) : null;
+  const dueDate = seedTargetDueDate(t, i, s);
   return {
     id: 't' + i,
     seedIndex: i,
     userAdded: false,
     manualDue: false,
     dueOffset,
-    title: t.title,
+    milestoneKey: anchor?.key || null,
+    title: seedTargetTitle(t, i),
     category: t.cat,
-    week: t.week,
-    dueDate: t.due ? addDays(s.planStart || DEFAULT_SETTINGS.planStart, dueOffset) : null,
+    week: dueDate ? weekNumberFromDate(dueDate, s) : t.week,
+    dueDate,
     dueTime: t.time || '',
     status: 'pending',
     createdAt: s.planStart || DEFAULT_SETTINGS.planStart,
@@ -1918,18 +1998,23 @@ function migrateState(s) {
     const fresh = makeSeedTask(seed, i, s.settings);
     const old = bySeed.get(i);
     if (!old) return fresh;
-    const manualDue = !!old.manualDue;
+    const anchor = seedMilestoneAnchor(seed, i);
+    const manualDue = !!old.manualDue && !anchor;
+    const chosenDue = anchor ? fresh.dueDate : (manualDue ? (old.dueDate || null) : fresh.dueDate);
+    const chosenWeek = chosenDue ? weekNumberFromDate(chosenDue, s.settings) : (old.week || fresh.week);
     return {
       ...fresh,
       ...old,
       seedIndex: i,
       userAdded: false,
       dueOffset: fresh.dueOffset,
+      milestoneKey: fresh.milestoneKey || null,
       manualDue,
-      dueDate: manualDue ? (old.dueDate || null) : fresh.dueDate,
+      dueDate: chosenDue,
       dueTime: old.dueTime ?? fresh.dueTime ?? '',
+      title: anchor ? fresh.title : (old.title || fresh.title),
       category: old.category || fresh.category,
-      week: old.week || fresh.week,
+      week: chosenWeek,
       status: old.status || 'pending',
     };
   });
@@ -1962,9 +2047,22 @@ function rescheduleSeedTasks(force = false) {
     if (!Number.isInteger(t.seedIndex)) continue;
     const seed = SEED_TASKS[t.seedIndex];
     const fresh = makeSeedTask(seed, t.seedIndex, settings());
+    const anchor = seedMilestoneAnchor(seed, t.seedIndex);
     t.dueOffset = fresh.dueOffset;
-    t.week = seed.week;
-    if (force || !t.manualDue) t.dueDate = fresh.dueDate;
+    t.milestoneKey = fresh.milestoneKey || null;
+    if (anchor) {
+      // Milestones are controlled by Settings, not by stale task text.
+      t.title = fresh.title;
+      t.dueDate = fresh.dueDate;
+      t.week = fresh.week;
+      t.manualDue = false;
+    } else if (force || !t.manualDue) {
+      t.dueDate = fresh.dueDate;
+      t.week = fresh.week;
+      if (force) t.manualDue = false;
+    } else if (t.dueDate) {
+      t.week = weekNumberFromDate(t.dueDate, settings());
+    }
   }
 }
 
@@ -2080,6 +2178,13 @@ function missedByLabel(t) {
 function categoryWeight(cat) {
   return ({ cv: 18, aws: 22, deploy: 22, apps: 16, coding: 20, planning: 8, travel: 10 })[cat] || 10;
 }
+function defaultPriorityForCategory(cat) {
+  return ({ cv: 'High', aws: 'High', deploy: 'High', coding: 'High', apps: 'Medium', planning: 'Low', travel: 'Medium' })[cat] || 'Medium';
+}
+function taskPriorityWeight(t) {
+  const p = t?.priority || defaultPriorityForCategory(t?.category);
+  return ({ Highest: 16, High: 10, Medium: 4, Low: 0 })[p] ?? 4;
+}
 function taskSeverityScore(t) {
   if (!taskIsOverdue(t)) return 0;
   const h = missedByHours(t);
@@ -2093,7 +2198,8 @@ function taskSeverityScore(t) {
     else if (days <= 2) deadlineScore = 15;
     else if (days <= 7) deadlineScore = 8;
   }
-  return Math.min(100, hourScore + catScore + deadlineScore);
+  const priorityScore = taskPriorityWeight(t);
+  return Math.min(100, hourScore + catScore + deadlineScore + priorityScore);
 }
 function severityBand(score) {
   if (score >= 80) return { label: 'critical', color: 'red', icon: '🔥' };
@@ -3218,7 +3324,7 @@ function renderSettings() {
   renderBackupStatus();
   $('#settings-dates').innerHTML = `
     <div class="block h2">Dynamic plan settings</div>
-    <div class="block text" style="color:var(--ink-mute)">These values now drive the algorithm. Change dates here, save, and seed-task deadlines can be regenerated from the new plan start. Browser localStorage persists the whole state.</div>
+    <div class="block text" style="color:var(--ink-mute)">These values drive the planner. <strong>Save settings</strong> updates countdowns, mission scores, overdue logic, exact milestone tasks, and non-manual seed tasks. Milestones are hard-anchored: AWS exam → AWS exam target date, travel → travel start, CV final → CV deadline, deploy final → deployment deadline, coding final → coding deadline. Browser localStorage persists the whole state.</div>
     <div class="tbl-wrap">
       <table class="tbl">
         <tbody>
@@ -3241,13 +3347,17 @@ function renderSettings() {
       </table>
     </div>
     <div class="row" style="margin:12px 0">
-      <button class="btn primary" data-action="save-settings">Save settings</button>
-      <button class="btn" data-action="reschedule-seed-tasks">Regenerate seed-task dates from plan start</button>
+      <button class="btn primary" data-action="save-settings">Save settings + update dynamic tasks</button>
+      <button class="btn" data-action="reschedule-seed-tasks">Force reflow all seed-task dates</button>
     </div>
     <div class="block callout warn">
       <div class="callout-icon">⚠️</div>
-      <div class="callout-body">Manual task dates stay manual unless you click the regenerate button. Export JSON before major changes if you care about rollback.</div>
+      <div class="callout-body"><strong>Save settings</strong> is the safe button: it updates dynamic deadlines while protecting manual dates on normal tasks. <strong>Force reflow</strong> is the stronger button: it rebuilds every original/seed task date from the current deadlines, so manual date edits on seed tasks may be overwritten. User-added custom tasks are not deleted. Export JSON before major changes if you care about rollback.</div>
     </div>
+    <div class="block h3">Milestone anchors</div>
+    <div class="block bullet"><div class="b-text">AWS exam task follows <code class="inline">AWS CP exam target date</code>, not the old May 25 text.</div></div>
+    <div class="block bullet"><div class="b-text">Travel to Dubai follows <code class="inline">Dubai travel / activation starts</code>.</div></div>
+    <div class="block bullet"><div class="b-text">CV, deployment, coding, and applications each get a final milestone task tied to their own deadline.</div></div>
   `;
 }
 
@@ -3273,7 +3383,7 @@ function saveSettingsFromForm() {
   rescheduleSeedTasks(false);
   save();
   rerender();
-  alert('Settings saved. Dynamic deadlines updated.');
+  alert('Settings saved. Safe dynamic update applied: countdowns, scores, anchored milestones, and non-manual seed dates updated. Manual dates on normal tasks were protected.');
 }
 
 function saveReviewFromForm() {
@@ -3791,7 +3901,7 @@ document.addEventListener('click', (e) => {
       case 'carry-forward-week': carryForwardWeek(Number(action.dataset.week)); break;
       case 'close-review-week': closeReviewWeek(Number(action.dataset.week)); break;
       case 'generate-catchup': generateCatchupTasks(); break;
-      case 'reschedule-seed-tasks': rescheduleSeedTasks(true); save(); rerender(); alert('Seed tasks rescheduled from your current plan start.'); break;
+      case 'reschedule-seed-tasks': rescheduleSeedTasks(true); save(); rerender(); alert('Force reflow complete. Original/seed task dates were rebuilt from your current settings. Milestones now match their exact setting dates. Custom user-added tasks were not deleted.'); break;
       case 'del-app': delApp(id); break;
       case 'edit-app': openAppEdit(id); break;
       case 'push-task': pushTask(id); closeDrawer(); break;
@@ -3857,7 +3967,18 @@ document.addEventListener('change', (e) => {
       save(); rerender(); break;
     case 'set-cat': t.category = e.target.value; save(); rerender(); break;
     case 'set-week': t.week = parseInt(e.target.value); save(); rerender(); break;
-    case 'set-due': t.dueDate = e.target.value || null; t.manualDue = true; save(); rerender(); break;
+    case 'set-due': {
+      const anchor = taskMilestoneAnchor(t);
+      if (anchor && e.target.value) {
+        state.settings[anchor.key] = e.target.value;
+        rescheduleSeedTasks(false);
+      } else {
+        t.dueDate = e.target.value || null;
+        t.manualDue = true;
+        if (t.dueDate) t.week = weekNumberFromDate(t.dueDate, settings());
+      }
+      save(); rerender(); break;
+    }
     case 'set-due-time': t.dueTime = cleanTime(e.target.value); t.manualDue = true; save(); rerender(); break;
   }
 });
@@ -3869,7 +3990,11 @@ document.addEventListener('blur', (e) => {
   const id = a.dataset.id;
   if (a.dataset.action === 'rename-task') {
     const t = state.tasks.find(x => x.id === id);
-    if (t) { t.title = e.target.textContent.trim() || t.title; save(); rerender(); }
+    if (t) {
+      const anchor = taskMilestoneAnchor(t);
+      t.title = anchor ? anchor.title : (e.target.textContent.trim() || t.title);
+      save(); rerender();
+    }
   }
   if (a.dataset.action === 'set-notes') {
     const t = state.tasks.find(x => x.id === id);
