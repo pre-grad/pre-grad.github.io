@@ -1,0 +1,3040 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mission: Dubai</title>
+<meta name="description" content="8-week execution plan · local-first · no signup" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50%25' y='55%25' font-size='80' text-anchor='middle' dominant-baseline='middle'%3E🎯%3C/text%3E%3C/svg%3E" />
+<style>
+/* =====================================================================
+   NOTION DARK · token system
+   ===================================================================== */
+:root {
+  /* surface */
+  --bg:           rgb(25, 25, 25);
+  --bg-sidebar:   rgb(32, 32, 32);
+  --bg-modal:     rgb(37, 37, 37);
+  --bg-hover:     rgba(255,255,255,0.055);
+  --bg-hover-soft: rgba(255,255,255,0.028);
+  --bg-active:    rgba(255,255,255,0.08);
+  --bg-input:     rgba(255,255,255,0.055);
+
+  /* lines */
+  --line:         rgba(255,255,255,0.094);
+  --line-strong:  rgba(255,255,255,0.13);
+
+  /* ink */
+  --ink:          rgba(255,255,255,0.81);
+  --ink-strong:   rgb(255,255,255);
+  --ink-mute:     rgba(255,255,255,0.443);
+  --ink-fade:     rgba(255,255,255,0.282);
+
+  /* accent */
+  --accent:       rgb(35, 131, 226);
+  --accent-soft:  rgba(35,131,226,0.28);
+
+  /* tag palette · Notion's actual values */
+  --c-gray-fg:   rgba(255,255,255,0.6);
+  --c-gray-bg:   rgba(255,255,255,0.07);
+  --c-red-fg:    rgb(255,115,105);
+  --c-red-bg:    rgba(255,115,105,0.16);
+  --c-orange-fg: rgb(255,163,68);
+  --c-orange-bg: rgba(255,163,68,0.16);
+  --c-yellow-fg: rgb(255,220,73);
+  --c-yellow-bg: rgba(255,220,73,0.13);
+  --c-green-fg:  rgb(77,171,154);
+  --c-green-bg:  rgba(77,171,154,0.16);
+  --c-blue-fg:   rgb(82,156,202);
+  --c-blue-bg:   rgba(82,156,202,0.16);
+  --c-purple-fg: rgb(157,114,217);
+  --c-purple-bg: rgba(157,114,217,0.16);
+  --c-pink-fg:   rgb(228,118,164);
+  --c-pink-bg:   rgba(228,118,164,0.16);
+  --c-brown-fg:  rgb(160,109,79);
+  --c-brown-bg:  rgba(160,109,79,0.16);
+
+  --r-sm: 3px;
+  --r:    4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+
+  --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
+  --font-mono: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden; /* shell scrolls internally */
+}
+
+button { font: inherit; color: inherit; cursor: pointer; background: none; border: none; padding: 0; }
+input, select, textarea { font: inherit; color: inherit; background: none; border: none; outline: none; }
+
+/* ----- selection ----- */
+::selection { background: rgba(35,131,226,0.4); color: var(--ink-strong); }
+
+/* ----- scrollbar ----- */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+  border-radius: 99px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); background-clip: padding-box; border: 3px solid transparent; }
+
+/* =====================================================================
+   shell
+   ===================================================================== */
+.app {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  height: 100vh;
+}
+
+/* =====================================================================
+   sidebar
+   ===================================================================== */
+.sidebar {
+  background: var(--bg-sidebar);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+  user-select: none;
+  border-right: 1px solid var(--line);
+}
+
+.sb-top {
+  padding: 8px 6px;
+}
+.sb-workspace {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; margin: 0 4px;
+  border-radius: var(--r);
+  cursor: pointer;
+}
+.sb-workspace:hover { background: var(--bg-hover); }
+.sb-workspace .icon {
+  width: 22px; height: 22px;
+  border-radius: var(--r-sm);
+  background: linear-gradient(135deg, #2b2b2b, #1f1f1f);
+  border: 1px solid var(--line-strong);
+  display: grid; place-items: center;
+  font-size: 13px;
+}
+.sb-workspace .name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sb-workspace .chev {
+  color: var(--ink-fade);
+  font-size: 12px;
+}
+
+.sb-actions {
+  padding: 4px 8px 8px;
+}
+.sb-action {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 8px;
+  border-radius: var(--r);
+  color: var(--ink-mute);
+  font-size: 14px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+.sb-action:hover { background: var(--bg-hover); color: var(--ink); }
+.sb-action .ic {
+  width: 18px; height: 18px;
+  display: grid; place-items: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  color: var(--ink-fade);
+}
+
+.sb-section-label {
+  padding: 12px 14px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-fade);
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.sb-tree { padding: 0 6px 12px; }
+.sb-page {
+  position: relative;
+  padding-left: var(--depth, 8px);
+}
+.sb-page-row {
+  display: flex; align-items: center; gap: 0;
+  padding: 4px 8px 4px 0;
+  border-radius: var(--r);
+  cursor: pointer;
+  margin: 1px 4px 1px 0;
+  position: relative;
+}
+.sb-page-row:hover { background: var(--bg-hover); }
+.sb-page-row.active { background: var(--bg-active); }
+.sb-page-row.active .sb-page-name { color: var(--ink-strong); font-weight: 500; }
+
+.sb-chev {
+  width: 18px; height: 22px;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  border-radius: var(--r-sm);
+  color: var(--ink-fade);
+  opacity: 0;
+  transition: transform 0.14s ease, opacity 0.1s;
+}
+.sb-page-row:hover .sb-chev { opacity: 1; }
+.sb-chev.has-children { opacity: 1; }
+.sb-chev.expanded { transform: rotate(90deg); }
+.sb-chev:hover { background: var(--bg-hover); }
+.sb-chev::before { content: '▸'; font-size: 9px; }
+.sb-page-emoji {
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.sb-page-name {
+  font-size: 14px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  padding: 0 2px;
+}
+.sb-page-actions {
+  display: flex; gap: 1px;
+  opacity: 0;
+  flex-shrink: 0;
+}
+.sb-page-row:hover .sb-page-actions { opacity: 1; }
+.sb-page-act {
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  border-radius: var(--r-sm);
+  color: var(--ink-fade);
+  font-size: 14px;
+}
+.sb-page-act:hover { background: var(--bg-hover); color: var(--ink); }
+
+.sb-children { display: none; }
+.sb-children.expanded { display: block; }
+
+.sb-bottom {
+  margin-top: auto;
+  padding: 8px 14px 14px;
+  font-size: 11px;
+  color: var(--ink-fade);
+  line-height: 1.6;
+}
+.sb-bottom code {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--bg-input);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+/* =====================================================================
+   main
+   ===================================================================== */
+.main {
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* topbar */
+.topbar {
+  height: 44px;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center;
+  padding: 0 14px;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.crumbs { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--ink-mute); flex: 1; min-width: 0; }
+.crumb { display: flex; align-items: center; gap: 4px; padding: 3px 6px; border-radius: var(--r); cursor: pointer; }
+.crumb:hover { background: var(--bg-hover); color: var(--ink); }
+.crumb.last { color: var(--ink); }
+.crumb-sep { color: var(--ink-fade); font-size: 12px; }
+.topbar-actions { display: flex; gap: 4px; }
+.topbar-btn {
+  height: 28px; padding: 0 8px;
+  border-radius: var(--r);
+  display: flex; align-items: center; gap: 4px;
+  color: var(--ink-mute);
+  font-size: 13px;
+}
+.topbar-btn:hover { background: var(--bg-hover); color: var(--ink); }
+
+/* page scroll container */
+.page-scroll {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+}
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 96px 200px;
+  display: none;
+}
+.page.active { display: block; }
+@media (max-width: 900px) { .page { padding: 32px 32px 200px; } }
+
+/* page header */
+.ph-emoji {
+  font-size: 78px;
+  line-height: 1;
+  margin-bottom: 8px;
+  display: block;
+}
+.ph-title {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: -0.018em;
+  line-height: 1.2;
+  color: var(--ink-strong);
+  outline: none;
+  word-break: break-word;
+  margin-bottom: 8px;
+}
+.ph-title:empty::before {
+  content: attr(data-placeholder);
+  color: var(--ink-fade);
+}
+.ph-meta {
+  display: flex; align-items: center; gap: 14px;
+  margin: 12px 0 4px;
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+.ph-meta-row {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--ink-mute);
+}
+.ph-meta-row .label {
+  width: 130px;
+  color: var(--ink-mute);
+  font-size: 13px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* dividers between hero and body */
+.page-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 18px 0 14px;
+}
+
+/* =====================================================================
+   blocks
+   ===================================================================== */
+.block {
+  position: relative;
+  padding: 3px 2px;
+  margin: 1px 0;
+  border-radius: var(--r);
+}
+.block:hover .block-handle { opacity: 1; }
+.block-handle {
+  position: absolute;
+  left: -32px; top: 4px;
+  display: flex; gap: 0;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+.bh-btn {
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  border-radius: var(--r-sm);
+  color: var(--ink-fade);
+  font-size: 14px;
+}
+.bh-btn:hover { background: var(--bg-hover); color: var(--ink); }
+
+.block.text { font-size: 16px; line-height: 1.55; padding: 4px 2px; color: var(--ink); }
+.block.text[contenteditable]:empty::before {
+  content: attr(data-placeholder);
+  color: var(--ink-fade);
+}
+
+.block.h2 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 28px 0 4px;
+  padding: 2px 2px;
+  color: var(--ink-strong);
+  line-height: 1.3;
+}
+.block.h3 {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  margin: 18px 0 2px;
+  padding: 2px 2px;
+  color: var(--ink-strong);
+  line-height: 1.3;
+}
+
+/* todo block */
+.block.todo {
+  display: flex; align-items: flex-start; gap: 6px;
+  padding: 4px 2px;
+}
+.block.todo .checkbox {
+  width: 16px; height: 16px; flex-shrink: 0;
+  border-radius: 3px;
+  border: 1.2px solid var(--ink-mute);
+  margin-top: 4px;
+  cursor: pointer;
+  display: grid; place-items: center;
+  background: transparent;
+  transition: all 0.1s;
+}
+.block.todo .checkbox:hover { border-color: var(--ink-strong); }
+.block.todo .checkbox.checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.block.todo .checkbox.checked::after {
+  content: '';
+  display: block;
+  width: 4px; height: 8px;
+  border: solid white;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg) translate(-1px,-1px);
+}
+.block.todo .todo-text {
+  font-size: 15px;
+  line-height: 1.55;
+  flex: 1;
+  outline: none;
+}
+.block.todo.done .todo-text {
+  color: var(--ink-fade);
+  text-decoration: line-through;
+}
+.todo-row-meta {
+  display: flex; gap: 4px; align-items: center;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+/* toggle block */
+.block.toggle {
+  padding: 0;
+}
+.toggle-head {
+  display: flex; align-items: flex-start; gap: 4px;
+  padding: 4px 2px;
+  cursor: pointer;
+}
+.toggle-chev {
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  flex-shrink: 0;
+  border-radius: var(--r-sm);
+  color: var(--ink-mute);
+  font-size: 11px;
+  margin-top: 1px;
+  transition: transform 0.14s;
+}
+.toggle-head:hover .toggle-chev { background: var(--bg-hover); }
+.toggle.expanded .toggle-chev { transform: rotate(90deg); }
+.toggle-chev::before { content: '▸'; }
+.toggle-title {
+  font-size: 16px;
+  line-height: 1.55;
+  flex: 1;
+  font-weight: 500;
+}
+.toggle-children {
+  display: none;
+  padding-left: 26px;
+}
+.toggle.expanded > .toggle-children { display: block; }
+
+/* bullet list */
+.block.bullet {
+  display: flex; align-items: flex-start; gap: 4px;
+  padding: 3px 2px;
+  font-size: 15px; line-height: 1.55;
+}
+.block.bullet::before {
+  content: '•';
+  width: 22px; flex-shrink: 0;
+  text-align: center;
+  color: var(--ink);
+  margin-top: 1px;
+}
+.block.bullet .b-text { flex: 1; }
+
+/* numbered list */
+.block.num {
+  display: flex; align-items: flex-start; gap: 4px;
+  padding: 3px 2px;
+  font-size: 15px; line-height: 1.55;
+}
+.block.num .num-marker {
+  width: 22px; flex-shrink: 0;
+  text-align: right;
+  padding-right: 4px;
+  color: var(--ink);
+}
+
+/* callout */
+.block.callout {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.03);
+  border-radius: var(--r-md);
+  margin: 4px 0;
+  border: 1px solid var(--line);
+}
+.block.callout .callout-icon {
+  font-size: 18px;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+.block.callout.warn { background: var(--c-orange-bg); border-color: rgba(255,163,68,0.3); color: var(--c-orange-fg); }
+.block.callout.danger { background: var(--c-red-bg); border-color: rgba(255,115,105,0.3); color: var(--c-red-fg); }
+.block.callout.info { background: var(--c-blue-bg); border-color: rgba(82,156,202,0.3); color: var(--c-blue-fg); }
+.block.callout.success { background: var(--c-green-bg); border-color: rgba(77,171,154,0.3); color: var(--c-green-fg); }
+.block.callout .callout-body { color: var(--ink); flex: 1; }
+.block.callout strong { color: var(--ink-strong); }
+
+/* quote */
+.block.quote {
+  border-left: 3px solid var(--ink-strong);
+  padding: 4px 14px;
+  font-size: 18px;
+  font-style: italic;
+  color: var(--ink);
+  margin: 6px 0;
+}
+
+/* divider */
+.block.divider {
+  height: 1px;
+  background: var(--line);
+  margin: 16px 0;
+}
+
+/* code */
+code.inline {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--c-red-bg);
+  color: var(--c-red-fg);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* tags / chips */
+.tag {
+  display: inline-flex; align-items: center;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  background: var(--c-gray-bg);
+  color: var(--c-gray-fg);
+}
+.tag.gray { background: var(--c-gray-bg); color: var(--c-gray-fg); }
+.tag.red { background: var(--c-red-bg); color: var(--c-red-fg); }
+.tag.orange { background: var(--c-orange-bg); color: var(--c-orange-fg); }
+.tag.yellow { background: var(--c-yellow-bg); color: var(--c-yellow-fg); }
+.tag.green { background: var(--c-green-bg); color: var(--c-green-fg); }
+.tag.blue { background: var(--c-blue-bg); color: var(--c-blue-fg); }
+.tag.purple { background: var(--c-purple-bg); color: var(--c-purple-fg); }
+.tag.pink { background: var(--c-pink-bg); color: var(--c-pink-fg); }
+.tag.brown { background: var(--c-brown-bg); color: var(--c-brown-fg); }
+
+.tag.ring {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+.tag.lg { height: 22px; padding: 0 8px; font-size: 13px; }
+
+/* =====================================================================
+   database UI
+   ===================================================================== */
+.db-views {
+  display: flex; align-items: center; gap: 0;
+  border-bottom: 1px solid var(--line);
+  margin: 0 0 0;
+  padding: 0;
+  position: relative;
+}
+.db-tab {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 8px;
+  margin-right: 2px;
+  border-radius: 0;
+  font-size: 14px;
+  color: var(--ink-mute);
+  cursor: pointer;
+  position: relative;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.db-tab:hover { color: var(--ink); }
+.db-tab.active {
+  color: var(--ink-strong);
+  border-bottom-color: var(--ink-strong);
+  font-weight: 500;
+}
+.db-tab .tab-icon { font-size: 14px; opacity: 0.8; }
+.db-add-view {
+  color: var(--ink-fade);
+  padding: 4px 6px;
+  border-radius: var(--r);
+  font-size: 14px;
+  margin-left: 2px;
+}
+.db-add-view:hover { background: var(--bg-hover); color: var(--ink); }
+
+.db-toolbar {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: 4px;
+  padding: 8px 0 8px;
+  flex-wrap: wrap;
+}
+.db-toolbar-left { flex: 1; display: flex; gap: 4px; align-items: center; }
+.db-tool-btn {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--r);
+  color: var(--ink-mute);
+  font-size: 13px;
+}
+.db-tool-btn:hover { background: var(--bg-hover); color: var(--ink); }
+.db-tool-btn.primary {
+  background: var(--accent);
+  color: white;
+  font-weight: 500;
+}
+.db-tool-btn.primary:hover { background: rgb(28,116,202); color: white; }
+
+/* table view */
+.tbl-wrap { overflow-x: auto; padding-bottom: 80px; }
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.tbl thead th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--ink-mute);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  background: var(--bg);
+  user-select: none;
+  white-space: nowrap;
+}
+.tbl thead th:first-child { padding-left: 8px; }
+.tbl thead th .col-icon { display: inline-block; width: 14px; color: var(--ink-fade); margin-right: 4px; }
+.tbl tbody td {
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  vertical-align: top;
+}
+.tbl tbody tr:hover td { background: var(--bg-hover-soft); }
+.tbl tbody tr.done td { color: var(--ink-mute); }
+.tbl tbody tr.done td .cell-title-text { text-decoration: line-through; color: var(--ink-mute); }
+.tbl tbody tr.overdue td:first-child { box-shadow: inset 2px 0 0 var(--c-red-fg); }
+
+.cell-title { display: flex; align-items: center; gap: 6px; min-width: 280px; }
+.cell-title .checkbox-wrap { flex-shrink: 0; }
+.cell-title .checkbox {
+  width: 14px; height: 14px;
+  border-radius: 3px;
+  border: 1.2px solid var(--ink-mute);
+  display: grid; place-items: center;
+  cursor: pointer;
+  background: transparent;
+}
+.cell-title .checkbox:hover { border-color: var(--ink-strong); }
+.cell-title .checkbox.checked { background: var(--accent); border-color: var(--accent); }
+.cell-title .checkbox.checked::after {
+  content: '';
+  width: 3.5px; height: 6px;
+  border: solid white;
+  border-width: 0 1.3px 1.3px 0;
+  transform: rotate(45deg) translateY(-1px);
+}
+.cell-title-text {
+  outline: none;
+  flex: 1;
+  cursor: text;
+  border-radius: 2px;
+  padding: 1px 2px;
+}
+.cell-title-text:focus { background: var(--bg-input); }
+.cell-empty { color: var(--ink-fade); }
+
+.tbl-add-row {
+  padding: 7px 8px;
+  color: var(--ink-fade);
+  cursor: pointer;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px;
+}
+.tbl-add-row:hover { background: var(--bg-hover-soft); color: var(--ink); }
+
+/* board view (kanban) */
+.board {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 0 80px;
+  align-items: flex-start;
+  min-height: 400px;
+}
+.board-col {
+  flex-shrink: 0;
+  width: 260px;
+  background: transparent;
+  border-radius: var(--r-md);
+}
+.board-col-h {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 6px 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.board-col-h .count { color: var(--ink-fade); font-weight: 400; font-size: 13px; }
+.board-col-h .spacer { flex: 1; }
+.board-col-h .add {
+  width: 22px; height: 22px;
+  display: grid; place-items: center;
+  border-radius: var(--r-sm);
+  color: var(--ink-fade);
+  font-size: 14px;
+}
+.board-col-h .add:hover { background: var(--bg-hover); color: var(--ink); }
+
+.board-cards { display: flex; flex-direction: column; gap: 6px; min-height: 40px; }
+.card {
+  background: rgb(37,37,37);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 8px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.card:hover { background: rgb(45,45,45); }
+.card-title {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.card-meta { display: flex; gap: 4px; flex-wrap: wrap; }
+
+.board-add-col {
+  flex-shrink: 0;
+  width: 200px;
+  padding: 8px 6px;
+  color: var(--ink-fade);
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: var(--r);
+}
+.board-add-col:hover { background: var(--bg-hover); color: var(--ink); }
+
+/* calendar view */
+.cal {
+  margin: 0 0 80px;
+}
+.cal-h {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 0 14px;
+  font-size: 16px;
+  font-weight: 600;
+}
+.cal-h .month { font-size: 16px; font-weight: 600; color: var(--ink-strong); }
+.cal-h .nav-btn {
+  width: 26px; height: 26px;
+  display: grid; place-items: center;
+  border-radius: var(--r);
+  color: var(--ink-mute);
+  font-size: 14px;
+}
+.cal-h .nav-btn:hover { background: var(--bg-hover); color: var(--ink); }
+.cal-h .today-btn {
+  margin-left: 4px;
+  padding: 4px 10px;
+  border-radius: var(--r);
+  border: 1px solid var(--line-strong);
+  font-size: 13px;
+  color: var(--ink-mute);
+}
+.cal-h .today-btn:hover { background: var(--bg-hover); color: var(--ink); }
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+.cal-dow {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-mute);
+  padding: 6px 8px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+.cal-day {
+  min-height: 100px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 4px 6px;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+.cal-day.muted { background: rgb(22,22,22); }
+.cal-day.muted .day-num { color: var(--ink-fade); }
+.cal-day.today .day-num {
+  background: var(--accent);
+  color: white;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-weight: 600;
+  font-size: 13px;
+}
+.day-num {
+  font-size: 13px;
+  color: var(--ink);
+  margin-bottom: 4px;
+  display: inline-block;
+  padding: 2px 4px;
+}
+.cal-pill {
+  display: block;
+  font-size: 12px;
+  padding: 2px 6px;
+  margin: 2px 0;
+  border-radius: 3px;
+  background: var(--c-gray-bg);
+  color: var(--c-gray-fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.cal-pill.cv { background: var(--c-pink-bg); color: var(--c-pink-fg); }
+.cal-pill.aws { background: var(--c-orange-bg); color: var(--c-orange-fg); }
+.cal-pill.deploy { background: var(--c-green-bg); color: var(--c-green-fg); }
+.cal-pill.apps { background: var(--c-purple-bg); color: var(--c-purple-fg); }
+.cal-pill.coding { background: var(--c-blue-bg); color: var(--c-blue-fg); }
+.cal-pill.planning { background: var(--c-gray-bg); color: var(--c-gray-fg); }
+.cal-pill.travel { background: var(--c-yellow-bg); color: var(--c-yellow-fg); }
+.cal-pill.done { opacity: 0.5; text-decoration: line-through; }
+
+/* =====================================================================
+   Today page specific
+   ===================================================================== */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 18px 0 6px;
+}
+@media (max-width: 700px) { .stats-row { grid-template-columns: 1fr 1fr; } }
+
+.stat {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 10px 12px;
+}
+.stat .lbl {
+  font-size: 12px;
+  color: var(--ink-mute);
+  margin-bottom: 4px;
+}
+.stat .val {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--ink-strong);
+  letter-spacing: -0.01em;
+}
+.stat .val .unit { font-size: 12px; color: var(--ink-mute); font-weight: 400; margin-left: 3px; }
+
+/* outcome card on Mission */
+.outcome {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 16px 18px;
+  margin: 8px 0;
+}
+.outcome-h {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.outcome-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink-strong);
+  letter-spacing: -0.005em;
+}
+.outcome-deadline {
+  font-size: 12px;
+  color: var(--ink-mute);
+  margin-top: 2px;
+}
+.bar {
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 99px;
+  position: relative;
+  overflow: visible;
+}
+.bar .fill {
+  height: 100%;
+  border-radius: 99px;
+  background: var(--accent);
+  transition: width 0.4s cubic-bezier(0.2,0.8,0.2,1);
+}
+.bar .target {
+  position: absolute;
+  top: -3px;
+  width: 2px; height: 12px;
+  background: var(--ink-mute);
+  opacity: 0.7;
+}
+.bar.cv .fill { background: var(--c-pink-fg); }
+.bar.aws .fill { background: var(--c-orange-fg); }
+.bar.deploy .fill { background: var(--c-green-fg); }
+.bar.apps .fill { background: var(--c-purple-fg); }
+
+.bar-meta {
+  display: flex; justify-content: space-between;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--ink-mute);
+}
+.bar-meta strong { color: var(--ink); font-weight: 600; }
+
+/* =====================================================================
+   inputs
+   ===================================================================== */
+.input {
+  background: var(--bg-input);
+  border-radius: var(--r);
+  padding: 5px 8px;
+  font-size: 14px;
+  color: var(--ink);
+  width: 100%;
+  border: 1px solid transparent;
+  transition: border 0.1s;
+}
+.input:focus { background: rgb(45,45,45); border-color: var(--accent-soft); }
+.input::placeholder { color: var(--ink-fade); }
+
+select.input {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path fill='rgba(255,255,255,0.5)' d='M6 8L2 4h8z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  padding-right: 22px;
+}
+
+/* =====================================================================
+   modal · slide-over · popover
+   ===================================================================== */
+.popover {
+  position: absolute;
+  background: var(--bg-modal);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 80;
+  min-width: 180px;
+  padding: 6px;
+}
+.po-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--r);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ink);
+  width: 100%;
+  text-align: left;
+}
+.po-item:hover { background: var(--bg-hover); }
+.po-item.danger { color: var(--c-red-fg); }
+.po-divider { height: 1px; background: var(--line); margin: 4px 0; }
+
+.modal-bg {
+  position: fixed; inset: 0;
+  background: rgba(15,15,15,0.6);
+  display: none;
+  align-items: center; justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.12s;
+}
+.modal-bg.open { display: flex; }
+.modal {
+  background: var(--bg-modal);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  padding: 22px 24px;
+  width: 460px; max-width: 90vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+.modal h3 { margin: 0 0 4px; font-size: 18px; font-weight: 600; color: var(--ink-strong); }
+.modal p { margin: 0 0 16px; color: var(--ink-mute); font-size: 14px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+.btn {
+  padding: 6px 12px;
+  border-radius: var(--r);
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--bg-input);
+}
+.btn:hover { background: rgba(255,255,255,0.1); }
+.btn.primary { background: var(--accent); color: white; font-weight: 500; }
+.btn.primary:hover { background: rgb(28,116,202); }
+.btn.danger { background: var(--c-red-bg); color: var(--c-red-fg); }
+.btn.danger:hover { background: rgba(255,115,105,0.25); }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* drawer (task detail slide-over) */
+.drawer-bg {
+  position: fixed; inset: 0;
+  background: rgba(15,15,15,0.5);
+  display: none;
+  z-index: 90;
+  animation: fadeIn 0.15s;
+}
+.drawer-bg.open { display: block; }
+.drawer {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: 720px; max-width: 95vw;
+  background: var(--bg);
+  border-left: 1px solid var(--line);
+  z-index: 95;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.22s cubic-bezier(0.2,0.8,0.2,1);
+}
+.drawer.open { transform: translateX(0); }
+.drawer-h {
+  height: 44px;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center;
+  padding: 0 14px;
+  gap: 8px;
+}
+.drawer-content { padding: 32px 64px; }
+@media (max-width: 700px) { .drawer-content { padding: 24px 24px; } }
+
+/* =====================================================================
+   small stuff
+   ===================================================================== */
+.row { display: flex; align-items: center; gap: 8px; }
+.row.between { justify-content: space-between; }
+.row.wrap { flex-wrap: wrap; }
+.spacer { flex: 1; }
+
+.sect-h {
+  font-size: 13px;
+  color: var(--ink-mute);
+  font-weight: 500;
+  margin: 18px 0 6px;
+  padding: 0 2px;
+}
+
+.empty {
+  padding: 18px 8px;
+  color: var(--ink-fade);
+  font-size: 14px;
+  font-style: italic;
+}
+
+.kbd {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--bg-input);
+  padding: 1.5px 5px;
+  border-radius: 3px;
+  color: var(--ink-mute);
+  border: 1px solid var(--line);
+}
+
+.t-pulse {
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* mobile */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 8px; left: 8px;
+  z-index: 50;
+  width: 32px; height: 32px;
+  background: var(--bg-modal);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  color: var(--ink);
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: 240px;
+    z-index: 40;
+    transform: translateX(-100%);
+    transition: transform 0.22s;
+  }
+  .sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.5); }
+  .menu-toggle { display: grid; place-items: center; }
+  .topbar { padding-left: 50px; }
+  .page { padding: 32px 22px 200px; }
+  .ph-title { font-size: 32px; }
+  .ph-emoji { font-size: 60px; }
+}
+</style>
+</head>
+
+<body>
+<button class="menu-toggle" id="menuToggle">≡</button>
+
+<div class="app">
+  <!-- ============================================================ -->
+  <!-- SIDEBAR                                                      -->
+  <!-- ============================================================ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <div class="sb-workspace">
+        <div class="icon">🎯</div>
+        <div class="name">Mission · Dubai</div>
+        <div class="chev">⌄</div>
+      </div>
+    </div>
+
+    <div class="sb-actions">
+      <button class="sb-action" data-act="search"><span class="ic">🔍</span>Search</button>
+      <button class="sb-action" data-act="settings" data-page="settings"><span class="ic">⚙</span>Settings</button>
+      <button class="sb-action" data-act="newTask"><span class="ic">＋</span>New task</button>
+    </div>
+
+    <div class="sb-section-label">Workspace</div>
+    <div class="sb-tree" id="sbTree"></div>
+
+    <div class="sb-bottom">
+      <div>local-only · no sign-up</div>
+      <div>data lives in your browser</div>
+      <div style="margin-top:6px"><code id="todayCode">—</code></div>
+    </div>
+  </aside>
+
+  <!-- ============================================================ -->
+  <!-- MAIN                                                         -->
+  <!-- ============================================================ -->
+  <div class="main">
+    <div class="topbar">
+      <div class="crumbs" id="crumbs"></div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" data-act="export">↓ Export</button>
+      </div>
+    </div>
+
+    <div class="page-scroll">
+
+      <!-- ============================================================ -->
+      <!-- TODAY                                                        -->
+      <!-- ============================================================ -->
+      <section class="page" data-page="today">
+        <div class="ph-emoji">🎯</div>
+        <h1 class="ph-title">Today</h1>
+        <div class="ph-meta">
+          <div class="ph-meta-row">
+            <div class="label">📅 Date</div>
+            <div id="t-date">—</div>
+          </div>
+          <div class="ph-meta-row">
+            <div class="label">📍 Phase</div>
+            <div id="t-phase">—</div>
+          </div>
+          <div class="ph-meta-row">
+            <div class="label">🔥 Streak</div>
+            <div id="t-streak">— days</div>
+          </div>
+        </div>
+
+        <div class="page-divider"></div>
+
+        <div class="stats-row">
+          <div class="stat"><div class="lbl">Days to AWS exam</div><div class="val" id="s-aws">—</div></div>
+          <div class="stat"><div class="lbl">Days to deploy</div><div class="val" id="s-deploy">—</div></div>
+          <div class="stat"><div class="lbl">Apps sent</div><div class="val" id="s-apps">—</div></div>
+          <div class="stat"><div class="lbl">Days to Dubai</div><div class="val" id="s-dubai">—</div></div>
+        </div>
+
+        <div id="t-overdue"></div>
+        <div id="t-today"></div>
+        <div id="t-week"></div>
+
+        <div style="margin-top:20px;border-top:1px solid var(--line);padding-top:14px">
+          <div class="sect-h">＋ Add task to today</div>
+          <div class="row">
+            <input class="input" id="qa-title" placeholder="Type and press Enter" style="flex:2" />
+            <select class="input" id="qa-cat" style="width:140px">
+              <option value="cv">CV</option>
+              <option value="aws">AWS</option>
+              <option value="deploy">Deploy</option>
+              <option value="apps">Apps</option>
+              <option value="coding" selected>Coding</option>
+              <option value="planning">Planning</option>
+              <option value="travel">Travel</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- MISSION                                                      -->
+      <!-- ============================================================ -->
+      <section class="page" data-page="mission">
+        <div class="ph-emoji">📊</div>
+        <h1 class="ph-title">Mission Status</h1>
+        <div class="ph-meta">
+          <div class="ph-meta-row">
+            <div class="label">📌 Plan window</div>
+            <div>2026-04-27 → 2026-06-20</div>
+          </div>
+          <div class="ph-meta-row">
+            <div class="label">📍 Currently</div>
+            <div id="m-current">—</div>
+          </div>
+        </div>
+        <div class="page-divider"></div>
+
+        <div class="block text" style="font-size:15px;color:var(--ink-mute);margin-bottom:8px">
+          Four deliverables. Nothing else matters. Status is computed as expected progress (elapsed time) versus actual progress (tasks done). The bar fill is actual; the marker is where you should be today.
+        </div>
+
+        <div id="mission-grid"></div>
+
+        <div class="block h2">How the algorithm scores you</div>
+        <div class="block text" style="color:var(--ink-mute)">
+          Delta = actual % − expected %. Bands map to status:
+        </div>
+        <div class="block bullet"><div class="b-text"><span class="tag green">Ahead</span> &nbsp; delta ≥ +5% &nbsp; → coast, bank the buffer</div></div>
+        <div class="block bullet"><div class="b-text"><span class="tag blue">On track</span> &nbsp; ±5% &nbsp; → keep daily ritual</div></div>
+        <div class="block bullet"><div class="b-text"><span class="tag orange">At risk</span> &nbsp; −5% to −20% &nbsp; → adjustment surfaces below</div></div>
+        <div class="block bullet"><div class="b-text"><span class="tag red">Behind</span> &nbsp; below −20% &nbsp; → hard intervention, cut scope</div></div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- 8-WEEK PLAN (parent)                                         -->
+      <!-- ============================================================ -->
+      <section class="page" data-page="plan">
+        <div class="ph-emoji">📅</div>
+        <h1 class="ph-title">8-Week Plan</h1>
+        <div class="ph-meta">
+          <div class="ph-meta-row"><div class="label">📌 Window</div><div>Apr 27 → Jun 20 · 2026</div></div>
+          <div class="ph-meta-row"><div class="label">🛬 Then</div><div>Travel to Dubai · Phase 3 begins</div></div>
+        </div>
+        <div class="page-divider"></div>
+
+        <div class="block text" style="color:var(--ink-mute);margin-bottom:8px">
+          Click a week in the sidebar (or toggle below) to drill in.
+        </div>
+
+        <div id="plan-toggles"></div>
+      </section>
+
+      <!-- Week subpages get rendered into a single placeholder, since they share template -->
+      <section class="page" data-page="week">
+        <div class="ph-emoji" id="w-emoji">📌</div>
+        <h1 class="ph-title" id="w-title">Week —</h1>
+        <div class="ph-meta">
+          <div class="ph-meta-row"><div class="label">📅 Dates</div><div id="w-dates">—</div></div>
+          <div class="ph-meta-row"><div class="label">🎯 Theme</div><div id="w-theme">—</div></div>
+          <div class="ph-meta-row"><div class="label">📊 Progress</div><div id="w-progress">—</div></div>
+        </div>
+        <div class="page-divider"></div>
+        <div id="w-content"></div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- TASKS DATABASE                                               -->
+      <!-- ============================================================ -->
+      <section class="page" data-page="tasks">
+        <div class="ph-emoji">✅</div>
+        <h1 class="ph-title">Tasks</h1>
+        <div class="ph-meta">
+          <div class="ph-meta-row"><div class="label">📊 Total</div><div id="tk-count">—</div></div>
+        </div>
+        <div class="page-divider"></div>
+
+        <div class="db-views" id="tk-views"></div>
+        <div class="db-toolbar">
+          <div class="db-toolbar-left">
+            <select class="input" id="tk-filterCat" style="width:auto">
+              <option value="all">All categories</option>
+              <option value="cv">CV</option>
+              <option value="aws">AWS</option>
+              <option value="deploy">Deploy</option>
+              <option value="apps">Apps</option>
+              <option value="coding">Coding</option>
+              <option value="planning">Planning</option>
+              <option value="travel">Travel</option>
+            </select>
+            <select class="input" id="tk-filterStatus" style="width:auto">
+              <option value="all">All statuses</option>
+              <option value="pending">Pending</option>
+              <option value="done">Done</option>
+              <option value="skipped">Skipped</option>
+            </select>
+          </div>
+          <button class="db-tool-btn primary" id="tk-newBtn">＋ New task</button>
+        </div>
+
+        <div id="tk-body"></div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- APPLICATIONS DATABASE                                        -->
+      <!-- ============================================================ -->
+      <section class="page" data-page="apps">
+        <div class="ph-emoji">📤</div>
+        <h1 class="ph-title">Applications</h1>
+        <div class="ph-meta">
+          <div class="ph-meta-row"><div class="label">📈 Sent</div><div id="ap-count">0 / 60</div></div>
+          <div class="ph-meta-row"><div class="label">📍 Pace</div><div id="ap-pace">—</div></div>
+        </div>
+        <div class="page-divider"></div>
+
+        <div class="db-views" id="ap-views"></div>
+        <div class="db-toolbar">
+          <div class="db-toolbar-left"></div>
+          <button class="db-tool-btn primary" id="ap-newBtn">＋ Log application</button>
+        </div>
+        <div id="ap-body"></div>
+
+        <div class="block callout info" style="margin-top:30px">
+          <div class="callout-icon">📌</div>
+          <div class="callout-body">
+            <strong>Tier 1 priority targets — apply Weeks 1–2:</strong>
+            Revolut Rev-celerator (highest), CBD Tech Trainee, PwC / EY / Deloitte / KPMG MEa Tech, Mashreq, FAB, ADCB, Amazon MENA, TikTok MENA, G42.
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- REFERENCE PAGES                                              -->
+      <!-- ============================================================ -->
+      <section class="page" data-page="reference">
+        <div class="ph-emoji">📚</div>
+        <h1 class="ph-title">Reference</h1>
+        <div class="page-divider"></div>
+        <div class="block text">Three short reference pages — pin them, re-read weekly.</div>
+        <div class="block bullet"><div class="b-text"><a class="db-tool-btn" data-page-link="rules">🚨 Stop Rules</a> — what this plan refuses to let you do</div></div>
+        <div class="block bullet"><div class="b-text"><a class="db-tool-btn" data-page-link="branch">🌿 Branch Point</a> — late July checkpoint, one reassessment window</div></div>
+        <div class="block bullet"><div class="b-text"><a class="db-tool-btn" data-page-link="theory">📐 Theory</a> — the methodology behind the plan</div></div>
+      </section>
+
+      <section class="page" data-page="rules">
+        <div class="ph-emoji">🚨</div>
+        <h1 class="ph-title">Stop Rules</h1>
+        <div class="page-divider"></div>
+
+        <div class="block quote">If a task does not directly improve CV, cert, deployment, or applications — it waits.</div>
+
+        <div class="block h2">Hard stops</div>
+        <div class="block bullet"><div class="b-text"><strong>AWS deployment eating 5+ days?</strong> Ship on Render or Railway. AWS CP keeps the cert. The deployed project doesn't need to be on AWS to matter. <em>A live demo beats a noble corpse.</em></div></div>
+        <div class="block bullet"><div class="b-text"><strong>RDS Postgres migration?</strong> Only if everything else is done. Never before.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>GitHub Actions / CI/CD?</strong> Only if everything else is done.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>New cert / second language / pivot?</strong> Finish what's on the plan first.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Restart Linux?</strong> Skipped. You'll learn the missing chapters from AWS pain.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Restart Git from chapter 1?</strong> Resume from chapter 5.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Docker / Go / AI agents / functional programming?</strong> Not on critical path. Post-job.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Polishing one section for days?</strong> Plan rewards <em>shipping</em>.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>AI writing your coding reps?</strong> The rep doesn't count.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Replanning every few days?</strong> Execute, don't redesign.</div></div>
+
+        <div class="block h2">The 10 rules (re-read weekly)</div>
+        <div class="block num"><div class="num-marker">1.</div><div><strong>No more re-planning.</strong> Execute what's written.</div></div>
+        <div class="block num"><div class="num-marker">2.</div><div><strong>AI is a tool, not a ghostwriter.</strong> Debug with AI; don't let AI type your code.</div></div>
+        <div class="block num"><div class="num-marker">3.</div><div><strong>Perfect is the enemy of done.</strong> SQLite live > Postgres half-deployed.</div></div>
+        <div class="block num"><div class="num-marker">4.</div><div><strong>The dissertation is your biggest asset.</strong> Lead with it.</div></div>
+        <div class="block num"><div class="num-marker">5.</div><div><strong>Dubai address on everything.</strong> Karachi off the CV.</div></div>
+        <div class="block num"><div class="num-marker">6.</div><div><strong>One no-AI coding rep per day.</strong> Non-negotiable.</div></div>
+        <div class="block num"><div class="num-marker">7.</div><div><strong>Track applications.</strong> Count them or you can't improve.</div></div>
+        <div class="block num"><div class="num-marker">8.</div><div><strong>When stuck, ship anyway.</strong> Momentum &gt; polish.</div></div>
+        <div class="block num"><div class="num-marker">9.</div><div><strong>Cloud-leaning backend is the entry strategy, not your identity.</strong> Re-angle if backend is silent by late July.</div></div>
+        <div class="block num"><div class="num-marker">10.</div><div><strong>The deployment escape hatch.</strong> Render/Railway after 5+ days of AWS pain.</div></div>
+      </section>
+
+      <section class="page" data-page="branch">
+        <div class="ph-emoji">🌿</div>
+        <h1 class="ph-title">Branch Point</h1>
+        <div class="page-divider"></div>
+
+        <div class="block h2">Late July checkpoint</div>
+        <div class="block text">If 6 weeks of applications produce <strong>zero traction on backend / cloud roles</strong> but <strong>data / analytics roles respond</strong>, the play is to <em>re-angle, not restart</em>.</div>
+
+        <div class="block callout warn">
+          <div class="callout-icon">⚠️</div>
+          <div class="callout-body">
+            <strong>Re-angle =</strong> rewrite the CV summary line and shift target search terms.<br/>
+            <strong>Restart =</strong> new cert, new roadmap, new identity. <span style="color:var(--c-red-fg)">Do not do this.</span>
+          </div>
+        </div>
+
+        <div class="block h3">What stays the same</div>
+        <div class="block bullet"><div class="b-text">The dissertation (passkey auth — still impressive)</div></div>
+        <div class="block bullet"><div class="b-text">AWS Cloud Practitioner (cloud literacy applies everywhere)</div></div>
+        <div class="block bullet"><div class="b-text">The deployed project (proof of execution)</div></div>
+        <div class="block bullet"><div class="b-text">SQL fluency (data roles eat SQL for breakfast)</div></div>
+
+        <div class="block h3">What you change</div>
+        <div class="block bullet"><div class="b-text">CV summary: "junior cloud-leaning backend engineer" → "junior data engineer / analyst with cloud + SQL fluency"</div></div>
+        <div class="block bullet"><div class="b-text">Search terms: <code class="inline">junior data engineer Dubai</code>, <code class="inline">analyst graduate UAE</code>, <code class="inline">SQL developer Dubai</code></div></div>
+        <div class="block bullet"><div class="b-text">Targets: Careem Data, Talabat Data, Property Finder Analytics, Sarwa, banking BI roles</div></div>
+
+        <div class="block quote">One reassessment window. Decide. Commit. Stop second-guessing.</div>
+
+        <div class="block h2">Phase 4 — Sep 17 → Dec 17 contingency</div>
+        <div class="block text">Only activate if no offer by Sept 17. Visit-visa extension active. Budget tight.</div>
+        <div class="block bullet"><div class="b-text">Accept paid internships (lower bar, internal conversion is real)</div></div>
+        <div class="block bullet"><div class="b-text">Abu Dhabi: G42 ecosystem, ADNOC Digital, Etihad</div></div>
+        <div class="block bullet"><div class="b-text">Sharjah tech (often easier entry)</div></div>
+        <div class="block bullet"><div class="b-text">DIFC fintech junior roles</div></div>
+
+        <div class="block h2">Phase 5 — Plan B (Dec 17+)</div>
+        <div class="block bullet"><div class="b-text"><strong>Pakistan with UAE exposure:</strong> 10Pearls, Systems Ltd, Careem Pakistan, Devsinc, NorthBay, i2c</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Remote-first global:</strong> Turing, Toptal (once experienced), We Work Remotely</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Alternative:</strong> MSc HW Dubai (Data Science / AI) — keeps you on-campus, extends the window. Only if finances allow.</div></div>
+      </section>
+
+      <section class="page" data-page="theory">
+        <div class="ph-emoji">📐</div>
+        <h1 class="ph-title">Theory</h1>
+        <div class="page-divider"></div>
+
+        <div class="block h2">🎯 Core methodology — Execution &gt; Re-planning</div>
+        <div class="block text">The plan is treated like a <strong>mission plan</strong>, not a study timetable.</div>
+        <div class="block bullet"><div class="b-text"><strong>Critical path first.</strong> Only tasks that improve employability matter: CV, cert, deployment, applications, coding fluency.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Daily minimum wins.</strong> Every day produces something visible.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>No over-planning.</strong> Planning is limited. Execution is the job.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Proof over intention.</strong> A deployed repo, passed cert, submitted application counts. "I thought about it" doesn't.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Momentum beats perfection.</strong> A rough but finished task beats a polished task that never ships.</div></div>
+
+        <div class="block h2">🧠 Five learning theories the plan uses</div>
+        <div class="block bullet"><div class="b-text"><strong>Backward planning</strong> — start from deadlines: AWS by Jun 1, deploy by Jun 15, apps by Jul 20.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Chunking</strong> — big goals broken into weekly + daily tasks.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Active recall</strong> — explain dissertation, routes, security choices from memory.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Deliberate practice</strong> — Codewars / LeetCode reps, no AI.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Project-based learning</strong> — dissertation deployment is the main learning surface for Flask, SQL, Git, AWS, debugging, interviews.</div></div>
+
+        <div class="block h2">📅 The daily formula</div>
+        <div class="block bullet"><div class="b-text"><span class="tag blue">60–90 min</span> &nbsp; main deliverable (CV / AWS / GitHub / deploy / apps)</div></div>
+        <div class="block bullet"><div class="b-text"><span class="tag pink">30–45 min</span> &nbsp; coding fluency (boot.dev current module)</div></div>
+        <div class="block bullet"><div class="b-text"><span class="tag green">15–20 min</span> &nbsp; daily rep (Codewars / LeetCode, no AI)</div></div>
+        <div class="block bullet"><div class="b-text"><span class="tag orange">20–45 min</span> &nbsp; dissertation memory (re-read, summarise, explain)</div></div>
+        <div class="block bullet"><div class="b-text"><span class="tag gray">5 min</span> &nbsp; log progress</div></div>
+
+        <div class="block h2">✅ Algorithm priority order</div>
+        <div class="block num"><div class="num-marker">1.</div><div>Deadline task for today</div></div>
+        <div class="block num"><div class="num-marker">2.</div><div>Anything overdue</div></div>
+        <div class="block num"><div class="num-marker">3.</div><div>Coding fluency requirement</div></div>
+        <div class="block num"><div class="num-marker">4.</div><div>Dissertation understanding</div></div>
+        <div class="block num"><div class="num-marker">5.</div><div>Applications / networking</div></div>
+        <div class="block num"><div class="num-marker">6.</div><div>Optional polish — only after core</div></div>
+
+        <div class="block quote">Small daily proof, repeated until the big outcomes become real.</div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- SETTINGS                                                     -->
+      <!-- ============================================================ -->
+      <section class="page" data-page="settings">
+        <div class="ph-emoji">⚙️</div>
+        <h1 class="ph-title">Settings</h1>
+        <div class="page-divider"></div>
+
+        <div class="block h2">Backup &amp; restore</div>
+        <div class="block text">Everything (tasks, applications, completion state, streak) lives in <code class="inline">localStorage</code> under <code class="inline">dxb-mission-v2</code>. Export to JSON to back up or sync between devices.</div>
+        <div class="row" style="margin:12px 0">
+          <button class="btn" id="exportBtn">↓ Export JSON</button>
+          <button class="btn" id="importBtn">↑ Import JSON</button>
+          <input type="file" id="importInput" style="display:none" accept="application/json" />
+          <div class="spacer"></div>
+          <button class="btn danger" id="resetBtn">⟲ Reset all data</button>
+        </div>
+
+        <div class="block h2">Calendar anchors</div>
+        <div class="block text" style="color:var(--ink-mute)">These dates drive the algorithm. They're hardcoded — change them only if your real deadlines shift.</div>
+        <div class="block bullet"><div class="b-text">Plan start &nbsp; <span class="tag">2026-04-27 · Mon</span></div></div>
+        <div class="block bullet"><div class="b-text">CV / LinkedIn / GitHub deadline &nbsp; <span class="tag pink">2026-05-04 · end W1</span></div></div>
+        <div class="block bullet"><div class="b-text">AWS CP exam target &nbsp; <span class="tag orange">2026-05-25</span></div></div>
+        <div class="block bullet"><div class="b-text">AWS CP passed by &nbsp; <span class="tag orange">2026-06-01 · end W5</span></div></div>
+        <div class="block bullet"><div class="b-text">Dissertation deployed by &nbsp; <span class="tag green">2026-06-15 · end W7</span></div></div>
+        <div class="block bullet"><div class="b-text">Travel to Dubai &nbsp; <span class="tag yellow">2026-06-15 → 2026-06-20</span></div></div>
+        <div class="block bullet"><div class="b-text">60+ applications by &nbsp; <span class="tag purple">2026-07-20 · rolling</span></div></div>
+        <div class="block bullet"><div class="b-text">Dubai hard deadline &nbsp; <span class="tag red">2026-09-17</span></div></div>
+        <div class="block bullet"><div class="b-text">Extension cutoff &nbsp; <span class="tag red">2026-12-17</span></div></div>
+
+        <div class="block h2">Deploy on GitHub Pages</div>
+        <div class="block num"><div class="num-marker">1.</div><div>Save this file as <code class="inline">index.html</code> in a new repo (e.g. <code class="inline">mission-dubai</code>).</div></div>
+        <div class="block num"><div class="num-marker">2.</div><div>Push to GitHub. Settings → Pages → deploy from <code class="inline">main</code> / <code class="inline">root</code>.</div></div>
+        <div class="block num"><div class="num-marker">3.</div><div>Live at <code class="inline">https://&lt;you&gt;.github.io/mission-dubai/</code>.</div></div>
+        <div class="block num"><div class="num-marker">4.</div><div>Bookmark on phone &amp; desktop. Each device's data is independent — use Export/Import to sync.</div></div>
+      </section>
+
+    </div> <!-- end page-scroll -->
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- DRAWER (task detail)                                         -->
+<!-- ============================================================ -->
+<div class="drawer-bg" id="drawerBg"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-h">
+    <button class="topbar-btn" id="drawerClose">✕ Close</button>
+    <div class="spacer"></div>
+    <button class="topbar-btn" id="drawerDelete" style="color:var(--c-red-fg)">🗑 Delete</button>
+  </div>
+  <div class="drawer-content" id="drawerBody"></div>
+</aside>
+
+<!-- ============================================================ -->
+<!-- MODALS                                                       -->
+<!-- ============================================================ -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal" id="modal">
+    <h3 id="m-title">Confirm</h3>
+    <p id="m-body">—</p>
+    <div id="m-form"></div>
+    <div class="modal-actions">
+      <button class="btn" id="m-cancel">Cancel</button>
+      <button class="btn primary" id="m-ok">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- POPOVER (status / category picker)                           -->
+<!-- ============================================================ -->
+<div class="popover" id="popover" style="display:none"></div>
+
+<script>
+/* =====================================================================
+   STATE
+   ===================================================================== */
+const KEY = 'dxb-mission-v2';
+const PLAN_START = '2026-04-27';
+const PLAN_END   = '2026-06-20';
+const APP_TARGET = 60;
+
+const DEADLINES = {
+  cv:     '2026-05-04',
+  aws:    '2026-06-01',
+  deploy: '2026-06-15',
+  apps:   '2026-07-20',
+};
+
+const OUTCOMES = [
+  { id: 'cv',     name: 'CV · LinkedIn · GitHub live',  deadline: DEADLINES.cv,     color: 'pink',   hint: 'Headline, photo, top 5 repos pinned, README on dissertation' },
+  { id: 'aws',    name: 'AWS Cloud Practitioner passed', deadline: DEADLINES.aws,    color: 'orange', hint: 'Stephane Maarek course → 2 practice exams ≥75% → book it' },
+  { id: 'deploy', name: 'Dissertation deployed publicly', deadline: DEADLINES.deploy, color: 'green',  hint: 'EC2 / Beanstalk / Render — SQLite first, working > perfect' },
+  { id: 'apps',   name: '60+ targeted applications',     deadline: DEADLINES.apps,   color: 'purple', hint: 'Tier 1 grad programmes first. Then daily LinkedIn / Bayt / Naukrigulf.' },
+];
+
+const CAT_META = {
+  cv:       { name: 'CV',        color: 'pink',   emoji: '📝' },
+  aws:      { name: 'AWS',       color: 'orange', emoji: '☁️' },
+  deploy:   { name: 'Deploy',    color: 'green',  emoji: '🚀' },
+  apps:     { name: 'Apps',      color: 'purple', emoji: '📤' },
+  coding:   { name: 'Coding',    color: 'blue',   emoji: '⌨️' },
+  planning: { name: 'Planning',  color: 'gray',   emoji: '📋' },
+  travel:   { name: 'Travel',    color: 'yellow', emoji: '🛫' },
+};
+
+const STATUS_META = {
+  pending: { name: 'Pending', color: 'gray' },
+  done:    { name: 'Done',    color: 'green' },
+  skipped: { name: 'Skipped', color: 'red' },
+};
+
+const APP_STATUS_META = {
+  sent:      { name: 'Sent',      color: 'gray' },
+  reply:     { name: 'Reply',     color: 'blue' },
+  screen:    { name: 'Screen',    color: 'purple' },
+  interview: { name: 'Interview', color: 'orange' },
+  offer:     { name: 'Offer',     color: 'green' },
+  rejected:  { name: 'Rejected',  color: 'red' },
+  ghosted:   { name: 'Ghosted',   color: 'gray' },
+};
+
+/* page tree (curated) */
+const PAGES = [
+  { id: 'today',    emoji: '🎯',  name: 'Today' },
+  { id: 'mission',  emoji: '📊',  name: 'Mission Status' },
+  { id: 'plan',     emoji: '📅',  name: '8-Week Plan', children: [
+    { id: 'week-1', emoji: '①', name: 'Week 1' },
+    { id: 'week-2', emoji: '②', name: 'Week 2' },
+    { id: 'week-3', emoji: '③', name: 'Week 3' },
+    { id: 'week-4', emoji: '④', name: 'Week 4 · Exam' },
+    { id: 'week-5', emoji: '⑤', name: 'Week 5 · Deploy 1' },
+    { id: 'week-6', emoji: '⑥', name: 'Week 6 · Deploy 2' },
+    { id: 'week-7', emoji: '⑦', name: 'Week 7 · Polish' },
+    { id: 'week-8', emoji: '⑧', name: 'Week 8 · Travel' },
+  ]},
+  { id: 'tasks',    emoji: '✅',  name: 'Tasks' },
+  { id: 'apps',     emoji: '📤',  name: 'Applications' },
+  { id: 'reference', emoji: '📚', name: 'Reference', children: [
+    { id: 'rules',  emoji: '🚨', name: 'Stop Rules' },
+    { id: 'branch', emoji: '🌿', name: 'Branch Point' },
+    { id: 'theory', emoji: '📐', name: 'Theory' },
+  ]},
+  { id: 'settings', emoji: '⚙️', name: 'Settings' },
+];
+
+/* week themes */
+const WEEK_INFO = [null,
+  { theme: 'CV · LinkedIn · GitHub live',                        emoji: '①' },
+  { theme: 'AWS to 40% · first 5 apps · clean repo',             emoji: '②' },
+  { theme: 'AWS to 70% · README draft',                          emoji: '③' },
+  { theme: 'AWS exam week',                                      emoji: '④' },
+  { theme: 'Deploy Phase 1 — SQLite live',                       emoji: '⑤' },
+  { theme: 'Deploy Phase 2 + polish',                            emoji: '⑥' },
+  { theme: 'Pre-Dubai polish · mock interviews',                 emoji: '⑦' },
+  { theme: 'Travel to Dubai · activate in-person',               emoji: '⑧' },
+];
+
+/* seed tasks */
+const SEED_TASKS = [
+  // WEEK 1
+  { title: 'Personalize CV draft (CV_v2.md) — fix tone, confirm grades section', cat: 'cv', week: 1, due: '2026-04-28' },
+  { title: 'Open boot.dev Git, click chapter 5 (Branching) — do NOT restart', cat: 'coding', week: 1, due: '2026-04-28' },
+  { title: 'LinkedIn — fix headline, About, Experience, featured, profile photo', cat: 'cv', week: 1, due: '2026-04-29' },
+  { title: 'GitHub cleanup — pin top 5 repos', cat: 'cv', week: 1, due: '2026-04-30' },
+  { title: 'Write clean READMEs for dissertation, C# browser, RL agents', cat: 'cv', week: 1, due: '2026-04-30' },
+  { title: 'Buy Stephane Maarek "Ultimate AWS CP CLF-C02" on Udemy', cat: 'aws', week: 1, due: '2026-05-01' },
+  { title: 'AWS CP Modules 1–2', cat: 'aws', week: 1, due: '2026-05-01' },
+  { title: 'Open AWS account (Free Tier) + billing alerts', cat: 'aws', week: 1, due: '2026-05-02' },
+  { title: 'AWS CP Module 3', cat: 'aws', week: 1, due: '2026-05-02' },
+  { title: 'AWS CP Module 4', cat: 'aws', week: 1, due: '2026-05-03' },
+  { title: 'Plan next week (20 min Sunday review)', cat: 'planning', week: 1, due: '2026-05-03' },
+  { title: 'Re-read dissertation PDF cover-to-cover (across 2 evenings)', cat: 'coding', week: 1 },
+  { title: 'Write 1-page "design decisions" cheat sheet', cat: 'coding', week: 1 },
+  { title: 'boot.dev Git Ch 5–7 (Branching, Merge, Rebase)', cat: 'coding', week: 1 },
+
+  // WEEK 2
+  { title: 'AWS CP course → ~40% completion', cat: 'aws', week: 2 },
+  { title: 'Build target-companies shortlist: pick 30 from Tier 1+2', cat: 'apps', week: 2 },
+  { title: 'Submit first 5 applications (Tier 1 grad programmes)', cat: 'apps', week: 2 },
+  { title: 'Clean dissertation repo locally — .env out, credentials out', cat: 'deploy', week: 2 },
+  { title: 'boot.dev Git Ch 8–11 (Reset, Remote, GitHub, Gitignore)', cat: 'coding', week: 2 },
+  { title: 'Read app.py top to bottom, write 1-paragraph summary per route', cat: 'coding', week: 2 },
+
+  // WEEK 3
+  { title: 'AWS CP → ~70% complete', cat: 'aws', week: 3 },
+  { title: 'First Tutorials Dojo practice exam — target ≥60%', cat: 'aws', week: 3 },
+  { title: 'Submit 5 more applications', cat: 'apps', week: 3 },
+  { title: 'Draft dissertation README — architecture diagram + setup + STRIDE table', cat: 'deploy', week: 3 },
+  { title: 'boot.dev SQL Ch 1–5 (Intro, Tables, Constraints, CRUD, Queries)', cat: 'coding', week: 3 },
+  { title: 'Read security.py + helpers.py — annotate what / why / what it protects', cat: 'coding', week: 3 },
+
+  // WEEK 4 - EXAM
+  { title: 'Tutorials Dojo practice exam #2 — target ≥75%', cat: 'aws', week: 4 },
+  { title: 'Gap-fill on weak areas (IAM, billing, shared responsibility)', cat: 'aws', week: 4 },
+  { title: 'BOOK the AWS CP exam (Pearson VUE)', cat: 'aws', week: 4 },
+  { title: 'TAKE the AWS CP exam — by May 25', cat: 'aws', week: 4, due: '2026-05-25' },
+  { title: '5 more applications', cat: 'apps', week: 4 },
+  { title: 'boot.dev SQL Ch 6–8 (Structuring, Aggregations, Subqueries)', cat: 'coding', week: 4 },
+  { title: 'Read models.py + run prototype locally — break is_valid(), watch test fail, fix', cat: 'coding', week: 4 },
+
+  // WEEK 5 - DEPLOY 1
+  { title: 'AWS setup — EC2 t3.micro OR Elastic Beanstalk (Free Tier)', cat: 'deploy', week: 5 },
+  { title: 'Deploy dissertation WITH SQLite first — working > perfect', cat: 'deploy', week: 5 },
+  { title: 'Debug deployment (env vars, HTTPS, ports, WebAuthn relying-party ID)', cat: 'deploy', week: 5 },
+  { title: '5 more applications', cat: 'apps', week: 5 },
+  { title: 'boot.dev SQL Ch 9–11 (Normalization, Joins, Performance) — finish', cat: 'coding', week: 5 },
+  { title: 'boot.dev DSA Ch 1–3 (Algorithms Intro, Math, Big-O)', cat: 'coding', week: 5 },
+
+  // WEEK 6 - DEPLOY 2
+  { title: 'End-to-end flow working on public URL', cat: 'deploy', week: 6 },
+  { title: 'Polish README — architecture, stack, STRIDE table, setup, screenshots', cat: 'deploy', week: 6 },
+  { title: 'Add honest "Known Limitations" section', cat: 'deploy', week: 6 },
+  { title: '5–10 applications', cat: 'apps', week: 6 },
+  { title: 'boot.dev DSA Ch 4–9 (Sorting, Big-O, Stacks, Queues, Linked Lists)', cat: 'coding', week: 6 },
+  { title: 'Walk one complete user journey out loud', cat: 'coding', week: 6 },
+
+  // WEEK 7 - PRE-DUBAI
+  { title: 'Fix any deployment loose ends', cat: 'deploy', week: 7 },
+  { title: 'ONLY IF AHEAD: migrate SQLite → AWS RDS Postgres', cat: 'deploy', week: 7 },
+  { title: 'Update CV — add AWS CP cert, add deployed URL in Projects', cat: 'cv', week: 7 },
+  { title: 'Line up 10 Dubai networking coffees via LinkedIn HW Dubai alumni', cat: 'travel', week: 7 },
+  { title: '10 applications', cat: 'apps', week: 7 },
+  { title: 'boot.dev DSA Ch 12–15 (Hashmaps, Tries, Graphs, BFS/DFS)', cat: 'coding', week: 7 },
+  { title: 'Mock interview rehearsal: 10 dissertation Qs, record + listen back', cat: 'coding', week: 7 },
+  { title: '3× live-coding dry run (45-min timed LeetCode Easy, explain out loud)', cat: 'coding', week: 7 },
+
+  // WEEK 8 - TRAVEL
+  { title: 'Print 10 physical CVs', cat: 'travel', week: 8 },
+  { title: 'Pack business casual + one formal set', cat: 'travel', week: 8 },
+  { title: 'Travel to Dubai', cat: 'travel', week: 8, due: '2026-06-15' },
+  { title: 'Graduation ceremony — network with classmates\' parents and faculty', cat: 'travel', week: 8 },
+  { title: 'HW Dubai career services drop-in', cat: 'travel', week: 8 },
+  { title: 'Walk-in: Dtec Silicon Oasis · In5 Tech · AstroLabs · Impact Hub', cat: 'travel', week: 8 },
+];
+
+function getRitualsForWeek(W) {
+  const rituals = [];
+  let module = '';
+  if (W <= 2) module = 'boot.dev — Learn Git (Ch 5–11)';
+  else if (W <= 4) module = 'boot.dev — Learn SQL';
+  else if (W === 5) module = 'boot.dev — finish SQL → start DSA';
+  else if (W <= 7) module = 'boot.dev — Learn DSA';
+  if (module) rituals.push({ title: '30–45 min · ' + module, cat: 'coding' });
+
+  let rep = '';
+  if (W <= 2) rep = '1 Codewars 8-kyu (no AI)';
+  else if (W <= 3) rep = '1 Codewars 7-kyu / LeetCode Easy (no AI)';
+  else if (W === 4) rep = 'Light reps — 3 LeetCode Easy total this week';
+  else if (W <= 6) rep = '1 LeetCode Easy (no AI)';
+  else if (W === 7) rep = 'LeetCode top-100 timed + 3 live-coding dry runs';
+  if (rep) rituals.push({ title: '15–20 min · ' + rep, cat: 'coding' });
+
+  if (W >= 2 && W <= 7) {
+    const target = W === 7 ? '10' : (W === 6 ? '5–10' : '5');
+    rituals.push({ title: `1 application submitted (week target ${target})`, cat: 'apps' });
+  }
+
+  rituals.push({ title: '5 min · dissertation repo check', cat: 'coding' });
+  return rituals;
+}
+
+/* state shape */
+function defaultState() {
+  return {
+    tasks: SEED_TASKS.map((t, i) => ({
+      id: 't' + i,
+      title: t.title,
+      category: t.cat,
+      week: t.week,
+      dueDate: t.due || null,
+      status: 'pending',
+      createdAt: PLAN_START,
+      completedAt: null,
+      notes: '',
+    })),
+    applications: [],
+    rituals: {},
+    metrics: { lastActiveDate: null, streak: 0, callbacks: 0 },
+    ui: {
+      currentPage: 'today',
+      expandedPages: { plan: true, reference: false },
+      tasksView: 'table',
+      appsView: 'table',
+      calMonth: '2026-04',
+    },
+  };
+}
+
+let state = loadState();
+function loadState() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return defaultState();
+    const s = JSON.parse(raw);
+    if (!s.tasks) return defaultState();
+    s.applications = s.applications || [];
+    s.rituals = s.rituals || {};
+    s.metrics = s.metrics || { lastActiveDate: null, streak: 0, callbacks: 0 };
+    s.ui = s.ui || { currentPage: 'today', expandedPages: { plan: true }, tasksView: 'table', appsView: 'table', calMonth: '2026-04' };
+    s.ui.expandedPages = s.ui.expandedPages || { plan: true };
+    s.ui.tasksView = s.ui.tasksView || 'table';
+    s.ui.appsView = s.ui.appsView || 'table';
+    s.ui.calMonth = s.ui.calMonth || '2026-04';
+    return s;
+  } catch { return defaultState(); }
+}
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+
+/* =====================================================================
+   DATE HELPERS
+   ===================================================================== */
+function todayISO() { return new Date().toISOString().slice(0, 10); }
+function isoDate(s) { return new Date(s + 'T00:00:00'); }
+function dayDiff(a, b) { return Math.round((isoDate(b) - isoDate(a)) / 86400000); }
+function fmtDate(iso) {
+  const d = isoDate(iso);
+  return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+}
+function fmtDateLong(iso) {
+  const d = isoDate(iso);
+  return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+function getCurrentWeek(today = todayISO()) {
+  const d = dayDiff(PLAN_START, today);
+  if (d < 0) return 0;
+  return Math.min(8, Math.floor(d / 7) + 1);
+}
+function weekRange(w) {
+  const start = isoDate(PLAN_START);
+  start.setDate(start.getDate() + (w - 1) * 7);
+  const end = new Date(start); end.setDate(end.getDate() + 6);
+  return { start: start.toISOString().slice(0,10), end: end.toISOString().slice(0,10) };
+}
+
+/* =====================================================================
+   ALGORITHM
+   ===================================================================== */
+function getTodayQueue() {
+  const today = todayISO();
+  const week = getCurrentWeek(today);
+
+  const overdue = state.tasks.filter(t =>
+    t.status === 'pending' && t.dueDate && t.dueDate < today
+  ).sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+
+  const todayDue = state.tasks.filter(t =>
+    t.status === 'pending' && t.dueDate === today
+  );
+
+  const weekPending = state.tasks.filter(t =>
+    t.status === 'pending' && t.week === week && !t.dueDate
+  );
+
+  return { overdue, todayDue, weekPending, week };
+}
+
+function getHealth(catId) {
+  const cat = OUTCOMES.find(o => o.id === catId);
+  if (!cat) return null;
+  const today = todayISO();
+  const totalDays = Math.max(1, dayDiff(PLAN_START, cat.deadline));
+  const elapsed = Math.max(0, dayDiff(PLAN_START, today));
+  const expectedPct = Math.min(1, elapsed / totalDays);
+
+  let actual, target, actualPct;
+  if (catId === 'apps') {
+    actual = state.applications.length;
+    target = APP_TARGET;
+    actualPct = actual / target;
+  } else {
+    const tasks = state.tasks.filter(t => t.category === catId);
+    const done = tasks.filter(t => t.status === 'done').length;
+    actual = done;
+    target = tasks.length || 1;
+    actualPct = tasks.length ? done / tasks.length : 0;
+  }
+
+  const delta = actualPct - expectedPct;
+  let status;
+  if (today > cat.deadline && actualPct < 1) status = 'behind';
+  else if (delta >= 0.05) status = 'ahead';
+  else if (delta >= -0.05) status = 'on-track';
+  else if (delta >= -0.20) status = 'at-risk';
+  else status = 'behind';
+
+  const expectedActual = Math.round(expectedPct * target);
+  const daysLeft = dayDiff(today, cat.deadline);
+  return { catId, actual, target, actualPct, expectedPct, expectedActual, delta, status, daysLeft, deadline: cat.deadline };
+}
+
+function getAdjustment(catId) {
+  const h = getHealth(catId);
+  if (!h) return null;
+  const week = getCurrentWeek();
+
+  if (catId === 'cv') {
+    if (h.status === 'behind' || (h.status === 'at-risk' && h.daysLeft <= 3)) {
+      return { tone: 'danger', text: `CV/LinkedIn/GitHub deadline is in ${h.daysLeft} day(s). Block 2 hours tomorrow morning. No new tasks until ${h.target - h.actual} of these are checked off. Lowest-hanging fruit on the whole plan.` };
+    }
+    if (h.actualPct >= 1) return { tone: 'success', text: 'CV/LinkedIn/GitHub: shipped. Lock it in. Move to AWS.' };
+  }
+
+  if (catId === 'aws') {
+    const awsTasks = state.tasks.filter(t => t.category === 'aws');
+    const done = awsTasks.filter(t => t.status === 'done').length;
+    const pct = done / (awsTasks.length || 1);
+    if (week >= 3 && pct < 0.4) {
+      return { tone: 'danger', text: `AWS progress is ${Math.round(pct * 100)}% by Week ${week}. Add 1 hour/day Maarek video for the next 7 days. If you can't, push the exam booking from May 25 to May 30 — but BOOK it this week regardless. Exam pressure forces completion.` };
+    }
+    if (week >= 5 && h.status === 'behind') {
+      return { tone: 'danger', text: `AWS still under target in Week ${week}. The exam is the forcing function — book it for the next available slot regardless of practice score.` };
+    }
+    if (h.actualPct >= 1) return { tone: 'success', text: 'AWS Cloud Practitioner: passed. Add it to LinkedIn + CV today.' };
+  }
+
+  if (catId === 'deploy') {
+    if (week >= 5 && h.actualPct < 0.2) {
+      return { tone: 'danger', text: `Deploy is ${Math.round(h.actualPct * 100)}% by Week ${week}. If AWS deployment is fighting you and you have less than 5 working days — flip the escape hatch: ship on Render or Railway. The cert is enough; the deployed project doesn't need to be on AWS.` };
+    }
+    if (week >= 6 && h.actualPct < 0.5) {
+      return { tone: 'danger', text: `Deploy < 50% by Week ${week}. Activate escape hatch TODAY. A live URL by Friday is the only goal.` };
+    }
+    if (h.actualPct >= 1) return { tone: 'success', text: 'Deployed. Live URL on the CV and in every application opener.' };
+  }
+
+  if (catId === 'apps') {
+    const sent = state.applications.length;
+    const cumulative = [0, 0, 5, 10, 15, 20, 27, 37, 50];
+    const expected = cumulative[Math.min(week, 8)];
+    if (week >= 2 && sent < expected - 3) {
+      return { tone: 'danger', text: `Behind on applications: ${sent} sent vs target ~${expected} by Week ${week}. Tomorrow do ${expected - sent} in one sitting. Tier 1 first — they have hard deadlines. Volume > polish.` };
+    }
+    if (week >= 6 && sent >= 30 && (state.metrics.callbacks || 0) === 0) {
+      return { tone: 'warn', text: `Branch point trigger: ${sent}+ apps with zero callbacks. Re-read the CV summary line. If data/analytics roles would be receptive, re-angle. Same dissertation, same cert, same deployed project — new framing. One reassessment window.` };
+    }
+    if (sent >= APP_TARGET) return { tone: 'success', text: `${sent} applications submitted. You hit the volume floor.` };
+  }
+  return null;
+}
+
+/* =====================================================================
+   RENDER · sidebar
+   ===================================================================== */
+function $(s, root = document) { return root.querySelector(s); }
+function $$(s, root = document) { return [...root.querySelectorAll(s)]; }
+function escapeHTML(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function renderSidebar() {
+  const tree = $('#sbTree');
+  let html = '';
+  for (const p of PAGES) {
+    html += renderSidebarPage(p, 0);
+  }
+  tree.innerHTML = html;
+}
+
+function renderSidebarPage(p, depth) {
+  const hasChildren = p.children && p.children.length > 0;
+  const expanded = state.ui.expandedPages[p.id];
+  const active = state.ui.currentPage === p.id;
+  const padding = 6 + depth * 14;
+  let html = `
+    <div class="sb-page" style="--depth:${padding}px">
+      <div class="sb-page-row ${active ? 'active' : ''}" data-page-id="${p.id}" style="padding-left:${padding}px">
+        <button class="sb-chev ${hasChildren ? 'has-children' : ''} ${expanded ? 'expanded' : ''}" data-toggle="${p.id}" ${!hasChildren ? 'style="visibility:hidden"' : ''}></button>
+        <div class="sb-page-emoji">${p.emoji || '📄'}</div>
+        <div class="sb-page-name">${escapeHTML(p.name)}</div>
+        <div class="sb-page-actions">
+          ${hasChildren ? '' : ''}
+        </div>
+      </div>
+      ${hasChildren ? `<div class="sb-children ${expanded ? 'expanded' : ''}">${p.children.map(c => renderSidebarPage(c, depth + 1)).join('')}</div>` : ''}
+    </div>
+  `;
+  return html;
+}
+
+/* =====================================================================
+   RENDER · breadcrumbs
+   ===================================================================== */
+function findPage(id, list = PAGES, parent = null) {
+  for (const p of list) {
+    if (p.id === id) return { p, parent };
+    if (p.children) {
+      const r = findPage(id, p.children, p);
+      if (r) return r;
+    }
+  }
+  return null;
+}
+
+function renderCrumbs() {
+  const cur = findPage(state.ui.currentPage);
+  if (!cur) return;
+  let crumbs = [];
+  if (cur.parent) crumbs.push({ id: cur.parent.id, emoji: cur.parent.emoji, name: cur.parent.name });
+  crumbs.push({ id: cur.p.id, emoji: cur.p.emoji, name: cur.p.name, last: true });
+
+  $('#crumbs').innerHTML = crumbs.map((c, i) => `
+    ${i > 0 ? '<span class="crumb-sep">/</span>' : ''}
+    <button class="crumb ${c.last ? 'last' : ''}" data-page-link="${c.id}">
+      <span>${c.emoji}</span> <span>${escapeHTML(c.name)}</span>
+    </button>
+  `).join('');
+}
+
+/* =====================================================================
+   ROUTING
+   ===================================================================== */
+function showPage(id) {
+  // resolve week-N
+  if (id.startsWith('week-')) {
+    state.ui.currentPage = id;
+    save();
+    $$('section.page').forEach(s => s.classList.toggle('active', s.dataset.page === 'week'));
+    renderWeekPage(parseInt(id.split('-')[1]));
+  } else {
+    state.ui.currentPage = id;
+    save();
+    $$('section.page').forEach(s => s.classList.toggle('active', s.dataset.page === id));
+    renderPage(id);
+  }
+  renderSidebar();
+  renderCrumbs();
+  $('.page-scroll').scrollTo({ top: 0, behavior: 'instant' });
+  $('#sidebar').classList.remove('open');
+}
+
+function renderPage(id) {
+  if (id === 'today') renderToday();
+  else if (id === 'mission') renderMission();
+  else if (id === 'plan') renderPlan();
+  else if (id === 'tasks') renderTasksDB();
+  else if (id === 'apps') renderAppsDB();
+}
+
+/* =====================================================================
+   RENDER · TODAY
+   ===================================================================== */
+function tagFor(cat) {
+  const m = CAT_META[cat];
+  return `<span class="tag ${m.color}">${m.name}</span>`;
+}
+
+function todoBlock(t, opts = {}) {
+  const today = todayISO();
+  const overdue = t.dueDate && t.dueDate < today && t.status === 'pending';
+  const isRitual = !!opts.ritual;
+  return `
+    <div class="block todo ${t.status === 'done' ? 'done' : ''}" data-task-id="${t.id}">
+      <div class="checkbox ${t.status === 'done' ? 'checked' : ''}" data-action="toggle" data-id="${t.id}"></div>
+      <div style="flex:1">
+        <div class="todo-text" ${!isRitual ? `data-action="open-task" data-id="${t.id}"` : ''} style="${!isRitual ? 'cursor:pointer' : ''}">${escapeHTML(t.title)}</div>
+        <div class="todo-row-meta">
+          ${tagFor(t.category)}
+          ${t.dueDate ? `<span class="tag gray">${fmtDate(t.dueDate)}</span>` : (t.week ? `<span class="tag gray">Week ${t.week}</span>` : '')}
+          ${overdue ? `<span class="tag red">overdue ${dayDiff(t.dueDate, today)}d</span>` : ''}
+          ${isRitual ? `<span class="tag" style="background:transparent;color:var(--ink-fade)">daily ritual</span>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderToday() {
+  const today = todayISO();
+  const week = getCurrentWeek();
+  $('#t-date').textContent = fmtDateLong(today);
+  $('#t-phase').textContent = week === 0 ? 'Pre-launch' : `Week ${week} · ${WEEK_INFO[week].theme}`;
+  $('#t-streak').textContent = `${state.metrics.streak} days`;
+  $('#todayCode').textContent = today;
+
+  const dToExam   = dayDiff(today, '2026-05-25');
+  const dToDeploy = dayDiff(today, '2026-06-15');
+  const dToDubai  = dayDiff(today, '2026-06-15');
+  $('#s-aws').innerHTML    = `${dToExam < 0 ? '✓' : dToExam}<span class="unit">d</span>`;
+  $('#s-deploy').innerHTML = `${dToDeploy < 0 ? '✓' : dToDeploy}<span class="unit">d</span>`;
+  $('#s-dubai').innerHTML  = `${dToDubai < 0 ? '✓' : dToDubai}<span class="unit">d</span>`;
+  $('#s-apps').innerHTML   = `${state.applications.length}<span class="unit">/${APP_TARGET}</span>`;
+
+  const q = getTodayQueue();
+
+  // overdue
+  $('#t-overdue').innerHTML = q.overdue.length ? `
+    <div class="block toggle expanded" data-toggle-section="overdue">
+      <div class="toggle-head">
+        <button class="toggle-chev"></button>
+        <div class="toggle-title" style="color:var(--c-red-fg)">⚠️ Overdue · ${q.overdue.length} item${q.overdue.length > 1 ? 's' : ''}</div>
+      </div>
+      <div class="toggle-children">
+        ${q.overdue.map(t => todoBlock(t)).join('')}
+      </div>
+    </div>
+  ` : '';
+
+  // today (rituals + scheduled)
+  const rituals = getRitualsForWeek(week || 1);
+  if (!state.rituals[today]) state.rituals[today] = {};
+  const ritualBlocks = rituals.map((r, i) => {
+    const id = `r-${today}-${i}`;
+    return {
+      id,
+      title: r.title,
+      category: r.cat,
+      status: state.rituals[today][id] === 'done' ? 'done' : 'pending',
+    };
+  });
+  const todayList = [...q.todayDue, ...ritualBlocks];
+
+  $('#t-today').innerHTML = todayList.length ? `
+    <div class="block toggle expanded">
+      <div class="toggle-head">
+        <button class="toggle-chev"></button>
+        <div class="toggle-title">Today · daily ritual + scheduled</div>
+      </div>
+      <div class="toggle-children">
+        ${todayList.map(t => todoBlock(t, { ritual: t.id.startsWith('r-') })).join('')}
+      </div>
+    </div>
+  ` : '';
+
+  // week pending
+  $('#t-week').innerHTML = q.weekPending.length ? `
+    <div class="block toggle ${q.weekPending.length <= 4 ? 'expanded' : ''}">
+      <div class="toggle-head">
+        <button class="toggle-chev"></button>
+        <div class="toggle-title">This week · still open · ${q.weekPending.length}</div>
+      </div>
+      <div class="toggle-children">
+        ${q.weekPending.map(t => todoBlock(t)).join('')}
+      </div>
+    </div>
+  ` : `
+    <div class="block toggle">
+      <div class="toggle-head">
+        <button class="toggle-chev"></button>
+        <div class="toggle-title">This week · clear</div>
+      </div>
+    </div>
+  `;
+}
+
+/* =====================================================================
+   RENDER · MISSION
+   ===================================================================== */
+function renderMission() {
+  const week = getCurrentWeek();
+  $('#m-current').textContent = week === 0 ? 'Pre-launch' : `Week ${week} of 8`;
+
+  $('#mission-grid').innerHTML = OUTCOMES.map(o => {
+    const h = getHealth(o.id);
+    const adj = getAdjustment(o.id);
+    const pct = Math.min(1, h.actualPct);
+    const expectedPct = Math.min(1, h.expectedPct);
+    const statusBand = h.status === 'on-track' ? 'blue' : (h.status === 'ahead' ? 'green' : (h.status === 'at-risk' ? 'orange' : 'red'));
+
+    return `
+      <div class="outcome">
+        <div class="outcome-h">
+          <div>
+            <div class="outcome-name">${escapeHTML(o.name)}</div>
+            <div class="outcome-deadline">deadline ${fmtDate(o.deadline)} · ${h.daysLeft >= 0 ? h.daysLeft + ' days left' : Math.abs(h.daysLeft) + ' days past'}</div>
+          </div>
+          <span class="tag ${statusBand} lg">${h.status.replace('-', ' ')}</span>
+        </div>
+        <div class="bar ${o.id}">
+          <div class="fill" style="width:${pct * 100}%"></div>
+          <div class="target" style="left:${expectedPct * 100}%"></div>
+        </div>
+        <div class="bar-meta">
+          <span><strong>${h.actual}</strong> of ${h.target} ${o.id === 'apps' ? 'sent' : 'tasks done'}</span>
+          <span>expected by today: ~${h.expectedActual}</span>
+        </div>
+        <div style="font-size:13px;color:var(--ink-mute);margin-top:8px;line-height:1.5">${escapeHTML(o.hint)}</div>
+        ${adj ? `
+          <div class="block callout ${adj.tone === 'success' ? 'success' : (adj.tone === 'warn' ? 'warn' : 'danger')}" style="margin-top:14px">
+            <div class="callout-icon">${adj.tone === 'success' ? '✓' : '⚡'}</div>
+            <div class="callout-body" style="font-size:14px;line-height:1.5;color:var(--ink)">${escapeHTML(adj.text)}</div>
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+/* =====================================================================
+   RENDER · PLAN (toggles per week)
+   ===================================================================== */
+function renderPlan() {
+  const cw = getCurrentWeek();
+  let html = '';
+  for (let w = 1; w <= 8; w++) {
+    const range = weekRange(w);
+    const tasks = state.tasks.filter(t => t.week === w);
+    const done = tasks.filter(t => t.status === 'done').length;
+    const isCurrent = w === cw;
+    const wInfo = WEEK_INFO[w];
+    html += `
+      <div class="block toggle ${isCurrent ? 'expanded' : ''}" data-week-toggle="${w}">
+        <div class="toggle-head">
+          <button class="toggle-chev"></button>
+          <div class="toggle-title">
+            ${wInfo.emoji} <strong>Week ${w}</strong> · ${escapeHTML(wInfo.theme)}
+            <span class="tag ${isCurrent ? 'pink' : 'gray'}" style="margin-left:8px">${fmtDate(range.start)} → ${fmtDate(range.end)}</span>
+            <span class="tag" style="margin-left:4px">${done}/${tasks.length} done</span>
+            ${isCurrent ? '<span class="tag green" style="margin-left:4px">current</span>' : ''}
+          </div>
+        </div>
+        <div class="toggle-children">
+          <div style="margin-bottom:8px">
+            <button class="db-tool-btn" data-page-link="week-${w}">→ Open Week ${w} page</button>
+          </div>
+          ${tasks.map(t => todoBlock(t)).join('') || '<div class="empty">No tasks for this week.</div>'}
+        </div>
+      </div>
+    `;
+  }
+  $('#plan-toggles').innerHTML = html;
+}
+
+/* =====================================================================
+   RENDER · WEEK PAGE
+   ===================================================================== */
+function renderWeekPage(w) {
+  const info = WEEK_INFO[w];
+  if (!info) return;
+  const range = weekRange(w);
+  const tasks = state.tasks.filter(t => t.week === w);
+  const done = tasks.filter(t => t.status === 'done').length;
+  const cw = getCurrentWeek();
+  const status = w < cw ? 'past' : (w === cw ? 'current' : 'upcoming');
+
+  $('#w-emoji').textContent = info.emoji;
+  $('#w-title').textContent = `Week ${w} · ${info.theme}`;
+  $('#w-dates').innerHTML = `${fmtDate(range.start)} → ${fmtDate(range.end)} <span class="tag ${status === 'current' ? 'pink' : 'gray'}" style="margin-left:6px">${status}</span>`;
+  $('#w-theme').textContent = info.theme;
+  $('#w-progress').innerHTML = `<strong>${done}</strong> / ${tasks.length} tasks done`;
+
+  // Group by category
+  const byCat = {};
+  for (const t of tasks) (byCat[t.category] = byCat[t.category] || []).push(t);
+  const order = ['cv','aws','deploy','apps','coding','planning','travel'];
+
+  let html = '';
+  for (const cat of order) {
+    if (!byCat[cat]) continue;
+    const meta = CAT_META[cat];
+    html += `
+      <div class="block h3">${meta.emoji} ${meta.name}</div>
+      ${byCat[cat].map(t => todoBlock(t)).join('')}
+    `;
+  }
+  $('#w-content').innerHTML = html || '<div class="empty">No tasks for this week.</div>';
+}
+
+/* =====================================================================
+   RENDER · TASKS DATABASE
+   ===================================================================== */
+function renderTasksDB() {
+  $('#tk-count').textContent = `${state.tasks.length} tasks`;
+
+  const views = [
+    { id: 'table',    icon: '⊞', name: 'Table' },
+    { id: 'board',    icon: '◫', name: 'Board' },
+    { id: 'calendar', icon: '▦', name: 'Calendar' },
+    { id: 'by-week',  icon: '⌗', name: 'By week' },
+  ];
+  $('#tk-views').innerHTML = views.map(v => `
+    <button class="db-tab ${state.ui.tasksView === v.id ? 'active' : ''}" data-tk-view="${v.id}">
+      <span class="tab-icon">${v.icon}</span>${v.name}
+    </button>
+  `).join('') + '<button class="db-add-view">+ Add view</button>';
+
+  // filter
+  const cat = $('#tk-filterCat').value;
+  const status = $('#tk-filterStatus').value;
+  let list = state.tasks.slice();
+  if (cat !== 'all') list = list.filter(t => t.category === cat);
+  if (status !== 'all') list = list.filter(t => t.status === status);
+
+  const view = state.ui.tasksView;
+  if (view === 'table') $('#tk-body').innerHTML = renderTasksTable(list);
+  else if (view === 'board') $('#tk-body').innerHTML = renderTasksBoard(list);
+  else if (view === 'calendar') $('#tk-body').innerHTML = renderTasksCalendar(list);
+  else if (view === 'by-week') $('#tk-body').innerHTML = renderTasksByWeek(list);
+}
+
+function renderTasksTable(list) {
+  const today = todayISO();
+  list = list.slice().sort((a, b) => {
+    const aOver = a.dueDate && a.dueDate < today && a.status === 'pending';
+    const bOver = b.dueDate && b.dueDate < today && b.status === 'pending';
+    if (aOver !== bOver) return aOver ? -1 : 1;
+    if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
+    if (a.dueDate) return -1;
+    if (b.dueDate) return 1;
+    return (a.week || 99) - (b.week || 99);
+  });
+
+  return `
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th><span class="col-icon">Aa</span>Task</th>
+            <th><span class="col-icon">●</span>Status</th>
+            <th><span class="col-icon">⊕</span>Category</th>
+            <th><span class="col-icon">⌗</span>Week</th>
+            <th><span class="col-icon">📅</span>Due</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${list.map(t => {
+            const overdue = t.dueDate && t.dueDate < today && t.status === 'pending';
+            return `
+              <tr class="${t.status === 'done' ? 'done' : ''} ${overdue ? 'overdue' : ''}">
+                <td>
+                  <div class="cell-title">
+                    <div class="checkbox-wrap">
+                      <div class="checkbox ${t.status === 'done' ? 'checked' : ''}" data-action="toggle" data-id="${t.id}"></div>
+                    </div>
+                    <div class="cell-title-text" data-action="open-task" data-id="${t.id}">${escapeHTML(t.title)}</div>
+                  </div>
+                </td>
+                <td><span class="tag ${STATUS_META[t.status].color}">${STATUS_META[t.status].name}</span></td>
+                <td><span class="tag ${CAT_META[t.category].color}">${CAT_META[t.category].name}</span></td>
+                <td>${t.week ? `<span class="tag">Week ${t.week}</span>` : '<span class="cell-empty">—</span>'}</td>
+                <td>${t.dueDate ? `<span style="font-size:13px;color:${overdue ? 'var(--c-red-fg)' : 'var(--ink)'}">${fmtDate(t.dueDate)}</span>` : '<span class="cell-empty">—</span>'}</td>
+              </tr>
+            `;
+          }).join('')}
+          <tr><td colspan="5">
+            <div class="tbl-add-row" data-action="new-task">＋ New task</div>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderTasksBoard(list) {
+  const cols = [
+    { key: 'pending', name: 'Pending', color: 'gray' },
+    { key: 'done', name: 'Done', color: 'green' },
+    { key: 'skipped', name: 'Skipped', color: 'red' },
+  ];
+  return `
+    <div class="board">
+      ${cols.map(col => {
+        const items = list.filter(t => t.status === col.key);
+        return `
+          <div class="board-col">
+            <div class="board-col-h">
+              <span class="tag ${col.color}">${col.name}</span>
+              <span class="count">${items.length}</span>
+              <div class="spacer"></div>
+              <button class="add" data-action="new-task" data-board-status="${col.key}">＋</button>
+            </div>
+            <div class="board-cards">
+              ${items.map(t => `
+                <div class="card" data-action="open-task" data-id="${t.id}">
+                  <div class="card-title">${escapeHTML(t.title)}</div>
+                  <div class="card-meta">
+                    ${tagFor(t.category)}
+                    ${t.dueDate ? `<span class="tag gray">${fmtDate(t.dueDate)}</span>` : (t.week ? `<span class="tag">Wk ${t.week}</span>` : '')}
+                  </div>
+                </div>
+              `).join('') || '<div class="empty" style="padding:8px;font-size:13px">—</div>'}
+            </div>
+          </div>
+        `;
+      }).join('')}
+      <div class="board-add-col">＋ Add group</div>
+    </div>
+  `;
+}
+
+function renderTasksCalendar(list) {
+  return renderCalendar(list.filter(t => t.dueDate), t => ({
+    id: t.id,
+    date: t.dueDate,
+    label: t.title,
+    cat: t.category,
+    done: t.status === 'done',
+  }));
+}
+
+function renderTasksByWeek(list) {
+  let html = '';
+  for (let w = 1; w <= 8; w++) {
+    const items = list.filter(t => t.week === w);
+    if (!items.length) continue;
+    const wInfo = WEEK_INFO[w];
+    const range = weekRange(w);
+    html += `
+      <div class="block h3" style="margin-top:24px">${wInfo.emoji} Week ${w} · ${escapeHTML(wInfo.theme)} <span class="tag" style="margin-left:8px">${fmtDate(range.start)} → ${fmtDate(range.end)}</span></div>
+      ${items.map(t => todoBlock(t)).join('')}
+    `;
+  }
+  return html || '<div class="empty">No tasks match.</div>';
+}
+
+/* =====================================================================
+   CALENDAR helper
+   ===================================================================== */
+function renderCalendar(list, mapItem) {
+  // determine month
+  const [yStr, mStr] = state.ui.calMonth.split('-');
+  let year = +yStr, month = +mStr; // 1-indexed
+  const monthDate = new Date(year, month - 1, 1);
+  const firstDow = monthDate.getDay(); // 0=Sun
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const today = todayISO();
+
+  // build 6x7 grid starting from Sunday-prior
+  const cells = [];
+  const startOffset = firstDow; // pad with previous month
+  const totalCells = 42;
+  for (let i = 0; i < totalCells; i++) {
+    const d = new Date(year, month - 1, 1 - startOffset + i);
+    const iso = d.toISOString().slice(0, 10);
+    cells.push({
+      iso,
+      day: d.getDate(),
+      isMuted: d.getMonth() !== month - 1,
+      isToday: iso === today,
+      items: list.filter(it => it.dueDate === iso || it.date === iso).map(mapItem || (x => x)),
+    });
+  }
+
+  const dows = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const monthName = monthDate.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+
+  return `
+    <div class="cal">
+      <div class="cal-h">
+        <button class="nav-btn" data-cal-nav="-1">‹</button>
+        <button class="nav-btn" data-cal-nav="1">›</button>
+        <div class="month">${monthName}</div>
+        <div class="spacer"></div>
+        <button class="today-btn" data-cal-nav="today">Today</button>
+      </div>
+      <div class="cal-grid">
+        ${dows.map(d => `<div class="cal-dow">${d}</div>`).join('')}
+        ${cells.map(c => `
+          <div class="cal-day ${c.isMuted ? 'muted' : ''} ${c.isToday ? 'today' : ''}">
+            <span class="day-num">${c.day}</span>
+            ${c.items.slice(0, 4).map(it => `
+              <div class="cal-pill ${it.cat || ''} ${it.done ? 'done' : ''}" data-action="open-task" data-id="${it.id}">${escapeHTML(it.label || '')}</div>
+            `).join('')}
+            ${c.items.length > 4 ? `<div style="font-size:11px;color:var(--ink-fade);padding:2px 4px">+${c.items.length - 4} more</div>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+/* =====================================================================
+   RENDER · APPS DATABASE
+   ===================================================================== */
+function renderAppsDB() {
+  const sent = state.applications.length;
+  $('#ap-count').textContent = `${sent} / ${APP_TARGET}`;
+  const week = getCurrentWeek();
+  const cumulative = [0, 0, 5, 10, 15, 20, 27, 37, 50];
+  const expected = cumulative[Math.min(week, 8)];
+  const h = getHealth('apps');
+  const statusBand = h.status === 'on-track' ? 'blue' : (h.status === 'ahead' ? 'green' : (h.status === 'at-risk' ? 'orange' : 'red'));
+  $('#ap-pace').innerHTML = `<span class="tag ${statusBand}">${h.status.replace('-', ' ')}</span> &nbsp; expected by W${week}: ~${expected}`;
+
+  const views = [
+    { id: 'table', icon: '⊞', name: 'Table' },
+    { id: 'board', icon: '◫', name: 'Pipeline' },
+  ];
+  $('#ap-views').innerHTML = views.map(v => `
+    <button class="db-tab ${state.ui.appsView === v.id ? 'active' : ''}" data-ap-view="${v.id}">
+      <span class="tab-icon">${v.icon}</span>${v.name}
+    </button>
+  `).join('') + '<button class="db-add-view">+ Add view</button>';
+
+  if (state.ui.appsView === 'table') {
+    $('#ap-body').innerHTML = renderAppsTable();
+  } else {
+    $('#ap-body').innerHTML = renderAppsBoard();
+  }
+}
+
+function renderAppsTable() {
+  const list = state.applications.slice().reverse();
+  if (!list.length) {
+    return `<div class="empty">No applications logged. Start with Tier 1 grad programmes — Revolut, CBD, Big-4. They have hard deadlines.</div>`;
+  }
+  return `
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th><span class="col-icon">Aa</span>Company</th>
+            <th><span class="col-icon">⊕</span>Role</th>
+            <th><span class="col-icon">●</span>Status</th>
+            <th><span class="col-icon">📅</span>Date</th>
+            <th><span class="col-icon">⊙</span>Source</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${list.map(a => `
+            <tr>
+              <td><div class="cell-title-text" data-action="edit-app" data-id="${a.id}" data-field="company">${escapeHTML(a.company)}</div></td>
+              <td><div class="cell-title-text" data-action="edit-app" data-id="${a.id}" data-field="role">${escapeHTML(a.role)}</div></td>
+              <td><span class="tag ${APP_STATUS_META[a.status].color}" data-action="cycle-app-status" data-id="${a.id}" style="cursor:pointer">${APP_STATUS_META[a.status].name}</span></td>
+              <td style="font-size:13px;color:var(--ink-mute)">${fmtDate(a.dateApplied)}</td>
+              <td style="font-size:13px;color:var(--ink-mute)">${escapeHTML(a.source)}</td>
+              <td><button class="topbar-btn" data-action="del-app" data-id="${a.id}" style="color:var(--c-red-fg);font-size:12px">×</button></td>
+            </tr>
+          `).join('')}
+          <tr><td colspan="6"><div class="tbl-add-row" data-action="new-app">＋ Log application</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderAppsBoard() {
+  const cols = ['sent','reply','screen','interview','offer','rejected','ghosted'];
+  return `
+    <div class="board">
+      ${cols.map(col => {
+        const items = state.applications.filter(a => a.status === col);
+        const meta = APP_STATUS_META[col];
+        return `
+          <div class="board-col">
+            <div class="board-col-h">
+              <span class="tag ${meta.color}">${meta.name}</span>
+              <span class="count">${items.length}</span>
+            </div>
+            <div class="board-cards">
+              ${items.map(a => `
+                <div class="card" data-action="edit-app" data-id="${a.id}">
+                  <div class="card-title">${escapeHTML(a.company)}</div>
+                  <div style="font-size:12px;color:var(--ink-mute);margin-bottom:6px">${escapeHTML(a.role)}</div>
+                  <div class="card-meta">
+                    <span class="tag gray">${fmtDate(a.dateApplied)}</span>
+                    <span class="tag">${escapeHTML(a.source)}</span>
+                  </div>
+                </div>
+              `).join('') || '<div class="empty" style="padding:8px;font-size:13px">—</div>'}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+/* =====================================================================
+   ACTIONS
+   ===================================================================== */
+function bumpStreak() {
+  const today = todayISO();
+  const last = state.metrics.lastActiveDate;
+  if (last === today) return;
+  if (!last) state.metrics.streak = 1;
+  else {
+    const diff = dayDiff(last, today);
+    state.metrics.streak = diff === 1 ? state.metrics.streak + 1 : 1;
+  }
+  state.metrics.lastActiveDate = today;
+}
+
+function toggleTask(id) {
+  if (id.startsWith('r-')) {
+    const today = todayISO();
+    if (!state.rituals[today]) state.rituals[today] = {};
+    state.rituals[today][id] = state.rituals[today][id] === 'done' ? 'pending' : 'done';
+    bumpStreak();
+    save(); renderPage(state.ui.currentPage);
+    return;
+  }
+  const t = state.tasks.find(x => x.id === id);
+  if (!t) return;
+  if (t.status === 'done') {
+    t.status = 'pending';
+    t.completedAt = null;
+  } else {
+    t.status = 'done';
+    t.completedAt = todayISO();
+    bumpStreak();
+  }
+  save(); rerender();
+}
+
+function rerender() {
+  renderSidebar();
+  renderCrumbs();
+  if (state.ui.currentPage.startsWith('week-')) {
+    renderWeekPage(parseInt(state.ui.currentPage.split('-')[1]));
+  } else {
+    renderPage(state.ui.currentPage);
+  }
+}
+
+function quickAdd() {
+  const title = $('#qa-title').value.trim();
+  const cat = $('#qa-cat').value;
+  if (!title) return;
+  state.tasks.push({
+    id: 't' + Date.now(),
+    title,
+    category: cat,
+    week: getCurrentWeek() || 1,
+    dueDate: todayISO(),
+    status: 'pending',
+    notes: '',
+    createdAt: todayISO(),
+    completedAt: null,
+  });
+  $('#qa-title').value = '';
+  save(); rerender();
+}
+
+function newApp() {
+  openModal('Log new application', `
+    <label class="sect-h">Company</label>
+    <input class="input" id="m-company" placeholder="Revolut" />
+    <label class="sect-h" style="margin-top:10px">Role</label>
+    <input class="input" id="m-role" placeholder="Rev-celerator Backend, Dubai" />
+    <label class="sect-h" style="margin-top:10px">Source</label>
+    <select class="input" id="m-source">
+      <option>LinkedIn</option><option>Careers page</option><option>Bayt</option>
+      <option>Naukrigulf</option><option>Indeed</option><option>Referral</option>
+      <option>Recruiter</option><option>Other</option>
+    </select>
+  `, () => {
+    const company = $('#m-company').value.trim();
+    const role = $('#m-role').value.trim();
+    if (!company || !role) return false;
+    state.applications.push({
+      id: 'a' + Date.now(),
+      company, role,
+      source: $('#m-source').value,
+      dateApplied: todayISO(),
+      status: 'sent',
+    });
+    bumpStreak();
+    save(); rerender();
+    return true;
+  });
+}
+
+function newTask(prefilledStatus) {
+  openModal('New task', `
+    <label class="sect-h">Title</label>
+    <input class="input" id="m-task-title" placeholder="What's the task?" />
+    <label class="sect-h" style="margin-top:10px">Category</label>
+    <select class="input" id="m-task-cat">
+      ${Object.entries(CAT_META).map(([k, v]) => `<option value="${k}">${v.emoji} ${v.name}</option>`).join('')}
+    </select>
+    <label class="sect-h" style="margin-top:10px">Due date (optional)</label>
+    <input class="input" type="date" id="m-task-due" />
+    <label class="sect-h" style="margin-top:10px">Week</label>
+    <select class="input" id="m-task-week">
+      ${Array.from({length: 8}, (_, i) => `<option value="${i+1}" ${i+1 === (getCurrentWeek() || 1) ? 'selected' : ''}>Week ${i+1}</option>`).join('')}
+    </select>
+  `, () => {
+    const title = $('#m-task-title').value.trim();
+    if (!title) return false;
+    state.tasks.push({
+      id: 't' + Date.now(),
+      title,
+      category: $('#m-task-cat').value,
+      week: parseInt($('#m-task-week').value),
+      dueDate: $('#m-task-due').value || null,
+      status: prefilledStatus || 'pending',
+      notes: '',
+      createdAt: todayISO(),
+      completedAt: null,
+    });
+    save(); rerender();
+    return true;
+  });
+}
+
+function delApp(id) {
+  if (!confirm('Delete this application?')) return;
+  state.applications = state.applications.filter(a => a.id !== id);
+  state.metrics.callbacks = state.applications.filter(x => ['reply','screen','interview','offer'].includes(x.status)).length;
+  save(); rerender();
+}
+
+function cycleAppStatus(id) {
+  const a = state.applications.find(x => x.id === id);
+  if (!a) return;
+  const order = ['sent','reply','screen','interview','offer','rejected','ghosted'];
+  const i = order.indexOf(a.status);
+  a.status = order[(i + 1) % order.length];
+  state.metrics.callbacks = state.applications.filter(x => ['reply','screen','interview','offer'].includes(x.status)).length;
+  save(); rerender();
+}
+
+/* =====================================================================
+   DRAWER (task detail)
+   ===================================================================== */
+function openTaskDrawer(id) {
+  if (id.startsWith('r-')) return; // rituals don't open
+  const t = state.tasks.find(x => x.id === id);
+  if (!t) return;
+
+  $('#drawerBody').innerHTML = `
+    <div class="ph-emoji">${CAT_META[t.category].emoji}</div>
+    <h1 class="ph-title" contenteditable data-action="rename-task" data-id="${t.id}">${escapeHTML(t.title)}</h1>
+    <div class="ph-meta">
+      <div class="ph-meta-row">
+        <div class="label">● Status</div>
+        <div>
+          <select class="input" style="width:auto" data-action="set-status" data-id="${t.id}">
+            ${Object.entries(STATUS_META).map(([k, v]) => `<option value="${k}" ${t.status === k ? 'selected' : ''}>${v.name}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="ph-meta-row">
+        <div class="label">⊕ Category</div>
+        <div>
+          <select class="input" style="width:auto" data-action="set-cat" data-id="${t.id}">
+            ${Object.entries(CAT_META).map(([k, v]) => `<option value="${k}" ${t.category === k ? 'selected' : ''}>${v.emoji} ${v.name}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="ph-meta-row">
+        <div class="label">⌗ Week</div>
+        <div>
+          <select class="input" style="width:auto" data-action="set-week" data-id="${t.id}">
+            ${Array.from({length: 8}, (_, i) => `<option value="${i+1}" ${t.week === i+1 ? 'selected' : ''}>Week ${i+1}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="ph-meta-row">
+        <div class="label">📅 Due</div>
+        <div>
+          <input type="date" class="input" style="width:auto" data-action="set-due" data-id="${t.id}" value="${t.dueDate || ''}" />
+        </div>
+      </div>
+    </div>
+    <div class="page-divider"></div>
+    <div class="sect-h">Notes</div>
+    <div class="block text" style="min-height:120px;background:var(--bg-input);padding:12px;border-radius:var(--r-md);outline:none;color:var(--ink)" contenteditable data-action="set-notes" data-id="${t.id}" data-placeholder="Add notes, links, blockers...">${escapeHTML(t.notes || '')}</div>
+    <div style="margin-top:24px">
+      <div class="row">
+        <button class="btn" data-action="push-task" data-id="${t.id}">→ Push to tomorrow</button>
+        <button class="btn" data-action="skip-task" data-id="${t.id}">Skip</button>
+      </div>
+    </div>
+  `;
+  $('#drawer').classList.add('open');
+  $('#drawerBg').classList.add('open');
+  $('#drawer').dataset.taskId = id;
+}
+
+function closeDrawer() {
+  $('#drawer').classList.remove('open');
+  $('#drawerBg').classList.remove('open');
+}
+
+/* =====================================================================
+   MODAL helper
+   ===================================================================== */
+let modalOnOk = null;
+function openModal(title, bodyHTML, onOk) {
+  $('#m-title').textContent = title;
+  $('#m-body').textContent = '';
+  $('#m-form').innerHTML = bodyHTML;
+  modalOnOk = onOk;
+  $('#modalBg').classList.add('open');
+  setTimeout(() => $('#m-form input,#m-form select')[0]?.focus(), 50);
+}
+function closeModal() {
+  $('#modalBg').classList.remove('open');
+  modalOnOk = null;
+}
+
+/* =====================================================================
+   GLOBAL EVENTS
+   ===================================================================== */
+document.addEventListener('click', (e) => {
+  // sidebar chevron toggle
+  const chev = e.target.closest('[data-toggle]');
+  if (chev) {
+    e.stopPropagation();
+    const id = chev.dataset.toggle;
+    state.ui.expandedPages[id] = !state.ui.expandedPages[id];
+    save(); renderSidebar();
+    return;
+  }
+
+  // sidebar page nav
+  const sbRow = e.target.closest('[data-page-id]');
+  if (sbRow) {
+    showPage(sbRow.dataset.pageId);
+    return;
+  }
+
+  // any link
+  const link = e.target.closest('[data-page-link]');
+  if (link) {
+    showPage(link.dataset.pageLink);
+    return;
+  }
+
+  // toggle block expand
+  const tHead = e.target.closest('.toggle-head');
+  if (tHead) {
+    tHead.parentElement.classList.toggle('expanded');
+    return;
+  }
+
+  // tasks view tabs
+  const tkView = e.target.closest('[data-tk-view]');
+  if (tkView) {
+    state.ui.tasksView = tkView.dataset.tkView;
+    save(); renderTasksDB();
+    return;
+  }
+  const apView = e.target.closest('[data-ap-view]');
+  if (apView) {
+    state.ui.appsView = apView.dataset.apView;
+    save(); renderAppsDB();
+    return;
+  }
+
+  // calendar nav
+  const calNav = e.target.closest('[data-cal-nav]');
+  if (calNav) {
+    if (calNav.dataset.calNav === 'today') {
+      state.ui.calMonth = todayISO().slice(0, 7);
+    } else {
+      const dir = parseInt(calNav.dataset.calNav);
+      const [y, m] = state.ui.calMonth.split('-').map(Number);
+      const d = new Date(y, m - 1 + dir, 1);
+      state.ui.calMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
+    save();
+    if (state.ui.currentPage === 'tasks') renderTasksDB();
+    return;
+  }
+
+  // task actions
+  const action = e.target.closest('[data-action]');
+  if (action) {
+    const a = action.dataset.action;
+    const id = action.dataset.id;
+    switch (a) {
+      case 'toggle': toggleTask(id); break;
+      case 'open-task': openTaskDrawer(id); break;
+      case 'new-task': newTask(action.dataset.boardStatus); break;
+      case 'new-app': newApp(); break;
+      case 'cycle-app-status': cycleAppStatus(id); break;
+      case 'del-app': delApp(id); break;
+      case 'edit-app': openAppEdit(id); break;
+      case 'push-task': pushTask(id); closeDrawer(); break;
+      case 'skip-task': skipTask(id); closeDrawer(); break;
+    }
+    return;
+  }
+
+  // sidebar action
+  const sbAct = e.target.closest('.sb-action');
+  if (sbAct) {
+    if (sbAct.dataset.act === 'newTask') newTask();
+    else if (sbAct.dataset.page) showPage(sbAct.dataset.page);
+    return;
+  }
+
+  // crumb click handled by data-page-link above
+
+  // menu toggle
+  if (e.target.id === 'menuToggle') $('#sidebar').classList.toggle('open');
+
+  // drawer close
+  if (e.target.id === 'drawerClose' || e.target.id === 'drawerBg') closeDrawer();
+  if (e.target.id === 'drawerDelete') {
+    const id = $('#drawer').dataset.taskId;
+    if (id && confirm('Delete this task?')) {
+      state.tasks = state.tasks.filter(x => x.id !== id);
+      save(); rerender(); closeDrawer();
+    }
+  }
+
+  // modal
+  if (e.target.id === 'm-cancel' || e.target.id === 'modalBg') closeModal();
+  if (e.target.id === 'm-ok') {
+    const ok = modalOnOk ? modalOnOk() : true;
+    if (ok !== false) closeModal();
+  }
+
+  // export / import
+  if (e.target.id === 'exportBtn') exportData();
+  if (e.target.id === 'importBtn') $('#importInput').click();
+  if (e.target.id === 'resetBtn') resetData();
+});
+
+/* drawer change events for selects */
+document.addEventListener('change', (e) => {
+  const a = e.target.closest('[data-action]');
+  if (!a) return;
+  const id = a.dataset.id;
+  const t = state.tasks.find(x => x.id === id);
+  if (!t) return;
+  switch (a.dataset.action) {
+    case 'set-status':
+      t.status = e.target.value;
+      if (t.status === 'done') { t.completedAt = todayISO(); bumpStreak(); }
+      save(); rerender(); break;
+    case 'set-cat': t.category = e.target.value; save(); rerender(); break;
+    case 'set-week': t.week = parseInt(e.target.value); save(); rerender(); break;
+    case 'set-due': t.dueDate = e.target.value || null; save(); rerender(); break;
+  }
+});
+
+/* contenteditable blur */
+document.addEventListener('blur', (e) => {
+  const a = e.target.closest('[data-action]');
+  if (!a) return;
+  const id = a.dataset.id;
+  if (a.dataset.action === 'rename-task') {
+    const t = state.tasks.find(x => x.id === id);
+    if (t) { t.title = e.target.textContent.trim() || t.title; save(); rerender(); }
+  }
+  if (a.dataset.action === 'set-notes') {
+    const t = state.tasks.find(x => x.id === id);
+    if (t) { t.notes = e.target.textContent; save(); }
+  }
+}, true);
+
+/* Enter key on title prevents newline */
+document.addEventListener('keydown', (e) => {
+  if (e.target.matches('.ph-title') && e.key === 'Enter') {
+    e.preventDefault();
+    e.target.blur();
+  }
+  if (e.target.id === 'qa-title' && e.key === 'Enter') quickAdd();
+  if (e.key === 'Escape') { closeModal(); closeDrawer(); }
+});
+
+/* filter change */
+['tk-filterCat','tk-filterStatus'].forEach(id => {
+  document.getElementById(id)?.addEventListener('change', renderTasksDB);
+});
+
+/* quickAdd button */
+$('#qa-title')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') quickAdd(); });
+
+/* explicit buttons */
+$('#tk-newBtn').addEventListener('click', () => newTask());
+$('#ap-newBtn').addEventListener('click', () => newApp());
+
+/* edit app via prompt */
+function openAppEdit(id) {
+  const a = state.applications.find(x => x.id === id);
+  if (!a) return;
+  openModal('Edit application', `
+    <label class="sect-h">Company</label>
+    <input class="input" id="m-company" value="${escapeHTML(a.company)}" />
+    <label class="sect-h" style="margin-top:10px">Role</label>
+    <input class="input" id="m-role" value="${escapeHTML(a.role)}" />
+    <label class="sect-h" style="margin-top:10px">Status</label>
+    <select class="input" id="m-status">
+      ${Object.entries(APP_STATUS_META).map(([k,v]) => `<option value="${k}" ${a.status === k ? 'selected' : ''}>${v.name}</option>`).join('')}
+    </select>
+    <label class="sect-h" style="margin-top:10px">Source</label>
+    <input class="input" id="m-source" value="${escapeHTML(a.source)}" />
+  `, () => {
+    a.company = $('#m-company').value.trim();
+    a.role = $('#m-role').value.trim();
+    a.status = $('#m-status').value;
+    a.source = $('#m-source').value.trim();
+    state.metrics.callbacks = state.applications.filter(x => ['reply','screen','interview','offer'].includes(x.status)).length;
+    save(); rerender();
+    return true;
+  });
+}
+
+function pushTask(id) {
+  const t = state.tasks.find(x => x.id === id);
+  if (!t) return;
+  const next = new Date(); next.setDate(next.getDate() + 1);
+  t.dueDate = next.toISOString().slice(0, 10);
+  save(); rerender();
+}
+function skipTask(id) {
+  const t = state.tasks.find(x => x.id === id);
+  if (!t) return;
+  t.status = 'skipped';
+  save(); rerender();
+}
+
+/* export / import */
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `mission-dubai-${todayISO()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('importInput')?.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = (ev) => {
+    try {
+      const d = JSON.parse(ev.target.result);
+      if (!d.tasks) throw 0;
+      state = d;
+      save(); rerender(); alert('Imported.');
+    } catch { alert('Invalid file.'); }
+  };
+  r.readAsText(file);
+});
+
+function resetData() {
+  if (!confirm('Wipe all data and re-seed the original 8-week plan? This deletes your check marks and applications.')) return;
+  state = defaultState();
+  save(); rerender();
+}
+
+document.querySelector('.topbar-btn[data-act="export"]')?.addEventListener('click', exportData);
+
+/* =====================================================================
+   BOOT
+   ===================================================================== */
+renderSidebar();
+showPage(state.ui.currentPage || 'today');
+</script>
+</body>
+</html>
