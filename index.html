@@ -1252,7 +1252,7 @@ select.input {
         <div class="ph-meta">
           <div class="ph-meta-row">
             <div class="label">📌 Plan window</div>
-            <div>2026-04-27 → 2026-06-20</div>
+            <div id="mission-window">—</div>
           </div>
           <div class="ph-meta-row">
             <div class="label">📍 Currently</div>
@@ -1262,7 +1262,7 @@ select.input {
         <div class="page-divider"></div>
 
         <div class="block text" style="font-size:15px;color:var(--ink-mute);margin-bottom:8px">
-          Four deliverables. Nothing else matters. Status is computed as expected progress (elapsed time) versus actual progress (tasks done). The bar fill is actual; the marker is where you should be today.
+          Five core outcomes. Nothing else matters: profile, AWS, deployment, applications, and coding fluency. Status is computed as expected progress (elapsed time) versus actual progress (tasks done). The bar fill is actual; the marker is where you should be today.
         </div>
 
         <div id="mission-grid"></div>
@@ -1284,7 +1284,7 @@ select.input {
         <div class="ph-emoji">📅</div>
         <h1 class="ph-title">8-Week Plan</h1>
         <div class="ph-meta">
-          <div class="ph-meta-row"><div class="label">📌 Window</div><div>Apr 27 → Jun 20 · 2026</div></div>
+          <div class="ph-meta-row"><div class="label">📌 Window</div><div id="plan-window">—</div></div>
           <div class="ph-meta-row"><div class="label">🛬 Then</div><div>Travel to Dubai · Phase 3 begins</div></div>
         </div>
         <div class="page-divider"></div>
@@ -1372,6 +1372,20 @@ select.input {
             Revolut Rev-celerator (highest), CBD Tech Trainee, PwC / EY / Deloitte / KPMG MEa Tech, Mashreq, FAB, ADCB, Amazon MENA, TikTok MENA, G42.
           </div>
         </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- WEEKLY REVIEW                                                -->
+      <!-- ============================================================ -->
+      <section class="page" data-page="review">
+        <div class="ph-emoji">🧾</div>
+        <h1 class="ph-title">Weekly Review</h1>
+        <div class="ph-meta">
+          <div class="ph-meta-row"><div class="label">📅 Week</div><div id="rv-week">—</div></div>
+          <div class="ph-meta-row"><div class="label">📊 Health</div><div id="rv-health">—</div></div>
+        </div>
+        <div class="page-divider"></div>
+        <div id="rv-body"></div>
       </section>
 
       <!-- ============================================================ -->
@@ -1508,7 +1522,7 @@ select.input {
         <div class="page-divider"></div>
 
         <div class="block h2">Backup &amp; restore</div>
-        <div class="block text">Everything (tasks, applications, completion state, streak) lives in <code class="inline">localStorage</code> under <code class="inline">dxb-mission-v2</code>. Export to JSON to back up or sync between devices.</div>
+        <div class="block text">Everything (settings, tasks, applications, target companies, weekly reviews, completion state, streak) lives in <code class="inline">localStorage</code> under <code class="inline">dxb-mission-v2</code>. Export to JSON to back up or sync between devices.</div>
         <div class="row" style="margin:12px 0">
           <button class="btn" id="exportBtn">↓ Export JSON</button>
           <button class="btn" id="importBtn">↑ Import JSON</button>
@@ -1517,17 +1531,7 @@ select.input {
           <button class="btn danger" id="resetBtn">⟲ Reset all data</button>
         </div>
 
-        <div class="block h2">Calendar anchors</div>
-        <div class="block text" style="color:var(--ink-mute)">These dates drive the algorithm. They're hardcoded — change them only if your real deadlines shift.</div>
-        <div class="block bullet"><div class="b-text">Plan start &nbsp; <span class="tag">2026-04-27 · Mon</span></div></div>
-        <div class="block bullet"><div class="b-text">CV / LinkedIn / GitHub deadline &nbsp; <span class="tag pink">2026-05-04 · end W1</span></div></div>
-        <div class="block bullet"><div class="b-text">AWS CP exam target &nbsp; <span class="tag orange">2026-05-25</span></div></div>
-        <div class="block bullet"><div class="b-text">AWS CP passed by &nbsp; <span class="tag orange">2026-06-01 · end W5</span></div></div>
-        <div class="block bullet"><div class="b-text">Dissertation deployed by &nbsp; <span class="tag green">2026-06-15 · end W7</span></div></div>
-        <div class="block bullet"><div class="b-text">Travel to Dubai &nbsp; <span class="tag yellow">2026-06-15 → 2026-06-20</span></div></div>
-        <div class="block bullet"><div class="b-text">60+ applications by &nbsp; <span class="tag purple">2026-07-20 · rolling</span></div></div>
-        <div class="block bullet"><div class="b-text">Dubai hard deadline &nbsp; <span class="tag red">2026-09-17</span></div></div>
-        <div class="block bullet"><div class="b-text">Extension cutoff &nbsp; <span class="tag red">2026-12-17</span></div></div>
+        <div id="settings-dates"></div>
 
         <div class="block h2">Deploy on GitHub Pages</div>
         <div class="block num"><div class="num-marker">1.</div><div>Save this file as <code class="inline">index.html</code> in a new repo (e.g. <code class="inline">mission-dubai</code>).</div></div>
@@ -1578,23 +1582,41 @@ select.input {
    STATE
    ===================================================================== */
 const KEY = 'dxb-mission-v2';
-const PLAN_START = '2026-04-27';
-const PLAN_END   = '2026-06-20';
-const APP_TARGET = 60;
+const SCHEMA_VERSION = 4;
 
-const DEADLINES = {
-  cv:     '2026-05-04',
-  aws:    '2026-06-01',
-  deploy: '2026-06-15',
-  apps:   '2026-07-20',
+const DEFAULT_SETTINGS = {
+  planStart: '2026-04-27',
+  planEnd: '2026-06-20',
+  cvDeadline: '2026-05-04',
+  awsExam: '2026-05-25',
+  awsDeadline: '2026-06-01',
+  deployDeadline: '2026-06-15',
+  codingDeadline: '2026-06-15',
+  travelStart: '2026-06-15',
+  travelEnd: '2026-06-20',
+  appsDeadline: '2026-07-20',
+  dubaiHardDeadline: '2026-09-17',
+  extensionCutoff: '2026-12-17',
+  appTarget: 60,
+  defaultTaskDueTime: '23:59',
+  autoCatchupMax: 5,
 };
 
-const OUTCOMES = [
-  { id: 'cv',     name: 'CV · LinkedIn · GitHub live',  deadline: DEADLINES.cv,     color: 'pink',   hint: 'Headline, photo, top 5 repos pinned, README on dissertation' },
-  { id: 'aws',    name: 'AWS Cloud Practitioner passed', deadline: DEADLINES.aws,    color: 'orange', hint: 'Stephane Maarek course → 2 practice exams ≥75% → book it' },
-  { id: 'deploy', name: 'Dissertation deployed publicly', deadline: DEADLINES.deploy, color: 'green',  hint: 'EC2 / Beanstalk / Render — SQLite first, working > perfect' },
-  { id: 'apps',   name: '60+ targeted applications',     deadline: DEADLINES.apps,   color: 'purple', hint: 'Tier 1 grad programmes first. Then daily LinkedIn / Bayt / Naukrigulf.' },
-];
+function settings() { return state?.settings || DEFAULT_SETTINGS; }
+function planStart() { return settings().planStart || DEFAULT_SETTINGS.planStart; }
+function planEnd() { return settings().planEnd || DEFAULT_SETTINGS.planEnd; }
+function appTarget() { return Number(settings().appTarget || DEFAULT_SETTINGS.appTarget); }
+function deadline(key) { return settings()[key] || DEFAULT_SETTINGS[key]; }
+
+function getOutcomes() {
+  return [
+    { id: 'cv',     name: 'CV · LinkedIn · GitHub live',       deadline: deadline('cvDeadline'),     color: 'pink',   hint: 'Headline, photo, top 5 repos pinned, README on dissertation' },
+    { id: 'aws',    name: 'AWS Cloud Practitioner passed',      deadline: deadline('awsDeadline'),    color: 'orange', hint: 'Maarek course → 2 practice exams ≥75% → book/pass the exam' },
+    { id: 'deploy', name: 'Dissertation deployed publicly',     deadline: deadline('deployDeadline'), color: 'green',  hint: 'SQLite-first live demo. AWS preferred; Render/Railway allowed if AWS blocks shipping.' },
+    { id: 'apps',   name: `${appTarget()}+ targeted applications`, deadline: deadline('appsDeadline'), color: 'purple', hint: 'Tier 1 grad programmes first. Then daily LinkedIn / Bayt / Naukrigulf.' },
+    { id: 'coding', name: 'Coding fluency: defend project + pass junior live-coding', deadline: deadline('codingDeadline'), color: 'blue', hint: 'boot.dev Git → SQL → DSA, daily no-AI reps, dissertation route/security walkthroughs.' },
+  ];
+}
 
 const CAT_META = {
   cv:       { name: 'CV',        color: 'pink',   emoji: '📝' },
@@ -1622,6 +1644,37 @@ const APP_STATUS_META = {
   ghosted:   { name: 'Ghosted',   color: 'gray' },
 };
 
+const TARGET_STATUS_META = {
+  target:  { name: 'Target',  color: 'gray' },
+  applied: { name: 'Applied', color: 'green' },
+  follow:  { name: 'Follow',  color: 'orange' },
+  skip:    { name: 'Skip',    color: 'red' },
+};
+
+const DEFAULT_TARGET_COMPANIES = [
+  { tier: 'Tier 1', company: 'Revolut', role: 'Rev-celerator Backend Engineer, Dubai', priority: 'Highest', source: 'Careers page', deadline: '' },
+  { tier: 'Tier 1', company: 'Commercial Bank of Dubai', role: 'Tech Management Trainee 2026', priority: 'High', source: 'Careers page', deadline: '' },
+  { tier: 'Tier 1', company: 'PwC Middle East', role: 'Technology / Digital Graduate Track', priority: 'High', source: 'Careers page', deadline: '' },
+  { tier: 'Tier 1', company: 'EY Middle East', role: 'Technology Consulting / Cyber Graduate', priority: 'High', source: 'Careers page', deadline: '' },
+  { tier: 'Tier 1', company: 'Deloitte Middle East', role: 'Technology Consulting Graduate', priority: 'High', source: 'Careers page', deadline: '' },
+  { tier: 'Tier 1', company: 'KPMG Lower Gulf', role: 'Graduate Programme', priority: 'High', source: 'Careers page', deadline: '' },
+  { tier: 'Tier 1', company: 'Mashreq Bank', role: 'Tech Graduate / Future Bankers', priority: 'High', source: 'Careers page', deadline: '' },
+  { tier: 'Tier 1', company: 'First Abu Dhabi Bank', role: 'Graduate Programme', priority: 'High', source: 'Careers page', deadline: '' },
+  { tier: 'Tier 1', company: 'ADCB', role: 'Graduate Programme', priority: 'High', source: 'Careers page', deadline: '' },
+  { tier: 'Tier 1', company: 'Amazon MENA', role: '2026 Internship / Cloud Support / SDE Intern', priority: 'High', source: 'Careers page', deadline: '' },
+  { tier: 'Tier 1', company: 'TikTok MENA', role: 'Graduate-to-Hire / Ops Intern', priority: 'Medium', source: 'Careers page', deadline: '' },
+  { tier: 'Tier 1', company: 'G42', role: 'Junior AI / Cloud Roles', priority: 'High', source: 'Careers page', deadline: '' },
+  { tier: 'Tier 2', company: 'Careem', role: 'Junior Software / Backend / Platform', priority: 'High', source: 'LinkedIn', deadline: '' },
+  { tier: 'Tier 2', company: 'Talabat', role: 'Junior Backend / Graduate Tech', priority: 'Medium', source: 'LinkedIn', deadline: '' },
+  { tier: 'Tier 2', company: 'Noon', role: 'Junior Backend / Cloud Support', priority: 'Medium', source: 'LinkedIn', deadline: '' },
+  { tier: 'Tier 2', company: 'Property Finder', role: 'Graduate Software Engineer', priority: 'Medium', source: 'LinkedIn', deadline: '' },
+  { tier: 'Tier 2', company: 'Bayzat', role: 'Junior Backend / HR Tech', priority: 'Medium', source: 'LinkedIn', deadline: '' },
+  { tier: 'Tier 2', company: 'Sarwa', role: 'Junior Engineer / Fintech', priority: 'Medium', source: 'LinkedIn', deadline: '' },
+  { tier: 'Tier 2', company: 'Tabby', role: 'Junior Backend / Fintech', priority: 'Medium', source: 'LinkedIn', deadline: '' },
+  { tier: 'Tier 2', company: 'du / e&', role: 'Telco Tech Graduate Programme', priority: 'Medium', source: 'Careers page', deadline: '' },
+];
+
+
 /* page tree (curated) */
 const PAGES = [
   { id: 'today',    emoji: '🎯',  name: 'Today' },
@@ -1638,6 +1691,7 @@ const PAGES = [
   ]},
   { id: 'tasks',    emoji: '✅',  name: 'Tasks' },
   { id: 'apps',     emoji: '📤',  name: 'Applications' },
+  { id: 'review',   emoji: '🧾',  name: 'Weekly Review' },
   { id: 'reference', emoji: '📚', name: 'Reference', children: [
     { id: 'rules',  emoji: '🚨', name: 'Stop Rules' },
     { id: 'branch', emoji: '🌿', name: 'Branch Point' },
@@ -1762,31 +1816,145 @@ function getRitualsForWeek(W) {
   return rituals;
 }
 
-/* state shape */
+/* state shape + persistence migration */
+function makeSeedTask(t, i, s = DEFAULT_SETTINGS) {
+  const dueOffset = t.due ? dayDiff(DEFAULT_SETTINGS.planStart, t.due) : null;
+  return {
+    id: 't' + i,
+    seedIndex: i,
+    userAdded: false,
+    manualDue: false,
+    dueOffset,
+    title: t.title,
+    category: t.cat,
+    week: t.week,
+    dueDate: t.due ? addDays(s.planStart || DEFAULT_SETTINGS.planStart, dueOffset) : null,
+    dueTime: t.time || '',
+    status: 'pending',
+    createdAt: s.planStart || DEFAULT_SETTINGS.planStart,
+    completedAt: null,
+    notes: '',
+  };
+}
+
+function makeDefaultTargets() {
+  return DEFAULT_TARGET_COMPANIES.map((t, i) => ({
+    id: 'tc' + i,
+    status: 'target',
+    notes: '',
+    ...t,
+  }));
+}
+
 function defaultState() {
   return {
-    tasks: SEED_TASKS.map((t, i) => ({
-      id: 't' + i,
-      title: t.title,
-      category: t.cat,
-      week: t.week,
-      dueDate: t.due || null,
-      status: 'pending',
-      createdAt: PLAN_START,
-      completedAt: null,
-      notes: '',
-    })),
+    schemaVersion: SCHEMA_VERSION,
+    settings: { ...DEFAULT_SETTINGS },
+    tasks: SEED_TASKS.map((t, i) => makeSeedTask(t, i, DEFAULT_SETTINGS)),
     applications: [],
+    targetCompanies: makeDefaultTargets(),
     rituals: {},
+    weeklyReviews: {},
     metrics: { lastActiveDate: null, streak: 0, callbacks: 0 },
     ui: {
       currentPage: 'today',
       expandedPages: { plan: true, reference: false },
       tasksView: 'table',
       appsView: 'table',
-      calMonth: '2026-04',
+      calMonth: DEFAULT_SETTINGS.planStart.slice(0, 7),
     },
   };
+}
+
+function migrateState(s) {
+  const base = defaultState();
+  s.schemaVersion = SCHEMA_VERSION;
+  s.settings = { ...DEFAULT_SETTINGS, ...(s.settings || {}) };
+  s.applications = (s.applications || []).map(a => ({
+    contact: '',
+    nextAction: '',
+    deadline: '',
+    priority: 'Medium',
+    notes: '',
+    ...a,
+  }));
+  s.targetCompanies = s.targetCompanies && s.targetCompanies.length ? s.targetCompanies : makeDefaultTargets();
+  s.targetCompanies = s.targetCompanies.map((t, i) => ({
+    id: t.id || 'tc' + i,
+    status: t.status || 'target',
+    notes: t.notes || '',
+    ...t,
+  }));
+  s.rituals = s.rituals || {};
+  s.weeklyReviews = s.weeklyReviews || {};
+  s.metrics = s.metrics || { lastActiveDate: null, streak: 0, callbacks: 0 };
+  s.metrics.callbacks = s.applications.filter(x => ['reply','screen','interview','offer'].includes(x.status)).length;
+  s.ui = { ...base.ui, ...(s.ui || {}) };
+  s.ui.expandedPages = { ...base.ui.expandedPages, ...(s.ui.expandedPages || {}) };
+  s.ui.tasksView = s.ui.tasksView || 'table';
+  s.ui.appsView = s.ui.appsView || 'table';
+  s.ui.calMonth = s.ui.calMonth || s.settings.planStart.slice(0, 7);
+
+  const existing = Array.isArray(s.tasks) ? s.tasks : [];
+  const bySeed = new Map();
+  for (const t of existing) {
+    const legacySeed = /^t\d+$/.test(t.id || '') ? Number(String(t.id).slice(1)) : null;
+    const seedIndex = Number.isInteger(t.seedIndex) ? t.seedIndex : legacySeed;
+    if (Number.isInteger(seedIndex) && seedIndex >= 0 && seedIndex < SEED_TASKS.length) bySeed.set(seedIndex, t);
+  }
+
+  const migratedSeeds = SEED_TASKS.map((seed, i) => {
+    const fresh = makeSeedTask(seed, i, s.settings);
+    const old = bySeed.get(i);
+    if (!old) return fresh;
+    const manualDue = !!old.manualDue;
+    return {
+      ...fresh,
+      ...old,
+      seedIndex: i,
+      userAdded: false,
+      dueOffset: fresh.dueOffset,
+      manualDue,
+      dueDate: manualDue ? (old.dueDate || null) : fresh.dueDate,
+      dueTime: old.dueTime ?? fresh.dueTime ?? '',
+      category: old.category || fresh.category,
+      week: old.week || fresh.week,
+      status: old.status || 'pending',
+    };
+  });
+
+  const customTasks = existing
+    .filter(t => {
+      if (Number.isInteger(t.seedIndex) && t.seedIndex >= 0 && t.seedIndex < SEED_TASKS.length) return false;
+      if (/^t\d+$/.test(t.id || '')) {
+        const n = Number(String(t.id).slice(1));
+        if (Number.isInteger(n) && n >= 0 && n < SEED_TASKS.length) return false;
+      }
+      return true;
+    })
+    .map(t => ({
+      id: t.id || 't' + Date.now() + Math.random().toString(16).slice(2),
+      userAdded: true,
+      manualDue: true,
+      dueTime: '',
+      status: 'pending',
+      notes: '',
+      ...t,
+    }));
+
+  s.tasks = [...migratedSeeds, ...customTasks].map(t => ({ dueTime: '', ...t }));
+  return s;
+}
+
+function rescheduleSeedTasks(force = false) {
+  for (const t of state.tasks) {
+    if (!Number.isInteger(t.seedIndex)) continue;
+    const seed = SEED_TASKS[t.seedIndex];
+    const fresh = makeSeedTask(seed, t.seedIndex, settings());
+    t.dueOffset = fresh.dueOffset;
+    t.week = seed.week;
+    if (force || !t.manualDue) t.dueDate = fresh.dueDate;
+  }
 }
 
 let state = loadState();
@@ -1796,26 +1964,47 @@ function loadState() {
     if (!raw) return defaultState();
     const s = JSON.parse(raw);
     if (!s.tasks) return defaultState();
-    s.applications = s.applications || [];
-    s.rituals = s.rituals || {};
-    s.metrics = s.metrics || { lastActiveDate: null, streak: 0, callbacks: 0 };
-    s.ui = s.ui || { currentPage: 'today', expandedPages: { plan: true }, tasksView: 'table', appsView: 'table', calMonth: '2026-04' };
-    s.ui.expandedPages = s.ui.expandedPages || { plan: true };
-    s.ui.tasksView = s.ui.tasksView || 'table';
-    s.ui.appsView = s.ui.appsView || 'table';
-    s.ui.calMonth = s.ui.calMonth || '2026-04';
-    return s;
-  } catch { return defaultState(); }
+    return migrateState(s);
+  } catch {
+    return defaultState();
+  }
 }
 function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+save(); // persist migrated schema immediately
 
 /* =====================================================================
-   DATE HELPERS
+   DATE HELPERS · local-browser date, not UTC
    ===================================================================== */
-function todayISO() { return new Date().toISOString().slice(0, 10); }
-function isoDate(s) { return new Date(s + 'T00:00:00'); }
-function dayDiff(a, b) { return Math.round((isoDate(b) - isoDate(a)) / 86400000); }
+function localDateParts(d = new Date()) {
+  return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')];
+}
+function todayISO() {
+  return localDateParts(new Date()).join('-');
+}
+function isoDate(s) {
+  if (!s) return null;
+  const [y, m, d] = String(s).split('-').map(Number);
+  return new Date(y, (m || 1) - 1, d || 1);
+}
+function toISO(d) {
+  return localDateParts(d).join('-');
+}
+function addDays(iso, days) {
+  const d = isoDate(iso);
+  d.setDate(d.getDate() + Number(days || 0));
+  return toISO(d);
+}
+function dayDiff(a, b) {
+  const da = isoDate(a);
+  const db = isoDate(b);
+  return Math.round((db - da) / 86400000);
+}
+function shiftedFromDefault(defaultIso, s = settings()) {
+  if (!defaultIso) return null;
+  return addDays(s.planStart || DEFAULT_SETTINGS.planStart, dayDiff(DEFAULT_SETTINGS.planStart, defaultIso));
+}
 function fmtDate(iso) {
+  if (!iso) return '—';
   const d = isoDate(iso);
   return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
 }
@@ -1824,15 +2013,103 @@ function fmtDateLong(iso) {
   return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 }
 function getCurrentWeek(today = todayISO()) {
-  const d = dayDiff(PLAN_START, today);
+  const d = dayDiff(planStart(), today);
   if (d < 0) return 0;
-  return Math.min(8, Math.floor(d / 7) + 1);
+  return Math.max(1, Math.min(8, Math.floor(d / 7) + 1));
 }
 function weekRange(w) {
-  const start = isoDate(PLAN_START);
-  start.setDate(start.getDate() + (w - 1) * 7);
-  const end = new Date(start); end.setDate(end.getDate() + 6);
-  return { start: start.toISOString().slice(0,10), end: end.toISOString().slice(0,10) };
+  const start = addDays(planStart(), (w - 1) * 7);
+  const end = addDays(start, 6);
+  return { start, end };
+}
+function weekStart(w) {
+  return weekRange(w).start;
+}
+function weekEnd(w) {
+  return weekRange(w).end;
+}
+function isSameOrBefore(a, b) { return dayDiff(a, b) >= 0; }
+function isSameOrAfter(a, b) { return dayDiff(b, a) >= 0; }
+function nowLocal() { return new Date(); }
+function nowLocalLabel() {
+  return nowLocal().toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+}
+function cleanTime(v) {
+  const s = String(v || '').trim();
+  return /^\d{2}:\d{2}$/.test(s) ? s : '';
+}
+function taskDueTime(t) {
+  if (!t?.dueDate) return '';
+  return cleanTime(t.dueTime) || cleanTime(settings().defaultTaskDueTime) || '23:59';
+}
+function taskDueDateTime(t) {
+  if (!t?.dueDate) return null;
+  const tm = taskDueTime(t);
+  const [y, m, d] = t.dueDate.split('-').map(Number);
+  const [hh, mm] = tm.split(':').map(Number);
+  return new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0, 0, 0);
+}
+function taskIsOverdue(t, now = nowLocal()) {
+  if (!t || t.status !== 'pending' || !t.dueDate) return false;
+  const due = taskDueDateTime(t);
+  return due && due.getTime() < now.getTime();
+}
+function missedByHours(t, now = nowLocal()) {
+  if (!taskIsOverdue(t, now)) return 0;
+  return Math.max(0, Math.floor((now.getTime() - taskDueDateTime(t).getTime()) / 3600000));
+}
+function missedByLabel(t) {
+  const h = missedByHours(t);
+  if (h <= 0) return '';
+  if (h < 24) return `${h}h late`;
+  const d = Math.floor(h / 24);
+  const rem = h % 24;
+  return rem ? `${d}d ${rem}h late` : `${d}d late`;
+}
+function categoryWeight(cat) {
+  return ({ cv: 18, aws: 22, deploy: 22, apps: 16, coding: 20, planning: 8, travel: 10 })[cat] || 10;
+}
+function taskSeverityScore(t) {
+  if (!taskIsOverdue(t)) return 0;
+  const h = missedByHours(t);
+  const hourScore = Math.min(65, Math.ceil(h * 2.5));
+  const catScore = categoryWeight(t.category);
+  const outcome = getOutcomes().find(o => o.id === t.category);
+  let deadlineScore = 0;
+  if (outcome) {
+    const days = dayDiff(todayISO(), outcome.deadline);
+    if (days < 0) deadlineScore = 20;
+    else if (days <= 2) deadlineScore = 15;
+    else if (days <= 7) deadlineScore = 8;
+  }
+  return Math.min(100, hourScore + catScore + deadlineScore);
+}
+function severityBand(score) {
+  if (score >= 80) return { label: 'critical', color: 'red', icon: '🔥' };
+  if (score >= 55) return { label: 'high', color: 'orange', icon: '⚠️' };
+  if (score >= 30) return { label: 'medium', color: 'yellow', icon: '⏰' };
+  if (score > 0) return { label: 'low', color: 'blue', icon: '•' };
+  return { label: 'none', color: 'gray', icon: '✓' };
+}
+function taskDueLabel(t) {
+  if (!t?.dueDate) return '';
+  const time = taskDueTime(t);
+  return `${fmtDate(t.dueDate)} · ${time}`;
+}
+function autoCatchupSuggestion(t) {
+  const score = taskSeverityScore(t);
+  const h = missedByHours(t);
+  if (!score) return 'No catch-up needed.';
+  const base = `Missed by ${missedByLabel(t)}.`;
+  if (score >= 80) return `${base} Do it today before anything else, or deliberately cut/split it.`;
+  if (score >= 55) return `${base} Move it into the next work block and remove one lower-value task.`;
+  if (h >= 24) return `${base} Either finish it today or reschedule with a real reason.`;
+  return `${base} Clear it after today’s scheduled item.`;
+}
+function oneHourFromNowTime() {
+  const d = nowLocal();
+  d.setHours(d.getHours() + 1);
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 
 /* =====================================================================
@@ -1841,14 +2118,15 @@ function weekRange(w) {
 function getTodayQueue() {
   const today = todayISO();
   const week = getCurrentWeek(today);
+  const now = nowLocal();
 
   const overdue = state.tasks.filter(t =>
-    t.status === 'pending' && t.dueDate && t.dueDate < today
-  ).sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+    taskIsOverdue(t, now)
+  ).sort((a, b) => taskSeverityScore(b) - taskSeverityScore(a) || taskDueDateTime(a) - taskDueDateTime(b));
 
   const todayDue = state.tasks.filter(t =>
-    t.status === 'pending' && t.dueDate === today
-  );
+    t.status === 'pending' && t.dueDate === today && !taskIsOverdue(t, now)
+  ).sort((a, b) => taskDueDateTime(a) - taskDueDateTime(b));
 
   const weekPending = state.tasks.filter(t =>
     t.status === 'pending' && t.week === week && !t.dueDate
@@ -1857,18 +2135,37 @@ function getTodayQueue() {
   return { overdue, todayDue, weekPending, week };
 }
 
+function countRitualsDoneThisWeek(cat = null) {
+  const week = getCurrentWeek();
+  const r = weekRange(week || 1);
+  let count = 0;
+  for (const [date, dayItems] of Object.entries(state.rituals || {})) {
+    if (date < r.start || date > r.end) continue;
+    for (const [id, status] of Object.entries(dayItems || {})) {
+      if (status !== 'done') continue;
+      if (!cat) count++;
+      else {
+        const idx = Number(String(id).split('-').pop());
+        const rituals = getRitualsForWeek(week || 1);
+        if (rituals[idx]?.cat === cat) count++;
+      }
+    }
+  }
+  return count;
+}
+
 function getHealth(catId) {
-  const cat = OUTCOMES.find(o => o.id === catId);
+  const cat = getOutcomes().find(o => o.id === catId);
   if (!cat) return null;
   const today = todayISO();
-  const totalDays = Math.max(1, dayDiff(PLAN_START, cat.deadline));
-  const elapsed = Math.max(0, dayDiff(PLAN_START, today));
+  const totalDays = Math.max(1, dayDiff(planStart(), cat.deadline));
+  const elapsed = Math.max(0, dayDiff(planStart(), today));
   const expectedPct = Math.min(1, elapsed / totalDays);
 
   let actual, target, actualPct;
   if (catId === 'apps') {
     actual = state.applications.length;
-    target = APP_TARGET;
+    target = appTarget();
     actualPct = actual / target;
   } else {
     const tasks = state.tasks.filter(t => t.category === catId);
@@ -1928,15 +2225,25 @@ function getAdjustment(catId) {
 
   if (catId === 'apps') {
     const sent = state.applications.length;
-    const cumulative = [0, 0, 5, 10, 15, 20, 27, 37, 50];
-    const expected = cumulative[Math.min(week, 8)];
+    const expected = h.expectedActual;
     if (week >= 2 && sent < expected - 3) {
-      return { tone: 'danger', text: `Behind on applications: ${sent} sent vs target ~${expected} by Week ${week}. Tomorrow do ${expected - sent} in one sitting. Tier 1 first — they have hard deadlines. Volume > polish.` };
+      return { tone: 'danger', text: `Behind on applications: ${sent} sent vs target ~${expected} by today. Tomorrow do ${Math.max(1, expected - sent)} in one sitting. Tier 1 first — they have hard deadlines. Volume > polish.` };
     }
     if (week >= 6 && sent >= 30 && (state.metrics.callbacks || 0) === 0) {
-      return { tone: 'warn', text: `Branch point trigger: ${sent}+ apps with zero callbacks. Re-read the CV summary line. If data/analytics roles would be receptive, re-angle. Same dissertation, same cert, same deployed project — new framing. One reassessment window.` };
+      return { tone: 'warn', text: `Branch point trigger: ${sent}+ apps with zero callbacks. Re-read the CV summary line and role framing. Same dissertation, same cert, same deployed project — sharper framing, not random pivoting.` };
     }
-    if (sent >= APP_TARGET) return { tone: 'success', text: `${sent} applications submitted. You hit the volume floor.` };
+    if (sent >= appTarget()) return { tone: 'success', text: `${sent} applications submitted. You hit the volume floor.` };
+  }
+
+  if (catId === 'coding') {
+    const repsThisWeek = countRitualsDoneThisWeek('coding');
+    if (week >= 3 && h.actualPct < h.expectedPct - 0.15) {
+      return { tone: 'danger', text: `Coding fluency is lagging. Do not hide in videos. Today: one no-AI rep, then explain one dissertation route/security function out loud and log the weak point.` };
+    }
+    if (week >= 5 && repsThisWeek < 3) {
+      return { tone: 'warn', text: `Only ${repsThisWeek} coding ritual(s) done this week. Minimum is 5. You need typing reps, not more planning.` };
+    }
+    if (h.actualPct >= 1) return { tone: 'success', text: 'Coding track complete enough for junior screening. Keep daily reps warm until interviews.' };
   }
   return null;
 }
@@ -2035,6 +2342,8 @@ function renderPage(id) {
   else if (id === 'plan') renderPlan();
   else if (id === 'tasks') renderTasksDB();
   else if (id === 'apps') renderAppsDB();
+  else if (id === 'review') renderReview();
+  else if (id === 'settings') renderSettings();
 }
 
 /* =====================================================================
@@ -2046,9 +2355,10 @@ function tagFor(cat) {
 }
 
 function todoBlock(t, opts = {}) {
-  const today = todayISO();
-  const overdue = t.dueDate && t.dueDate < today && t.status === 'pending';
   const isRitual = !!opts.ritual;
+  const overdue = !isRitual && taskIsOverdue(t);
+  const score = overdue ? taskSeverityScore(t) : 0;
+  const sev = severityBand(score);
   return `
     <div class="block todo ${t.status === 'done' ? 'done' : ''}" data-task-id="${t.id}">
       <div class="checkbox ${t.status === 'done' ? 'checked' : ''}" data-action="toggle" data-id="${t.id}"></div>
@@ -2056,10 +2366,11 @@ function todoBlock(t, opts = {}) {
         <div class="todo-text" ${!isRitual ? `data-action="open-task" data-id="${t.id}"` : ''} style="${!isRitual ? 'cursor:pointer' : ''}">${escapeHTML(t.title)}</div>
         <div class="todo-row-meta">
           ${tagFor(t.category)}
-          ${t.dueDate ? `<span class="tag gray">${fmtDate(t.dueDate)}</span>` : (t.week ? `<span class="tag gray">Week ${t.week}</span>` : '')}
-          ${overdue ? `<span class="tag red">overdue ${dayDiff(t.dueDate, today)}d</span>` : ''}
+          ${t.dueDate ? `<span class="tag gray">${taskDueLabel(t)}</span>` : (t.week ? `<span class="tag gray">Week ${t.week}</span>` : '')}
+          ${overdue ? `<span class="tag ${sev.color}">${sev.icon} ${missedByLabel(t)}</span><span class="tag ${sev.color}">severity ${score}</span>` : ''}
           ${isRitual ? `<span class="tag" style="background:transparent;color:var(--ink-fade)">daily ritual</span>` : ''}
         </div>
+        ${overdue ? `<div style="font-size:12px;color:var(--ink-mute);margin-top:4px">${escapeHTML(autoCatchupSuggestion(t))}</div>` : ''}
       </div>
     </div>
   `;
@@ -2068,29 +2379,35 @@ function todoBlock(t, opts = {}) {
 function renderToday() {
   const today = todayISO();
   const week = getCurrentWeek();
-  $('#t-date').textContent = fmtDateLong(today);
-  $('#t-phase').textContent = week === 0 ? 'Pre-launch' : `Week ${week} · ${WEEK_INFO[week].theme}`;
+  $('#t-date').textContent = `${fmtDateLong(today)} · ${nowLocal().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`;
+  $('#t-phase').textContent = week === 0 ? 'Pre-launch' : `Week ${week} · ${WEEK_INFO[week]?.theme || 'Post-plan execution'}`;
   $('#t-streak').textContent = `${state.metrics.streak} days`;
-  $('#todayCode').textContent = today;
+  $('#todayCode').textContent = nowLocalLabel();
 
-  const dToExam   = dayDiff(today, '2026-05-25');
-  const dToDeploy = dayDiff(today, '2026-06-15');
-  const dToDubai  = dayDiff(today, '2026-06-15');
+  const dToExam   = dayDiff(today, deadline('awsExam'));
+  const dToDeploy = dayDiff(today, deadline('deployDeadline'));
+  const dToDubai  = dayDiff(today, deadline('travelStart'));
   $('#s-aws').innerHTML    = `${dToExam < 0 ? '✓' : dToExam}<span class="unit">d</span>`;
   $('#s-deploy').innerHTML = `${dToDeploy < 0 ? '✓' : dToDeploy}<span class="unit">d</span>`;
   $('#s-dubai').innerHTML  = `${dToDubai < 0 ? '✓' : dToDubai}<span class="unit">d</span>`;
-  $('#s-apps').innerHTML   = `${state.applications.length}<span class="unit">/${APP_TARGET}</span>`;
+  $('#s-apps').innerHTML   = `${state.applications.length}<span class="unit">/${appTarget()}</span>`;
 
   const q = getTodayQueue();
+  const worstScore = q.overdue.reduce((m, t) => Math.max(m, taskSeverityScore(t)), 0);
+  const worstBand = severityBand(worstScore);
 
   // overdue
   $('#t-overdue').innerHTML = q.overdue.length ? `
     <div class="block toggle expanded" data-toggle-section="overdue">
       <div class="toggle-head">
         <button class="toggle-chev"></button>
-        <div class="toggle-title" style="color:var(--c-red-fg)">⚠️ Overdue · ${q.overdue.length} item${q.overdue.length > 1 ? 's' : ''}</div>
+        <div class="toggle-title" style="color:var(--c-red-fg)">⚠️ Overdue · ${q.overdue.length} item${q.overdue.length > 1 ? 's' : ''} · worst ${worstBand.label} (${worstScore})</div>
       </div>
       <div class="toggle-children">
+        <div class="block callout danger" style="margin:4px 0 10px">
+          <div class="callout-icon">🔥</div>
+          <div class="callout-body">Missed tasks are scored by hours late, category importance, and deadline pressure. Do not add new work until critical/high items are cleared, split, or deliberately rescheduled.</div>
+        </div>
         ${q.overdue.map(t => todoBlock(t)).join('')}
       </div>
     </div>
@@ -2149,8 +2466,9 @@ function renderToday() {
 function renderMission() {
   const week = getCurrentWeek();
   $('#m-current').textContent = week === 0 ? 'Pre-launch' : `Week ${week} of 8`;
+  $('#mission-window').textContent = `${planStart()} → ${planEnd()}`;
 
-  $('#mission-grid').innerHTML = OUTCOMES.map(o => {
+  $('#mission-grid').innerHTML = getOutcomes().map(o => {
     const h = getHealth(o.id);
     const adj = getAdjustment(o.id);
     const pct = Math.min(1, h.actualPct);
@@ -2191,6 +2509,7 @@ function renderMission() {
    ===================================================================== */
 function renderPlan() {
   const cw = getCurrentWeek();
+  $('#plan-window').textContent = `${fmtDate(planStart())} → ${fmtDate(planEnd())}`;
   let html = '';
   for (let w = 1; w <= 8; w++) {
     const range = weekRange(w);
@@ -2289,12 +2608,13 @@ function renderTasksDB() {
 }
 
 function renderTasksTable(list) {
-  const today = todayISO();
   list = list.slice().sort((a, b) => {
-    const aOver = a.dueDate && a.dueDate < today && a.status === 'pending';
-    const bOver = b.dueDate && b.dueDate < today && b.status === 'pending';
+    const aOver = taskIsOverdue(a);
+    const bOver = taskIsOverdue(b);
     if (aOver !== bOver) return aOver ? -1 : 1;
-    if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
+    const sev = taskSeverityScore(b) - taskSeverityScore(a);
+    if (sev) return sev;
+    if (a.dueDate && b.dueDate) return taskDueDateTime(a) - taskDueDateTime(b);
     if (a.dueDate) return -1;
     if (b.dueDate) return 1;
     return (a.week || 99) - (b.week || 99);
@@ -2310,11 +2630,16 @@ function renderTasksTable(list) {
             <th><span class="col-icon">⊕</span>Category</th>
             <th><span class="col-icon">⌗</span>Week</th>
             <th><span class="col-icon">📅</span>Due</th>
+            <th><span class="col-icon">⏱</span>Missed</th>
+            <th><span class="col-icon">🔥</span>Severity</th>
+            <th><span class="col-icon">↪</span>Catch-up</th>
           </tr>
         </thead>
         <tbody>
           ${list.map(t => {
-            const overdue = t.dueDate && t.dueDate < today && t.status === 'pending';
+            const overdue = taskIsOverdue(t);
+            const score = taskSeverityScore(t);
+            const sev = severityBand(score);
             return `
               <tr class="${t.status === 'done' ? 'done' : ''} ${overdue ? 'overdue' : ''}">
                 <td>
@@ -2328,11 +2653,14 @@ function renderTasksTable(list) {
                 <td><span class="tag ${STATUS_META[t.status].color}">${STATUS_META[t.status].name}</span></td>
                 <td><span class="tag ${CAT_META[t.category].color}">${CAT_META[t.category].name}</span></td>
                 <td>${t.week ? `<span class="tag">Week ${t.week}</span>` : '<span class="cell-empty">—</span>'}</td>
-                <td>${t.dueDate ? `<span style="font-size:13px;color:${overdue ? 'var(--c-red-fg)' : 'var(--ink)'}">${fmtDate(t.dueDate)}</span>` : '<span class="cell-empty">—</span>'}</td>
+                <td>${t.dueDate ? `<span style="font-size:13px;color:${overdue ? 'var(--c-red-fg)' : 'var(--ink)'}">${taskDueLabel(t)}</span>` : '<span class="cell-empty">—</span>'}</td>
+                <td>${overdue ? `<span class="tag ${sev.color}">${missedByLabel(t)}</span>` : '<span class="cell-empty">—</span>'}</td>
+                <td>${score ? `<span class="tag ${sev.color}">${score} · ${sev.label}</span>` : '<span class="cell-empty">—</span>'}</td>
+                <td style="font-size:12px;color:var(--ink-mute);min-width:220px">${overdue ? escapeHTML(autoCatchupSuggestion(t)) : '—'}</td>
               </tr>
             `;
           }).join('')}
-          <tr><td colspan="5">
+          <tr><td colspan="8">
             <div class="tbl-add-row" data-action="new-task">＋ New task</div>
           </td></tr>
         </tbody>
@@ -2365,7 +2693,8 @@ function renderTasksBoard(list) {
                   <div class="card-title">${escapeHTML(t.title)}</div>
                   <div class="card-meta">
                     ${tagFor(t.category)}
-                    ${t.dueDate ? `<span class="tag gray">${fmtDate(t.dueDate)}</span>` : (t.week ? `<span class="tag">Wk ${t.week}</span>` : '')}
+                    ${t.dueDate ? `<span class="tag gray">${taskDueLabel(t)}</span>` : (t.week ? `<span class="tag">Wk ${t.week}</span>` : '')}
+                    ${taskIsOverdue(t) ? `<span class="tag ${severityBand(taskSeverityScore(t)).color}">${missedByLabel(t)}</span>` : ''}
                   </div>
                 </div>
               `).join('') || '<div class="empty" style="padding:8px;font-size:13px">—</div>'}
@@ -2382,7 +2711,7 @@ function renderTasksCalendar(list) {
   return renderCalendar(list.filter(t => t.dueDate), t => ({
     id: t.id,
     date: t.dueDate,
-    label: t.title,
+    label: `${taskDueTime(t)} · ${t.title}`,
     cat: t.category,
     done: t.status === 'done',
   }));
@@ -2421,7 +2750,7 @@ function renderCalendar(list, mapItem) {
   const totalCells = 42;
   for (let i = 0; i < totalCells; i++) {
     const d = new Date(year, month - 1, 1 - startOffset + i);
-    const iso = d.toISOString().slice(0, 10);
+    const iso = toISO(d);
     cells.push({
       iso,
       day: d.getDate(),
@@ -2464,13 +2793,11 @@ function renderCalendar(list, mapItem) {
    ===================================================================== */
 function renderAppsDB() {
   const sent = state.applications.length;
-  $('#ap-count').textContent = `${sent} / ${APP_TARGET}`;
+  $('#ap-count').textContent = `${sent} / ${appTarget()}`;
   const week = getCurrentWeek();
-  const cumulative = [0, 0, 5, 10, 15, 20, 27, 37, 50];
-  const expected = cumulative[Math.min(week, 8)];
   const h = getHealth('apps');
   const statusBand = h.status === 'on-track' ? 'blue' : (h.status === 'ahead' ? 'green' : (h.status === 'at-risk' ? 'orange' : 'red'));
-  $('#ap-pace').innerHTML = `<span class="tag ${statusBand}">${h.status.replace('-', ' ')}</span> &nbsp; expected by W${week}: ~${expected}`;
+  $('#ap-pace').innerHTML = `<span class="tag ${statusBand}">${h.status.replace('-', ' ')}</span> &nbsp; expected by today: ~${h.expectedActual}`;
 
   const views = [
     { id: 'table', icon: '⊞', name: 'Table' },
@@ -2483,9 +2810,9 @@ function renderAppsDB() {
   `).join('') + '<button class="db-add-view">+ Add view</button>';
 
   if (state.ui.appsView === 'table') {
-    $('#ap-body').innerHTML = renderAppsTable();
+    $('#ap-body').innerHTML = renderAppsTable() + renderTargetCompaniesTable() + renderApplicationBranchPanel();
   } else {
-    $('#ap-body').innerHTML = renderAppsBoard();
+    $('#ap-body').innerHTML = renderAppsBoard() + renderTargetCompaniesTable() + renderApplicationBranchPanel();
   }
 }
 
@@ -2502,23 +2829,34 @@ function renderAppsTable() {
             <th><span class="col-icon">Aa</span>Company</th>
             <th><span class="col-icon">⊕</span>Role</th>
             <th><span class="col-icon">●</span>Status</th>
-            <th><span class="col-icon">📅</span>Date</th>
+            <th><span class="col-icon">⚑</span>Priority</th>
+            <th><span class="col-icon">👤</span>Contact</th>
+            <th><span class="col-icon">↪</span>Next action</th>
+            <th><span class="col-icon">📅</span>Applied</th>
+            <th><span class="col-icon">⏰</span>Deadline</th>
             <th><span class="col-icon">⊙</span>Source</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          ${list.map(a => `
-            <tr>
-              <td><div class="cell-title-text" data-action="edit-app" data-id="${a.id}" data-field="company">${escapeHTML(a.company)}</div></td>
-              <td><div class="cell-title-text" data-action="edit-app" data-id="${a.id}" data-field="role">${escapeHTML(a.role)}</div></td>
-              <td><span class="tag ${APP_STATUS_META[a.status].color}" data-action="cycle-app-status" data-id="${a.id}" style="cursor:pointer">${APP_STATUS_META[a.status].name}</span></td>
-              <td style="font-size:13px;color:var(--ink-mute)">${fmtDate(a.dateApplied)}</td>
-              <td style="font-size:13px;color:var(--ink-mute)">${escapeHTML(a.source)}</td>
-              <td><button class="topbar-btn" data-action="del-app" data-id="${a.id}" style="color:var(--c-red-fg);font-size:12px">×</button></td>
-            </tr>
-          `).join('')}
-          <tr><td colspan="6"><div class="tbl-add-row" data-action="new-app">＋ Log application</div></td></tr>
+          ${list.map(a => {
+            const needsFollow = a.nextAction && (!a.deadline || a.deadline <= todayISO()) && !['offer','rejected','ghosted'].includes(a.status);
+            return `
+              <tr class="${needsFollow ? 'overdue' : ''}">
+                <td><div class="cell-title-text" data-action="edit-app" data-id="${a.id}">${escapeHTML(a.company)}</div></td>
+                <td><div class="cell-title-text" data-action="edit-app" data-id="${a.id}">${escapeHTML(a.role)}</div></td>
+                <td><span class="tag ${APP_STATUS_META[a.status]?.color || 'gray'}" data-action="cycle-app-status" data-id="${a.id}" style="cursor:pointer">${APP_STATUS_META[a.status]?.name || a.status}</span></td>
+                <td><span class="tag ${a.priority === 'Highest' ? 'red' : (a.priority === 'High' ? 'orange' : 'gray')}">${escapeHTML(a.priority || 'Medium')}</span></td>
+                <td style="font-size:13px;color:var(--ink-mute)">${escapeHTML(a.contact || '—')}</td>
+                <td style="font-size:13px;color:${needsFollow ? 'var(--c-orange-fg)' : 'var(--ink-mute)'}">${escapeHTML(a.nextAction || '—')}</td>
+                <td style="font-size:13px;color:var(--ink-mute)">${fmtDate(a.dateApplied)}</td>
+                <td style="font-size:13px;color:${needsFollow ? 'var(--c-orange-fg)' : 'var(--ink-mute)'}">${a.deadline ? fmtDate(a.deadline) : '—'}</td>
+                <td style="font-size:13px;color:var(--ink-mute)">${escapeHTML(a.source || '—')}</td>
+                <td><button class="topbar-btn" data-action="del-app" data-id="${a.id}" style="color:var(--c-red-fg);font-size:12px">×</button></td>
+              </tr>
+            `;
+          }).join('')}
+          <tr><td colspan="10"><div class="tbl-add-row" data-action="new-app">＋ Log application</div></td></tr>
         </tbody>
       </table>
     </div>
@@ -2555,6 +2893,254 @@ function renderAppsBoard() {
       }).join('')}
     </div>
   `;
+}
+
+function renderTargetCompaniesTable() {
+  const targets = state.targetCompanies || [];
+  const openTargets = targets.filter(t => t.status !== 'skip');
+  return `
+    <div class="block h2" style="margin-top:32px">Target-company database</div>
+    <div class="block text" style="color:var(--ink-mute)">This is the MD plan turned into rows. Do not let this stay as inspirational text — convert targets into logged applications.</div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Tier</th>
+            <th>Company</th>
+            <th>Role angle</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Deadline</th>
+            <th>Source</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${openTargets.map(t => `
+            <tr>
+              <td><span class="tag ${t.tier === 'Tier 1' ? 'pink' : 'gray'}">${escapeHTML(t.tier)}</span></td>
+              <td>${escapeHTML(t.company)}</td>
+              <td style="font-size:13px;color:var(--ink-mute)">${escapeHTML(t.role)}</td>
+              <td><span class="tag ${t.priority === 'Highest' ? 'red' : (t.priority === 'High' ? 'orange' : 'gray')}">${escapeHTML(t.priority || 'Medium')}</span></td>
+              <td><span class="tag ${TARGET_STATUS_META[t.status]?.color || 'gray'}" data-action="cycle-target-status" data-id="${t.id}" style="cursor:pointer">${TARGET_STATUS_META[t.status]?.name || t.status}</span></td>
+              <td style="font-size:13px;color:var(--ink-mute)">${t.deadline ? fmtDate(t.deadline) : 'check site'}</td>
+              <td style="font-size:13px;color:var(--ink-mute)">${escapeHTML(t.source || '—')}</td>
+              <td><button class="db-tool-btn" data-action="log-target-app" data-id="${t.id}">Log app</button></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderApplicationBranchPanel() {
+  const sent = state.applications.length;
+  const callbacks = state.applications.filter(x => ['reply','screen','interview','offer'].includes(x.status)).length;
+  const interviews = state.applications.filter(x => ['screen','interview','offer'].includes(x.status)).length;
+  const h = getHealth('apps');
+  let tone = 'info';
+  let text = `Pipeline health: ${sent} sent, ${callbacks} callback(s), ${interviews} screen/interview stage. Keep volume moving.`;
+  if (sent >= 30 && callbacks === 0) {
+    tone = 'warn';
+    text = 'Branch trigger: 30+ applications and zero callbacks. Do not spam harder blindly. Fix headline, CV summary, project bullets, and role angle before the next batch.';
+  }
+  if (h.status === 'behind') {
+    tone = 'danger';
+    text = `Applications are behind pace. You need roughly ${Math.max(1, h.expectedActual - sent)} catch-up submission(s) immediately, then daily logging.`;
+  }
+  return `
+    <div class="block callout ${tone}" style="margin-top:18px">
+      <div class="callout-icon">${tone === 'danger' ? '⚠️' : '🌿'}</div>
+      <div class="callout-body">${escapeHTML(text)}</div>
+    </div>
+  `;
+}
+
+/* =====================================================================
+   RENDER · REVIEW + SETTINGS
+   ===================================================================== */
+function renderReview() {
+  const week = getCurrentWeek() || 1;
+  const range = weekRange(week);
+  const tasks = state.tasks.filter(t => t.week === week);
+  const done = tasks.filter(t => t.status === 'done').length;
+  const overdue = state.tasks.filter(t => taskIsOverdue(t)).length;
+  const key = 'week-' + week;
+  const review = state.weeklyReviews[key] || {};
+  const healthTags = getOutcomes().map(o => {
+    const h = getHealth(o.id);
+    const band = h.status === 'on-track' ? 'blue' : (h.status === 'ahead' ? 'green' : (h.status === 'at-risk' ? 'orange' : 'red'));
+    return `<span class="tag ${band}">${o.id}: ${h.status.replace('-', ' ')}</span>`;
+  }).join(' ');
+
+  $('#rv-week').innerHTML = `Week ${week} · ${fmtDate(range.start)} → ${fmtDate(range.end)}`;
+  $('#rv-health').innerHTML = healthTags;
+  $('#rv-body').innerHTML = `
+    <div class="stats-row">
+      <div class="stat"><div class="lbl">Week tasks done</div><div class="val">${done}<span class="unit">/${tasks.length}</span></div></div>
+      <div class="stat"><div class="lbl">Overdue</div><div class="val">${overdue}</div></div>
+      <div class="stat"><div class="lbl">Apps sent</div><div class="val">${state.applications.length}<span class="unit">/${appTarget()}</span></div></div>
+      <div class="stat"><div class="lbl">Coding rituals this week</div><div class="val">${countRitualsDoneThisWeek('coding')}</div></div>
+    </div>
+
+    <div class="block callout ${overdue ? 'danger' : 'success'}">
+      <div class="callout-icon">${overdue ? '⚠️' : '✓'}</div>
+      <div class="callout-body">${overdue ? `You have ${overdue} overdue task(s). Clear or deliberately reschedule them before adding new work.` : 'No overdue tasks. Keep the daily loop boring and consistent.'}</div>
+    </div>
+
+    ${reviewField(key, 'shipped', 'What shipped this week?', 'Actual proof only: sent apps, completed modules, deployed URL, cleaned repo, passed exam.')}
+    ${reviewField(key, 'slipped', 'What slipped?', 'Be honest. No vague excuses. What did not get done?')}
+    ${reviewField(key, 'cut', 'What gets cut or descoped?', 'If behind, cut polish before cutting outcomes.')}
+    ${reviewField(key, 'next', 'Tomorrow’s first action', 'One concrete action you can start without thinking.')}
+
+    <div class="row" style="margin-top:14px">
+      <button class="btn primary" data-action="save-review" data-week="${key}">Save weekly review</button>
+      <button class="btn" data-action="generate-catchup">Generate catch-up tasks</button>
+    </div>
+  `;
+}
+
+function reviewField(key, field, label, placeholder) {
+  return `
+    <label class="sect-h">${label}</label>
+    <textarea class="input" data-review-field="${field}" data-review-key="${key}" rows="3" placeholder="${escapeHTML(placeholder)}">${escapeHTML(state.weeklyReviews[key]?.[field] || '')}</textarea>
+  `;
+}
+
+function renderSettings() {
+  const s = settings();
+  $('#settings-dates').innerHTML = `
+    <div class="block h2">Dynamic plan settings</div>
+    <div class="block text" style="color:var(--ink-mute)">These values now drive the algorithm. Change dates here, save, and seed-task deadlines can be regenerated from the new plan start. Browser localStorage persists the whole state.</div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <tbody>
+          ${settingsRow('planStart', 'Plan start', s.planStart, 'date')}
+          ${settingsRow('planEnd', 'Plan end / travel prep end', s.planEnd, 'date')}
+          ${settingsRow('cvDeadline', 'CV / LinkedIn / GitHub deadline', s.cvDeadline, 'date')}
+          ${settingsRow('awsExam', 'AWS CP exam target date', s.awsExam, 'date')}
+          ${settingsRow('awsDeadline', 'AWS CP passed by', s.awsDeadline, 'date')}
+          ${settingsRow('deployDeadline', 'Dissertation deployed by', s.deployDeadline, 'date')}
+          ${settingsRow('codingDeadline', 'Coding fluency target', s.codingDeadline, 'date')}
+          ${settingsRow('travelStart', 'Dubai travel / activation starts', s.travelStart, 'date')}
+          ${settingsRow('travelEnd', 'Dubai travel window ends', s.travelEnd, 'date')}
+          ${settingsRow('appsDeadline', 'Application-volume deadline', s.appsDeadline, 'date')}
+          ${settingsRow('dubaiHardDeadline', 'Dubai hard deadline', s.dubaiHardDeadline, 'date')}
+          ${settingsRow('extensionCutoff', 'Extension cutoff', s.extensionCutoff, 'date')}
+          ${settingsRow('appTarget', 'Application target count', s.appTarget, 'number')}
+          ${settingsRow('defaultTaskDueTime', 'Default due time for date-only tasks', s.defaultTaskDueTime || '23:59', 'time')}
+          ${settingsRow('autoCatchupMax', 'Max catch-up tasks generated at once', s.autoCatchupMax || 5, 'number')}
+        </tbody>
+      </table>
+    </div>
+    <div class="row" style="margin:12px 0">
+      <button class="btn primary" data-action="save-settings">Save settings</button>
+      <button class="btn" data-action="reschedule-seed-tasks">Regenerate seed-task dates from plan start</button>
+    </div>
+    <div class="block callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">Manual task dates stay manual unless you click the regenerate button. Export JSON before major changes if you care about rollback.</div>
+    </div>
+  `;
+}
+
+function settingsRow(key, label, value, type) {
+  return `
+    <tr>
+      <td style="width:260px;color:var(--ink-mute)">${escapeHTML(label)}</td>
+      <td><input class="input" data-setting-key="${key}" type="${type}" value="${escapeHTML(value)}" /></td>
+    </tr>
+  `;
+}
+
+function saveSettingsFromForm() {
+  const next = { ...settings() };
+  $$('[data-setting-key]').forEach(el => {
+    next[el.dataset.settingKey] = el.type === 'number' ? Number(el.value || 0) : el.value;
+  });
+  if (!next.planStart || !next.planEnd) {
+    alert('Plan start and end are required.');
+    return;
+  }
+  state.settings = next;
+  rescheduleSeedTasks(false);
+  save();
+  rerender();
+  alert('Settings saved. Dynamic deadlines updated.');
+}
+
+function saveReviewFromForm() {
+  const first = $('[data-review-key]');
+  if (!first) return;
+  const key = first.dataset.reviewKey;
+  state.weeklyReviews[key] = state.weeklyReviews[key] || {};
+  $$(`[data-review-key="${key}"]`).forEach(el => {
+    state.weeklyReviews[key][el.dataset.reviewField] = el.value;
+  });
+  state.weeklyReviews[key].updatedAt = todayISO();
+  save();
+  alert('Weekly review saved.');
+}
+
+function generateCatchupTasks() {
+  const today = todayISO();
+  const week = getCurrentWeek() || 1;
+  const maxAdds = Math.max(1, Number(settings().autoCatchupMax || 5));
+  const adds = [];
+
+  const severeOverdue = state.tasks
+    .filter(t => taskIsOverdue(t))
+    .sort((a, b) => taskSeverityScore(b) - taskSeverityScore(a))
+    .slice(0, maxAdds);
+
+  for (const t of severeOverdue) {
+    adds.push({
+      title: `Catch-up: ${t.title}`,
+      cat: t.category,
+      notes: `${autoCatchupSuggestion(t)} Original due: ${taskDueLabel(t)}. Original task id: ${t.id}.`
+    });
+  }
+
+  if (adds.length < maxAdds) {
+    for (const o of getOutcomes()) {
+      if (adds.length >= maxAdds) break;
+      const h = getHealth(o.id);
+      if (h.status === 'behind' || h.status === 'at-risk') {
+        if (o.id === 'apps') {
+          adds.push({ title: `Catch-up: submit ${Math.max(1, h.expectedActual - h.actual)} targeted application(s)`, cat: 'apps', notes: 'Generated because the applications outcome is below expected pace.' });
+        } else if (o.id === 'coding') {
+          adds.push({ title: 'Catch-up: 1 no-AI coding rep + explain one dissertation route out loud', cat: 'coding', notes: 'Generated because the coding fluency outcome is below expected pace.' });
+        } else {
+          adds.push({ title: `Catch-up: move ${o.id} outcome one visible step forward`, cat: o.id, notes: `Generated because ${o.id} is ${h.status.replace('-', ' ')}.` });
+        }
+      }
+    }
+  }
+
+  const existingTitles = new Set(state.tasks.map(t => t.title));
+  let added = 0;
+  for (const item of adds) {
+    if (existingTitles.has(item.title)) continue;
+    state.tasks.push({
+      id: 't' + Date.now() + Math.random().toString(16).slice(2),
+      userAdded: true,
+      manualDue: true,
+      title: item.title,
+      category: item.cat,
+      week,
+      dueDate: today,
+      dueTime: oneHourFromNowTime(),
+      status: 'pending',
+      notes: item.notes || 'Generated from catch-up algorithm.',
+      createdAt: today,
+      completedAt: null,
+    });
+    added++;
+  }
+  save();
+  rerender();
+  alert(added ? `${added} catch-up task(s) added to today with due times.` : 'No new catch-up tasks needed right now.');
 }
 
 /* =====================================================================
@@ -2610,10 +3196,13 @@ function quickAdd() {
   if (!title) return;
   state.tasks.push({
     id: 't' + Date.now(),
+    userAdded: true,
+    manualDue: true,
     title,
     category: cat,
     week: getCurrentWeek() || 1,
     dueDate: todayISO(),
+    dueTime: settings().defaultTaskDueTime || '23:59',
     status: 'pending',
     notes: '',
     createdAt: todayISO(),
@@ -2623,17 +3212,25 @@ function quickAdd() {
   save(); rerender();
 }
 
-function newApp() {
+function newApp(prefill = {}) {
   openModal('Log new application', `
     <label class="sect-h">Company</label>
-    <input class="input" id="m-company" placeholder="Revolut" />
+    <input class="input" id="m-company" placeholder="Revolut" value="${escapeHTML(prefill.company || '')}" />
     <label class="sect-h" style="margin-top:10px">Role</label>
-    <input class="input" id="m-role" placeholder="Rev-celerator Backend, Dubai" />
+    <input class="input" id="m-role" placeholder="Rev-celerator Backend, Dubai" value="${escapeHTML(prefill.role || '')}" />
+    <label class="sect-h" style="margin-top:10px">Priority</label>
+    <select class="input" id="m-priority">
+      ${['Highest','High','Medium','Low'].map(x => `<option ${((prefill.priority || 'Medium') === x) ? 'selected' : ''}>${x}</option>`).join('')}
+    </select>
+    <label class="sect-h" style="margin-top:10px">Contact / referral lead</label>
+    <input class="input" id="m-contact" placeholder="Name, LinkedIn URL, recruiter email" value="${escapeHTML(prefill.contact || '')}" />
+    <label class="sect-h" style="margin-top:10px">Next action</label>
+    <input class="input" id="m-next" placeholder="Follow up, tailor CV, message alumnus..." value="${escapeHTML(prefill.nextAction || 'Follow up in 7 days')}" />
+    <label class="sect-h" style="margin-top:10px">Follow-up / role deadline</label>
+    <input class="input" type="date" id="m-deadline" value="${escapeHTML(prefill.deadline || addDays(todayISO(), 7))}" />
     <label class="sect-h" style="margin-top:10px">Source</label>
     <select class="input" id="m-source">
-      <option>LinkedIn</option><option>Careers page</option><option>Bayt</option>
-      <option>Naukrigulf</option><option>Indeed</option><option>Referral</option>
-      <option>Recruiter</option><option>Other</option>
+      ${['LinkedIn','Careers page','Bayt','Naukrigulf','Indeed','Referral','Recruiter','Other'].map(x => `<option ${((prefill.source || 'LinkedIn') === x) ? 'selected' : ''}>${x}</option>`).join('')}
     </select>
   `, () => {
     const company = $('#m-company').value.trim();
@@ -2643,9 +3240,18 @@ function newApp() {
       id: 'a' + Date.now(),
       company, role,
       source: $('#m-source').value,
+      priority: $('#m-priority').value,
+      contact: $('#m-contact').value.trim(),
+      nextAction: $('#m-next').value.trim(),
+      deadline: $('#m-deadline').value || '',
+      notes: '',
       dateApplied: todayISO(),
       status: 'sent',
     });
+    if (prefill.targetId) {
+      const target = state.targetCompanies.find(t => t.id === prefill.targetId);
+      if (target) target.status = 'applied';
+    }
     bumpStreak();
     save(); rerender();
     return true;
@@ -2662,6 +3268,8 @@ function newTask(prefilledStatus) {
     </select>
     <label class="sect-h" style="margin-top:10px">Due date (optional)</label>
     <input class="input" type="date" id="m-task-due" />
+    <label class="sect-h" style="margin-top:10px">Due time (optional)</label>
+    <input class="input" type="time" id="m-task-time" value="${settings().defaultTaskDueTime || '23:59'}" />
     <label class="sect-h" style="margin-top:10px">Week</label>
     <select class="input" id="m-task-week">
       ${Array.from({length: 8}, (_, i) => `<option value="${i+1}" ${i+1 === (getCurrentWeek() || 1) ? 'selected' : ''}>Week ${i+1}</option>`).join('')}
@@ -2671,10 +3279,13 @@ function newTask(prefilledStatus) {
     if (!title) return false;
     state.tasks.push({
       id: 't' + Date.now(),
+      userAdded: true,
+      manualDue: true,
       title,
       category: $('#m-task-cat').value,
       week: parseInt($('#m-task-week').value),
       dueDate: $('#m-task-due').value || null,
+      dueTime: cleanTime($('#m-task-time').value),
       status: prefilledStatus || 'pending',
       notes: '',
       createdAt: todayISO(),
@@ -2700,6 +3311,29 @@ function cycleAppStatus(id) {
   a.status = order[(i + 1) % order.length];
   state.metrics.callbacks = state.applications.filter(x => ['reply','screen','interview','offer'].includes(x.status)).length;
   save(); rerender();
+}
+
+function cycleTargetStatus(id) {
+  const t = state.targetCompanies.find(x => x.id === id);
+  if (!t) return;
+  const order = ['target','applied','follow','skip'];
+  const i = order.indexOf(t.status);
+  t.status = order[(i + 1) % order.length];
+  save(); rerender();
+}
+
+function logTargetApplication(id) {
+  const t = state.targetCompanies.find(x => x.id === id);
+  if (!t) return;
+  newApp({
+    targetId: t.id,
+    company: t.company,
+    role: t.role,
+    source: t.source || 'Careers page',
+    priority: t.priority || 'Medium',
+    deadline: t.deadline || addDays(todayISO(), 7),
+    nextAction: 'Follow up in 7 days',
+  });
 }
 
 /* =====================================================================
@@ -2744,7 +3378,22 @@ function openTaskDrawer(id) {
           <input type="date" class="input" style="width:auto" data-action="set-due" data-id="${t.id}" value="${t.dueDate || ''}" />
         </div>
       </div>
+      <div class="ph-meta-row">
+        <div class="label">⏱ Due time</div>
+        <div>
+          <input type="time" class="input" style="width:auto" data-action="set-due-time" data-id="${t.id}" value="${cleanTime(t.dueTime) || ''}" />
+        </div>
+      </div>
     </div>
+    ${taskIsOverdue(t) ? `
+      <div class="block callout danger" style="margin-top:14px">
+        <div class="callout-icon">${severityBand(taskSeverityScore(t)).icon}</div>
+        <div class="callout-body">
+          <strong>Missed task:</strong> ${escapeHTML(missedByLabel(t))} · severity ${taskSeverityScore(t)} (${severityBand(taskSeverityScore(t)).label}).<br>
+          ${escapeHTML(autoCatchupSuggestion(t))}
+        </div>
+      </div>
+    ` : ''}
     <div class="page-divider"></div>
     <div class="sect-h">Notes</div>
     <div class="block text" style="min-height:120px;background:var(--bg-input);padding:12px;border-radius:var(--r-md);outline:none;color:var(--ink)" contenteditable data-action="set-notes" data-id="${t.id}" data-placeholder="Add notes, links, blockers...">${escapeHTML(t.notes || '')}</div>
@@ -2858,6 +3507,12 @@ document.addEventListener('click', (e) => {
       case 'new-task': newTask(action.dataset.boardStatus); break;
       case 'new-app': newApp(); break;
       case 'cycle-app-status': cycleAppStatus(id); break;
+      case 'cycle-target-status': cycleTargetStatus(id); break;
+      case 'log-target-app': logTargetApplication(id); break;
+      case 'save-settings': saveSettingsFromForm(); break;
+      case 'save-review': saveReviewFromForm(); break;
+      case 'generate-catchup': generateCatchupTasks(); break;
+      case 'reschedule-seed-tasks': rescheduleSeedTasks(true); save(); rerender(); alert('Seed tasks rescheduled from your current plan start.'); break;
       case 'del-app': delApp(id); break;
       case 'edit-app': openAppEdit(id); break;
       case 'push-task': pushTask(id); closeDrawer(); break;
@@ -2916,7 +3571,8 @@ document.addEventListener('change', (e) => {
       save(); rerender(); break;
     case 'set-cat': t.category = e.target.value; save(); rerender(); break;
     case 'set-week': t.week = parseInt(e.target.value); save(); rerender(); break;
-    case 'set-due': t.dueDate = e.target.value || null; save(); rerender(); break;
+    case 'set-due': t.dueDate = e.target.value || null; t.manualDue = true; save(); rerender(); break;
+    case 'set-due-time': t.dueTime = cleanTime(e.target.value); t.manualDue = true; save(); rerender(); break;
   }
 });
 
@@ -2970,12 +3626,26 @@ function openAppEdit(id) {
     <select class="input" id="m-status">
       ${Object.entries(APP_STATUS_META).map(([k,v]) => `<option value="${k}" ${a.status === k ? 'selected' : ''}>${v.name}</option>`).join('')}
     </select>
+    <label class="sect-h" style="margin-top:10px">Priority</label>
+    <select class="input" id="m-priority">
+      ${['Highest','High','Medium','Low'].map(x => `<option ${((a.priority || 'Medium') === x) ? 'selected' : ''}>${x}</option>`).join('')}
+    </select>
+    <label class="sect-h" style="margin-top:10px">Contact</label>
+    <input class="input" id="m-contact" value="${escapeHTML(a.contact || '')}" />
+    <label class="sect-h" style="margin-top:10px">Next action</label>
+    <input class="input" id="m-next" value="${escapeHTML(a.nextAction || '')}" />
+    <label class="sect-h" style="margin-top:10px">Follow-up / deadline</label>
+    <input class="input" type="date" id="m-deadline" value="${escapeHTML(a.deadline || '')}" />
     <label class="sect-h" style="margin-top:10px">Source</label>
-    <input class="input" id="m-source" value="${escapeHTML(a.source)}" />
+    <input class="input" id="m-source" value="${escapeHTML(a.source || '')}" />
   `, () => {
     a.company = $('#m-company').value.trim();
     a.role = $('#m-role').value.trim();
     a.status = $('#m-status').value;
+    a.priority = $('#m-priority').value;
+    a.contact = $('#m-contact').value.trim();
+    a.nextAction = $('#m-next').value.trim();
+    a.deadline = $('#m-deadline').value || '';
     a.source = $('#m-source').value.trim();
     state.metrics.callbacks = state.applications.filter(x => ['reply','screen','interview','offer'].includes(x.status)).length;
     save(); rerender();
@@ -2986,8 +3656,9 @@ function openAppEdit(id) {
 function pushTask(id) {
   const t = state.tasks.find(x => x.id === id);
   if (!t) return;
-  const next = new Date(); next.setDate(next.getDate() + 1);
-  t.dueDate = next.toISOString().slice(0, 10);
+  t.dueDate = addDays(todayISO(), 1);
+  t.dueTime = cleanTime(t.dueTime) || settings().defaultTaskDueTime || '23:59';
+  t.manualDue = true;
   save(); rerender();
 }
 function skipTask(id) {
@@ -3015,7 +3686,7 @@ document.getElementById('importInput')?.addEventListener('change', (e) => {
     try {
       const d = JSON.parse(ev.target.result);
       if (!d.tasks) throw 0;
-      state = d;
+      state = migrateState(d);
       save(); rerender(); alert('Imported.');
     } catch { alert('Invalid file.'); }
   };
