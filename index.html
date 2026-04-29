@@ -1766,6 +1766,12 @@ const DEFAULT_SETTINGS = {
   appTarget: 60,
   defaultTaskDueTime: '23:59',
   autoCatchupMax: 5,
+  // Dynamic engine settings (added v3)
+  workHoursStart: '09:00',         // catch-up scheduling floor
+  workHoursEnd:   '18:00',         // catch-up scheduling ceiling
+  dailyCapacityMinutes: 240,       // realistic daily work budget (4 hrs)
+  cascadeDependents: true,         // when a date moves, push downstream tasks
+  ritualStreakAlertDays: 2,        // warn after N consecutive missed-ritual days
 };
 
 const DATE_SETTING_KEYS = [
@@ -1892,89 +1898,93 @@ const WEEK_INFO = [null,
   { theme: 'Travel to Dubai · activate in-person',               emoji: '⑧' },
 ];
 
-/* seed tasks */
+/* seed tasks · augmented schema (v3)
+   - id: stable string key (used for dependency edges, not changed by reordering)
+   - estMinutes: estimated effort in minutes (drives time-budget realism)
+   - criticality: 'low' | 'normal' | 'high' | 'critical' (multiplies severity)
+   - deps: [seedId] — must finish before this task can start (drives cascade)
+*/
 const SEED_TASKS = [
-  // WEEK 1
-  { title: 'Personalize CV draft (CV_v2.md) — fix tone, confirm grades section', cat: 'cv', week: 1, due: '2026-04-28' },
-  { title: 'Open boot.dev Git, click chapter 5 (Branching) — do NOT restart', cat: 'coding', week: 1, due: '2026-04-28' },
-  { title: 'LinkedIn — fix headline, About, Experience, featured, profile photo', cat: 'cv', week: 1, due: '2026-04-29' },
-  { title: 'GitHub cleanup — pin top 5 repos', cat: 'cv', week: 1, due: '2026-04-30' },
-  { title: 'Write clean READMEs for dissertation, C# browser, RL agents', cat: 'cv', week: 1, due: '2026-04-30' },
-  { title: 'Buy Stephane Maarek "Ultimate AWS CP CLF-C02" on Udemy', cat: 'aws', week: 1, due: '2026-05-01' },
-  { title: 'AWS CP Modules 1–2', cat: 'aws', week: 1, due: '2026-05-01' },
-  { title: 'Open AWS account (Free Tier) + billing alerts', cat: 'aws', week: 1, due: '2026-05-02' },
-  { title: 'AWS CP Module 3', cat: 'aws', week: 1, due: '2026-05-02' },
-  { title: 'AWS CP Module 4', cat: 'aws', week: 1, due: '2026-05-03' },
-  { title: 'Plan next week (20 min Sunday review)', cat: 'planning', week: 1, due: '2026-05-03' },
-  { title: 'Re-read dissertation PDF cover-to-cover (across 2 evenings)', cat: 'coding', week: 1 },
-  { title: 'Write 1-page "design decisions" cheat sheet', cat: 'coding', week: 1 },
-  { title: 'boot.dev Git Ch 5–7 (Branching, Merge, Rebase)', cat: 'coding', week: 1 },
+  // WEEK 1 ----------------------------------------------------------
+  { id: 'cv-personalize',  title: 'Personalize CV draft (CV_v2.md) — fix tone, confirm grades section', cat: 'cv', week: 1, due: '2026-04-28', estMinutes: 90, criticality: 'high' },
+  { id: 'git-ch5',         title: 'Open boot.dev Git, click chapter 5 (Branching) — do NOT restart', cat: 'coding', week: 1, due: '2026-04-28', estMinutes: 45, criticality: 'normal' },
+  { id: 'linkedin-fix',    title: 'LinkedIn — fix headline, About, Experience, featured, profile photo', cat: 'cv', week: 1, due: '2026-04-29', estMinutes: 90, criticality: 'high', deps: ['cv-personalize'] },
+  { id: 'github-pin',      title: 'GitHub cleanup — pin top 5 repos', cat: 'cv', week: 1, due: '2026-04-30', estMinutes: 30, criticality: 'normal' },
+  { id: 'github-readmes',  title: 'Write clean READMEs for dissertation, C# browser, RL agents', cat: 'cv', week: 1, due: '2026-04-30', estMinutes: 120, criticality: 'high', deps: ['github-pin'] },
+  { id: 'aws-buy-course',  title: 'Buy Stephane Maarek "Ultimate AWS CP CLF-C02" on Udemy', cat: 'aws', week: 1, due: '2026-05-01', estMinutes: 15, criticality: 'critical' },
+  { id: 'aws-mod-1-2',     title: 'AWS CP Modules 1–2', cat: 'aws', week: 1, due: '2026-05-01', estMinutes: 90, criticality: 'high', deps: ['aws-buy-course'] },
+  { id: 'aws-account',     title: 'Open AWS account (Free Tier) + billing alerts', cat: 'aws', week: 1, due: '2026-05-02', estMinutes: 45, criticality: 'high' },
+  { id: 'aws-mod-3',       title: 'AWS CP Module 3', cat: 'aws', week: 1, due: '2026-05-02', estMinutes: 60, criticality: 'high', deps: ['aws-mod-1-2'] },
+  { id: 'aws-mod-4',       title: 'AWS CP Module 4', cat: 'aws', week: 1, due: '2026-05-03', estMinutes: 60, criticality: 'high', deps: ['aws-mod-3'] },
+  { id: 'plan-w1',         title: 'Plan next week (20 min Sunday review)', cat: 'planning', week: 1, due: '2026-05-03', estMinutes: 20, criticality: 'normal' },
+  { id: 'diss-reread',     title: 'Re-read dissertation PDF cover-to-cover (across 2 evenings)', cat: 'coding', week: 1, estMinutes: 180, criticality: 'high' },
+  { id: 'diss-cheatsheet', title: 'Write 1-page "design decisions" cheat sheet', cat: 'coding', week: 1, estMinutes: 60, criticality: 'normal', deps: ['diss-reread'] },
+  { id: 'git-ch5-7',       title: 'boot.dev Git Ch 5–7 (Branching, Merge, Rebase)', cat: 'coding', week: 1, estMinutes: 135, criticality: 'normal', deps: ['git-ch5'] },
 
-  // WEEK 2
-  { title: 'AWS CP course → ~40% completion', cat: 'aws', week: 2 },
-  { title: 'Build target-companies shortlist: pick 30 from Tier 1+2', cat: 'apps', week: 2 },
-  { title: 'Submit first 5 applications (Tier 1 grad programmes)', cat: 'apps', week: 2 },
-  { title: 'Clean dissertation repo locally — .env out, credentials out', cat: 'deploy', week: 2 },
-  { title: 'boot.dev Git Ch 8–11 (Reset, Remote, GitHub, Gitignore)', cat: 'coding', week: 2 },
-  { title: 'Read app.py top to bottom, write 1-paragraph summary per route', cat: 'coding', week: 2 },
+  // WEEK 2 ----------------------------------------------------------
+  { id: 'aws-40pct',       title: 'AWS CP course → ~40% completion', cat: 'aws', week: 2, estMinutes: 240, criticality: 'high', deps: ['aws-mod-4'] },
+  { id: 'apps-shortlist',  title: 'Build target-companies shortlist: pick 30 from Tier 1+2', cat: 'apps', week: 2, estMinutes: 60, criticality: 'high' },
+  { id: 'apps-first-5',    title: 'Submit first 5 applications (Tier 1 grad programmes)', cat: 'apps', week: 2, estMinutes: 150, criticality: 'critical', deps: ['apps-shortlist','linkedin-fix','github-readmes'] },
+  { id: 'deploy-clean',    title: 'Clean dissertation repo locally — .env out, credentials out', cat: 'deploy', week: 2, estMinutes: 60, criticality: 'high' },
+  { id: 'git-ch8-11',      title: 'boot.dev Git Ch 8–11 (Reset, Remote, GitHub, Gitignore)', cat: 'coding', week: 2, estMinutes: 180, criticality: 'normal', deps: ['git-ch5-7'] },
+  { id: 'app-py-read',     title: 'Read app.py top to bottom, write 1-paragraph summary per route', cat: 'coding', week: 2, estMinutes: 90, criticality: 'high' },
 
-  // WEEK 3
-  { title: 'AWS CP → ~70% complete', cat: 'aws', week: 3 },
-  { title: 'First Tutorials Dojo practice exam — target ≥60%', cat: 'aws', week: 3 },
-  { title: 'Submit 5 more applications', cat: 'apps', week: 3 },
-  { title: 'Draft dissertation README — architecture diagram + setup + STRIDE table', cat: 'deploy', week: 3 },
-  { title: 'boot.dev SQL Ch 1–5 (Intro, Tables, Constraints, CRUD, Queries)', cat: 'coding', week: 3 },
-  { title: 'Read security.py + helpers.py — annotate what / why / what it protects', cat: 'coding', week: 3 },
+  // WEEK 3 ----------------------------------------------------------
+  { id: 'aws-70pct',       title: 'AWS CP → ~70% complete', cat: 'aws', week: 3, estMinutes: 240, criticality: 'high', deps: ['aws-40pct'] },
+  { id: 'aws-mock-1',      title: 'First Tutorials Dojo practice exam — target ≥60%', cat: 'aws', week: 3, estMinutes: 90, criticality: 'high', deps: ['aws-70pct'] },
+  { id: 'apps-w3',         title: 'Submit 5 more applications', cat: 'apps', week: 3, estMinutes: 150, criticality: 'critical', deps: ['apps-first-5'] },
+  { id: 'readme-draft',    title: 'Draft dissertation README — architecture diagram + setup + STRIDE table', cat: 'deploy', week: 3, estMinutes: 120, criticality: 'high', deps: ['deploy-clean'] },
+  { id: 'sql-ch1-5',       title: 'boot.dev SQL Ch 1–5 (Intro, Tables, Constraints, CRUD, Queries)', cat: 'coding', week: 3, estMinutes: 200, criticality: 'normal', deps: ['git-ch8-11'] },
+  { id: 'security-read',   title: 'Read security.py + helpers.py — annotate what / why / what it protects', cat: 'coding', week: 3, estMinutes: 90, criticality: 'high', deps: ['app-py-read'] },
 
-  // WEEK 4 - EXAM
-  { title: 'Tutorials Dojo practice exam #2 — target ≥75%', cat: 'aws', week: 4 },
-  { title: 'Gap-fill on weak areas (IAM, billing, shared responsibility)', cat: 'aws', week: 4 },
-  { title: 'BOOK the AWS CP exam (Pearson VUE)', cat: 'aws', week: 4 },
-  { title: 'TAKE the AWS CP exam — by May 25', cat: 'aws', week: 4, due: '2026-05-25' },
-  { title: '5 more applications', cat: 'apps', week: 4 },
-  { title: 'boot.dev SQL Ch 6–8 (Structuring, Aggregations, Subqueries)', cat: 'coding', week: 4 },
-  { title: 'Read models.py + run prototype locally — break is_valid(), watch test fail, fix', cat: 'coding', week: 4 },
+  // WEEK 4 - EXAM ---------------------------------------------------
+  { id: 'aws-mock-2',      title: 'Tutorials Dojo practice exam #2 — target ≥75%', cat: 'aws', week: 4, estMinutes: 90, criticality: 'critical', deps: ['aws-mock-1'] },
+  { id: 'aws-gapfill',     title: 'Gap-fill on weak areas (IAM, billing, shared responsibility)', cat: 'aws', week: 4, estMinutes: 120, criticality: 'high', deps: ['aws-mock-2'] },
+  { id: 'aws-book',        title: 'BOOK the AWS CP exam (Pearson VUE)', cat: 'aws', week: 4, estMinutes: 20, criticality: 'critical', deps: ['aws-mock-2'] },
+  { id: 'aws-take',        title: 'TAKE the AWS CP exam', cat: 'aws', week: 4, due: '2026-05-25', estMinutes: 90, criticality: 'critical', deps: ['aws-book','aws-gapfill'] },
+  { id: 'apps-w4',         title: '5 more applications', cat: 'apps', week: 4, estMinutes: 150, criticality: 'high', deps: ['apps-w3'] },
+  { id: 'sql-ch6-8',       title: 'boot.dev SQL Ch 6–8 (Structuring, Aggregations, Subqueries)', cat: 'coding', week: 4, estMinutes: 180, criticality: 'normal', deps: ['sql-ch1-5'] },
+  { id: 'models-read',     title: 'Read models.py + run prototype locally — break is_valid(), watch test fail, fix', cat: 'coding', week: 4, estMinutes: 90, criticality: 'high', deps: ['security-read'] },
 
-  // WEEK 5 - DEPLOY 1
-  { title: 'AWS setup — EC2 t3.micro OR Elastic Beanstalk (Free Tier)', cat: 'deploy', week: 5 },
-  { title: 'Deploy dissertation WITH SQLite first — working > perfect', cat: 'deploy', week: 5 },
-  { title: 'Debug deployment (env vars, HTTPS, ports, WebAuthn relying-party ID)', cat: 'deploy', week: 5 },
-  { title: '5 more applications', cat: 'apps', week: 5 },
-  { title: 'boot.dev SQL Ch 9–11 (Normalization, Joins, Performance) — finish', cat: 'coding', week: 5 },
-  { title: 'boot.dev DSA Ch 1–3 (Algorithms Intro, Math, Big-O)', cat: 'coding', week: 5 },
+  // WEEK 5 - DEPLOY 1 -----------------------------------------------
+  { id: 'deploy-setup',    title: 'AWS setup — EC2 t3.micro OR Elastic Beanstalk (Free Tier)', cat: 'deploy', week: 5, estMinutes: 120, criticality: 'high', deps: ['aws-take','readme-draft'] },
+  { id: 'deploy-sqlite',   title: 'Deploy dissertation WITH SQLite first — working > perfect', cat: 'deploy', week: 5, estMinutes: 240, criticality: 'critical', deps: ['deploy-setup'] },
+  { id: 'deploy-debug',    title: 'Debug deployment (env vars, HTTPS, ports, WebAuthn relying-party ID)', cat: 'deploy', week: 5, estMinutes: 180, criticality: 'high', deps: ['deploy-sqlite'] },
+  { id: 'apps-w5',         title: '5 more applications', cat: 'apps', week: 5, estMinutes: 150, criticality: 'high', deps: ['apps-w4'] },
+  { id: 'sql-ch9-11',      title: 'boot.dev SQL Ch 9–11 (Normalization, Joins, Performance) — finish', cat: 'coding', week: 5, estMinutes: 180, criticality: 'normal', deps: ['sql-ch6-8'] },
+  { id: 'dsa-ch1-3',       title: 'boot.dev DSA Ch 1–3 (Algorithms Intro, Math, Big-O)', cat: 'coding', week: 5, estMinutes: 150, criticality: 'normal', deps: ['sql-ch9-11'] },
 
-  // WEEK 6 - DEPLOY 2
-  { title: 'End-to-end flow working on public URL', cat: 'deploy', week: 6 },
-  { title: 'Polish README — architecture, stack, STRIDE table, setup, screenshots', cat: 'deploy', week: 6 },
-  { title: 'Add honest "Known Limitations" section', cat: 'deploy', week: 6 },
-  { title: '5–10 applications', cat: 'apps', week: 6 },
-  { title: 'boot.dev DSA Ch 4–9 (Sorting, Big-O, Stacks, Queues, Linked Lists)', cat: 'coding', week: 6 },
-  { title: 'Walk one complete user journey out loud', cat: 'coding', week: 6 },
+  // WEEK 6 - DEPLOY 2 -----------------------------------------------
+  { id: 'deploy-e2e',      title: 'End-to-end flow working on public URL', cat: 'deploy', week: 6, estMinutes: 120, criticality: 'critical', deps: ['deploy-debug'] },
+  { id: 'readme-polish',   title: 'Polish README — architecture, stack, STRIDE table, setup, screenshots', cat: 'deploy', week: 6, estMinutes: 120, criticality: 'high', deps: ['deploy-e2e'] },
+  { id: 'readme-limits',   title: 'Add honest "Known Limitations" section', cat: 'deploy', week: 6, estMinutes: 30, criticality: 'normal', deps: ['readme-polish'] },
+  { id: 'apps-w6',         title: '5–10 applications', cat: 'apps', week: 6, estMinutes: 200, criticality: 'high', deps: ['apps-w5'] },
+  { id: 'dsa-ch4-9',       title: 'boot.dev DSA Ch 4–9 (Sorting, Big-O, Stacks, Queues, Linked Lists)', cat: 'coding', week: 6, estMinutes: 360, criticality: 'normal', deps: ['dsa-ch1-3'] },
+  { id: 'diss-walkthrough',title: 'Walk one complete user journey out loud', cat: 'coding', week: 6, estMinutes: 30, criticality: 'normal', deps: ['models-read'] },
 
-  // WEEK 7 - PRE-DUBAI
-  { title: 'Fix any deployment loose ends', cat: 'deploy', week: 7 },
-  { title: 'ONLY IF AHEAD: migrate SQLite → AWS RDS Postgres', cat: 'deploy', week: 7 },
-  { title: 'Update CV — add AWS CP cert, add deployed URL in Projects', cat: 'cv', week: 7 },
-  { title: 'Line up 10 Dubai networking coffees via LinkedIn HW Dubai alumni', cat: 'travel', week: 7 },
-  { title: '10 applications', cat: 'apps', week: 7 },
-  { title: 'boot.dev DSA Ch 12–15 (Hashmaps, Tries, Graphs, BFS/DFS)', cat: 'coding', week: 7 },
-  { title: 'Mock interview rehearsal: 10 dissertation Qs, record + listen back', cat: 'coding', week: 7 },
-  { title: '3× live-coding dry run (45-min timed LeetCode Easy, explain out loud)', cat: 'coding', week: 7 },
+  // WEEK 7 - PRE-DUBAI ----------------------------------------------
+  { id: 'deploy-fix',      title: 'Fix any deployment loose ends', cat: 'deploy', week: 7, estMinutes: 120, criticality: 'high', deps: ['deploy-e2e'] },
+  { id: 'deploy-rds',      title: 'ONLY IF AHEAD: migrate SQLite → AWS RDS Postgres', cat: 'deploy', week: 7, estMinutes: 240, criticality: 'low', deps: ['deploy-fix'] },
+  { id: 'cv-update',       title: 'Update CV — add AWS CP cert, add deployed URL in Projects', cat: 'cv', week: 7, estMinutes: 30, criticality: 'critical', deps: ['aws-take','deploy-e2e'] },
+  { id: 'dubai-coffees',   title: 'Line up 10 Dubai networking coffees via LinkedIn HW Dubai alumni', cat: 'travel', week: 7, estMinutes: 90, criticality: 'high' },
+  { id: 'apps-w7',         title: '10 applications', cat: 'apps', week: 7, estMinutes: 300, criticality: 'high', deps: ['apps-w6'] },
+  { id: 'dsa-ch12-15',     title: 'boot.dev DSA Ch 12–15 (Hashmaps, Tries, Graphs, BFS/DFS)', cat: 'coding', week: 7, estMinutes: 240, criticality: 'normal', deps: ['dsa-ch4-9'] },
+  { id: 'mock-record',     title: 'Mock interview rehearsal: 10 dissertation Qs, record + listen back', cat: 'coding', week: 7, estMinutes: 120, criticality: 'critical', deps: ['diss-walkthrough'] },
+  { id: 'mock-leetcode',   title: '3× live-coding dry run (45-min timed LeetCode Easy, explain out loud)', cat: 'coding', week: 7, estMinutes: 135, criticality: 'critical', deps: ['dsa-ch4-9'] },
 
-  // WEEK 8 - TRAVEL
-  { title: 'Print 10 physical CVs', cat: 'travel', week: 8 },
-  { title: 'Pack business casual + one formal set', cat: 'travel', week: 8 },
-  { title: 'Travel to Dubai', cat: 'travel', week: 8, due: '2026-06-15' },
-  { title: 'Graduation ceremony — network with classmates\' parents and faculty', cat: 'travel', week: 8 },
-  { title: 'HW Dubai career services drop-in', cat: 'travel', week: 8 },
-  { title: 'Walk-in: Dtec Silicon Oasis · In5 Tech · AstroLabs · Impact Hub', cat: 'travel', week: 8 },
+  // WEEK 8 - TRAVEL -------------------------------------------------
+  { id: 'cv-print',        title: 'Print 10 physical CVs', cat: 'travel', week: 8, estMinutes: 30, criticality: 'high', deps: ['cv-update'] },
+  { id: 'pack',            title: 'Pack business casual + one formal set', cat: 'travel', week: 8, estMinutes: 60, criticality: 'normal' },
+  { id: 'travel-dubai',    title: 'Travel to Dubai', cat: 'travel', week: 8, due: '2026-06-15', estMinutes: 480, criticality: 'critical', deps: ['cv-print','pack'] },
+  { id: 'graduation',      title: "Graduation ceremony — network with classmates' parents and faculty", cat: 'travel', week: 8, estMinutes: 240, criticality: 'high', deps: ['travel-dubai'] },
+  { id: 'hw-careers',      title: 'HW Dubai career services drop-in', cat: 'travel', week: 8, estMinutes: 60, criticality: 'high', deps: ['travel-dubai'] },
+  { id: 'walk-ins',        title: 'Walk-in: Dtec Silicon Oasis · In5 Tech · AstroLabs · Impact Hub', cat: 'travel', week: 8, estMinutes: 360, criticality: 'high', deps: ['travel-dubai'] },
 
-  // DYNAMIC MILESTONES — these are anchored directly to editable Settings dates.
-  // They are appended instead of inserted so existing backups keep their original seed indexes.
-  { title: 'MILESTONE: CV / LinkedIn / GitHub live', cat: 'cv', week: 1, anchor: 'cvDeadline' },
-  { title: 'MILESTONE: dissertation deployed publicly', cat: 'deploy', week: 7, anchor: 'deployDeadline' },
-  { title: 'MILESTONE: coding fluency checkpoint', cat: 'coding', week: 7, anchor: 'codingDeadline' },
-  { title: 'MILESTONE: application target reached', cat: 'apps', week: 8, anchor: 'appsDeadline' },
+  // MILESTONE ANCHORS (dynamic — driven by Settings dates) ----------
+  { id: 'M-cv',            title: 'MILESTONE: CV / LinkedIn / GitHub live', cat: 'cv', week: 1, anchor: 'cvDeadline', estMinutes: 0, criticality: 'critical', deps: ['linkedin-fix','github-readmes','cv-personalize'] },
+  { id: 'M-deploy',        title: 'MILESTONE: dissertation deployed publicly', cat: 'deploy', week: 7, anchor: 'deployDeadline', estMinutes: 0, criticality: 'critical', deps: ['deploy-e2e','readme-polish'] },
+  { id: 'M-coding',        title: 'MILESTONE: coding fluency checkpoint', cat: 'coding', week: 7, anchor: 'codingDeadline', estMinutes: 0, criticality: 'critical', deps: ['mock-leetcode','mock-record'] },
+  { id: 'M-apps',          title: 'MILESTONE: application target reached', cat: 'apps', week: 8, anchor: 'appsDeadline', estMinutes: 0, criticality: 'critical', deps: ['apps-w7'] },
 ];
 
 function getRitualsForWeek(W) {
@@ -2099,8 +2109,9 @@ function makeSeedTask(t, i, s = DEFAULT_SETTINGS) {
   const dueOffset = t.due ? dayDiff(DEFAULT_SETTINGS.planStart, t.due) : null;
   const dueDate = seedTargetDueDate(t, i, s);
   return {
-    id: 't' + i,
+    id: t.id || ('t' + i),                    // stable seed id when present
     seedIndex: i,
+    seedId: t.id || null,                     // canonical seed key for dep lookups
     userAdded: false,
     manualDue: false,
     dueOffset,
@@ -2111,6 +2122,9 @@ function makeSeedTask(t, i, s = DEFAULT_SETTINGS) {
     dueDate,
     dueTime: t.time || '',
     status: 'pending',
+    estMinutes: Number.isFinite(t.estMinutes) ? t.estMinutes : 30,
+    criticality: t.criticality || 'normal',
+    deps: Array.isArray(t.deps) ? [...t.deps] : [],
     createdAt: s.planStart || DEFAULT_SETTINGS.planStart,
     completedAt: null,
     notes: '',
@@ -2198,6 +2212,12 @@ function migrateState(s) {
     return {
       ...fresh,
       ...old,
+      // The next 4 lines force fresh values for fields that come from the seed schema
+      // (so users on old localStorage pick up new estMinutes / criticality / deps / seedId).
+      seedId: fresh.seedId,
+      estMinutes: Number.isFinite(old.estMinutes) ? old.estMinutes : fresh.estMinutes,
+      criticality: old.criticality || fresh.criticality,
+      deps: Array.isArray(old.deps) && old.deps.length ? old.deps : fresh.deps,
       seedIndex: i,
       userAdded: false,
       dueOffset: fresh.dueOffset,
@@ -2228,6 +2248,9 @@ function migrateState(s) {
       dueTime: '',
       status: 'pending',
       notes: '',
+      estMinutes: 30,
+      criticality: 'normal',
+      deps: [],
       ...t,
     }));
 
@@ -2243,6 +2266,11 @@ function rescheduleSeedTasks(force = false) {
     const anchor = seedMilestoneAnchor(seed, t.seedIndex);
     t.dueOffset = fresh.dueOffset;
     t.milestoneKey = fresh.milestoneKey || null;
+    // Always refresh seed metadata that lives in the seed array, not user state.
+    t.seedId = fresh.seedId;
+    t.estMinutes = Number.isFinite(t.estMinutes) ? t.estMinutes : fresh.estMinutes;
+    t.criticality = t.criticality || fresh.criticality;
+    t.deps = Array.isArray(t.deps) && t.deps.length ? t.deps : fresh.deps;
     if (anchor) {
       // Milestones are controlled by Settings, not by stale task text.
       t.title = fresh.title;
@@ -2256,6 +2284,37 @@ function rescheduleSeedTasks(force = false) {
     } else if (t.dueDate) {
       t.week = weekNumberFromDate(t.dueDate, settings());
     }
+  }
+  // After bulk reflow, run dep validator: any task earlier than its
+  // predecessor gets pushed forward. Walk in topological-ish order by
+  // running cascade from each non-dependent task.
+  if (settings().cascadeDependents !== false) {
+    enforceDependencyConsistency();
+  }
+}
+
+/* Walk all seed-task pairs (predecessor, dependent) and ensure dependent's
+   date is >= predecessor's date. Iterates until stable to handle chains. */
+function enforceDependencyConsistency() {
+  let pass = 0;
+  while (pass < 8) {
+    let changed = false;
+    for (const t of state.tasks) {
+      if (!Array.isArray(t.deps) || !t.deps.length) continue;
+      if (t.status === 'done' || t.status === 'skipped') continue;
+      if (!t.dueDate) continue;
+      for (const depId of t.deps) {
+        const pred = getTaskBySeedId(depId);
+        if (!pred || !pred.dueDate) continue;
+        if (dayDiff(pred.dueDate, t.dueDate) < 0) {
+          t.dueDate = pred.dueDate;
+          t.week = weekNumberFromDate(t.dueDate, settings());
+          changed = true;
+        }
+      }
+    }
+    if (!changed) break;
+    pass++;
   }
 }
 
@@ -2392,7 +2451,11 @@ function taskSeverityScore(t) {
     else if (days <= 7) deadlineScore = 8;
   }
   const priorityScore = taskPriorityWeight(t);
-  return Math.min(100, hourScore + catScore + deadlineScore + priorityScore);
+  const baseScore = hourScore + catScore + deadlineScore + priorityScore;
+  // NEW: criticality multiplier so a missed milestone scores higher than
+  // a missed 5-min check, hour-for-hour.
+  const weighted = baseScore * criticalityWeight(t);
+  return Math.min(100, Math.round(weighted));
 }
 function severityBand(score) {
   if (score >= 80) return { label: 'critical', color: 'red', icon: '🔥' };
@@ -2420,6 +2483,289 @@ function oneHourFromNowTime() {
   const d = nowLocal();
   d.setHours(d.getHours() + 1);
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
+/* =====================================================================
+   DEPENDENCY CASCADE ENGINE
+   ---------------------------------------------------------------------
+   Each task has `deps: [seedId]` — list of seed IDs that must complete
+   before this task can start. When a task's date moves, dependents are
+   pushed forward so they cannot start before the predecessor's due date.
+   Pull-back is offered if a predecessor's date moves earlier.
+   ===================================================================== */
+
+function getTaskBySeedId(seedId) {
+  if (!seedId) return null;
+  return state.tasks.find(t => t.seedId === seedId || t.id === seedId);
+}
+
+function getDependents(seedId) {
+  if (!seedId) return [];
+  return state.tasks.filter(t =>
+    Array.isArray(t.deps) && t.deps.includes(seedId)
+  );
+}
+
+function getPrerequisites(task) {
+  if (!task || !Array.isArray(task.deps) || !task.deps.length) return [];
+  return task.deps.map(dep => getTaskBySeedId(dep)).filter(Boolean);
+}
+
+/* When a task moves to a new date, walk the dep graph forward (BFS) and
+   push any dependent tasks whose start date is now blocked. Returns an
+   array of {task, oldDate, newDate} for the UI to summarize. */
+function cascadeForward(rootSeedId, options = {}) {
+  if (!settings().cascadeDependents) return [];
+  if (!rootSeedId) return [];
+  const moves = [];
+  const visited = new Set([rootSeedId]);
+  const queue = [rootSeedId];
+  let safety = 200; // guard against accidental cycles
+
+  while (queue.length && safety-- > 0) {
+    const currentId = queue.shift();
+    const current = getTaskBySeedId(currentId);
+    if (!current || !current.dueDate) continue;
+
+    for (const dep of getDependents(currentId)) {
+      if (visited.has(dep.seedId || dep.id)) continue;
+      visited.add(dep.seedId || dep.id);
+      // Skip already-completed tasks — they don't get pushed
+      if (dep.status === 'done' || dep.status === 'skipped') continue;
+      // Skip milestone anchors — they're date-driven by Settings, not by deps
+      if (dep.milestoneKey) {
+        queue.push(dep.seedId || dep.id);
+        continue;
+      }
+      if (!dep.dueDate) continue;
+      // Push dependent if its current date is before predecessor's date.
+      if (dayDiff(current.dueDate, dep.dueDate) < 0) {
+        const oldDate = dep.dueDate;
+        const newDate = current.dueDate;
+        dep.dueDate = newDate;
+        dep.manualDue = true; // user moved upstream → downstream becomes manual
+        dep.week = weekNumberFromDate(newDate, settings());
+        moves.push({ id: dep.id, title: dep.title, oldDate, newDate });
+        if (!options.suppressNote) {
+          dep.notes = `${dep.notes || ''}\n[${nowLocalLabel()}] Auto-shifted from ${oldDate} → ${newDate} because dependency "${current.title}" moved.`.trim();
+        }
+        queue.push(dep.seedId || dep.id);
+      }
+    }
+  }
+  return moves;
+}
+
+/* When a predecessor finishes early or moves earlier, dependents *could*
+   pull forward. We don't auto-pull — we surface candidates so the user
+   approves. */
+function findPullForwardCandidates(rootSeedId) {
+  if (!rootSeedId) return [];
+  const root = getTaskBySeedId(rootSeedId);
+  if (!root || !root.dueDate) return [];
+  const candidates = [];
+  for (const dep of getDependents(rootSeedId)) {
+    if (dep.status === 'done' || dep.status === 'skipped') continue;
+    if (dep.milestoneKey) continue;
+    if (!dep.dueDate) continue;
+    // If dep is scheduled more than 2 days after root finishes, it could move.
+    if (dayDiff(root.dueDate, dep.dueDate) >= 2) candidates.push(dep);
+  }
+  return candidates;
+}
+
+/* =====================================================================
+   CRITICALITY-WEIGHTED SEVERITY
+   ===================================================================== */
+const CRITICALITY_MULTIPLIER = { low: 0.6, normal: 1.0, high: 1.25, critical: 1.6 };
+function criticalityWeight(t) {
+  return CRITICALITY_MULTIPLIER[t?.criticality] || 1.0;
+}
+
+/* =====================================================================
+   PROJECTION ENGINE
+   ---------------------------------------------------------------------
+   Computes 7-day rolling completion velocity per category from
+   completedAt timestamps, projects forward to the deadline, and reports
+   "at this pace you'll finish N days late" before status turns red.
+   ===================================================================== */
+
+function getRecentCompletions(catId, lookbackDays = 7) {
+  const cutoff = addDays(todayISO(), -lookbackDays);
+  return state.tasks.filter(t =>
+    t.category === catId &&
+    t.status === 'done' &&
+    t.completedAt &&
+    t.completedAt >= cutoff
+  );
+}
+
+function getCategoryVelocity(catId, lookbackDays = 7) {
+  const completions = getRecentCompletions(catId, lookbackDays);
+  return completions.length / lookbackDays; // tasks per day
+}
+
+function getTotalVelocity(lookbackDays = 7) {
+  const cutoff = addDays(todayISO(), -lookbackDays);
+  const recent = state.tasks.filter(t =>
+    t.status === 'done' && t.completedAt && t.completedAt >= cutoff
+  ).length;
+  return recent / lookbackDays;
+}
+
+function getAppVelocity(lookbackDays = 7) {
+  const cutoff = addDays(todayISO(), -lookbackDays);
+  const recent = (state.applications || []).filter(a => a.dateApplied >= cutoff).length;
+  return recent / lookbackDays;
+}
+
+function getRitualVelocity(lookbackDays = 7) {
+  const cutoff = addDays(todayISO(), -lookbackDays);
+  let count = 0;
+  for (const [date, items] of Object.entries(state.rituals || {})) {
+    if (date < cutoff) continue;
+    for (const status of Object.values(items || {})) {
+      if (status === 'done') count++;
+    }
+  }
+  return count / lookbackDays;
+}
+
+/* Returns {paceSufficient, projectedFinishISO, daysOverDeadline, gapPerDay}
+   for the given category, or null if nothing meaningful to project. */
+function getProjection(catId) {
+  const today = todayISO();
+  const cat = getOutcomes().find(o => o.id === catId);
+  if (!cat) return null;
+
+  let remaining, target, currentRate, rateLabel;
+  if (catId === 'apps') {
+    remaining = Math.max(0, appTarget() - state.applications.length);
+    target = appTarget();
+    currentRate = getAppVelocity(7);
+    rateLabel = 'apps/day';
+  } else {
+    const tasks = state.tasks.filter(t => t.category === catId && !t.milestoneKey);
+    const pending = tasks.filter(t => t.status === 'pending').length;
+    remaining = pending;
+    target = tasks.length;
+    currentRate = getCategoryVelocity(catId, 7);
+    rateLabel = 'tasks/day';
+  }
+
+  if (remaining <= 0) {
+    return { complete: true, catId, currentRate, rateLabel };
+  }
+
+  const daysLeft = dayDiff(today, cat.deadline);
+  const requiredRate = daysLeft > 0 ? remaining / daysLeft : Infinity;
+  const gapPerDay = Math.max(0, requiredRate - currentRate);
+
+  let projectedFinishISO = null;
+  let daysOverDeadline = null;
+  if (currentRate > 0) {
+    const daysToFinish = Math.ceil(remaining / currentRate);
+    projectedFinishISO = addDays(today, daysToFinish);
+    daysOverDeadline = dayDiff(cat.deadline, projectedFinishISO);
+  } else {
+    daysOverDeadline = Infinity;
+  }
+
+  return {
+    catId,
+    complete: false,
+    remaining,
+    target,
+    daysLeft,
+    currentRate,
+    requiredRate,
+    rateLabel,
+    gapPerDay,
+    projectedFinishISO,
+    daysOverDeadline,
+    paceSufficient: currentRate >= requiredRate,
+  };
+}
+
+/* =====================================================================
+   TIME-BUDGET REALISM
+   ---------------------------------------------------------------------
+   Sums estMinutes of pending tasks per week and reports daily load.
+   Compares to dailyCapacityMinutes setting.
+   ===================================================================== */
+
+function getTimeBudgetForWeek(week) {
+  const range = weekRange(week);
+  const tasks = state.tasks.filter(t =>
+    t.status === 'pending' &&
+    ((t.dueDate && t.dueDate >= range.start && t.dueDate <= range.end) ||
+     (!t.dueDate && t.week === week))
+  );
+  const totalMinutes = tasks.reduce((sum, t) => sum + (Number(t.estMinutes) || 0), 0);
+  const today = todayISO();
+  // Working days remaining in the week (incl. today if today is in this week)
+  const startISO = today >= range.start ? today : range.start;
+  const daysRemaining = Math.max(1, dayDiff(startISO, range.end) + 1);
+  const minutesPerDay = totalMinutes / daysRemaining;
+  const cap = Number(settings().dailyCapacityMinutes) || 240;
+  return {
+    week,
+    range,
+    taskCount: tasks.length,
+    totalMinutes,
+    daysRemaining,
+    minutesPerDay,
+    cap,
+    overBudget: minutesPerDay > cap,
+    utilization: minutesPerDay / cap,
+  };
+}
+
+function getTimeBudgetTotal() {
+  const today = todayISO();
+  const pending = state.tasks.filter(t => t.status === 'pending');
+  const totalMinutes = pending.reduce((sum, t) => sum + (Number(t.estMinutes) || 0), 0);
+  const planEndISO = settings().planEnd || DEFAULT_SETTINGS.planEnd;
+  const daysRemaining = Math.max(1, dayDiff(today, planEndISO));
+  const minutesPerDay = totalMinutes / daysRemaining;
+  const cap = Number(settings().dailyCapacityMinutes) || 240;
+  return {
+    taskCount: pending.length,
+    totalMinutes,
+    totalHours: totalMinutes / 60,
+    daysRemaining,
+    minutesPerDay,
+    hoursPerDay: minutesPerDay / 60,
+    cap,
+    overBudget: minutesPerDay > cap,
+    utilization: minutesPerDay / cap,
+  };
+}
+
+/* =====================================================================
+   RITUAL STREAK PER CATEGORY
+   ===================================================================== */
+
+function getRitualStreak(cat) {
+  // Walks back from yesterday — does NOT count today (today's still open).
+  let consecutiveMissed = 0;
+  for (let i = 1; i <= 30; i++) {
+    const date = addDays(todayISO(), -i);
+    const week = getCurrentWeek(date);
+    if (week < 1) break; // before plan start
+    const day = state.rituals[date] || {};
+    const rituals = getRitualsForWeek(week);
+    const matchingRituals = cat
+      ? rituals.map((r, idx) => ({ r, idx })).filter(x => x.r.cat === cat)
+      : rituals.map((r, idx) => ({ r, idx }));
+    if (!matchingRituals.length) break;
+    const anyDone = matchingRituals.some(x =>
+      day[`r-${date}-${x.idx}`] === 'done'
+    );
+    if (anyDone) break;
+    consecutiveMissed++;
+  }
+  return consecutiveMissed;
 }
 
 /* =====================================================================
@@ -2505,60 +2851,110 @@ function getAdjustment(catId) {
   const h = getHealth(catId);
   if (!h) return null;
   const week = getCurrentWeek();
+  const proj = getProjection(catId);
+
+  // Universal early-return: complete
+  if (h.actualPct >= 1) {
+    if (catId === 'cv')      return { tone: 'success', text: 'CV/LinkedIn/GitHub: shipped. Lock it in. Move to AWS.' };
+    if (catId === 'aws')     return { tone: 'success', text: 'AWS Cloud Practitioner: complete. Add it to LinkedIn + CV today.' };
+    if (catId === 'deploy')  return { tone: 'success', text: 'Deployed. Live URL on the CV and in every application opener.' };
+    if (catId === 'apps')    return { tone: 'success', text: `${state.applications.length} applications submitted. You hit the volume floor.` };
+    if (catId === 'coding')  return { tone: 'success', text: 'Coding track complete enough for junior screening. Keep daily reps warm until interviews.' };
+  }
+
+  // Recovery-plan core: compute concrete numbers from the projection engine.
+  const recoveryLines = [];
+  if (proj && !proj.complete && proj.daysLeft > 0) {
+    recoveryLines.push(
+      `${proj.remaining} ${catId === 'apps' ? 'apps' : 'tasks'} left, ${proj.daysLeft} days to deadline = ` +
+      `need ${proj.requiredRate.toFixed(1)} ${proj.rateLabel}.`
+    );
+    if (proj.currentRate > 0) {
+      recoveryLines.push(
+        `Current 7-day pace: ${proj.currentRate.toFixed(2)} ${proj.rateLabel}. ` +
+        (proj.paceSufficient
+          ? `On pace — projected finish ${fmtDate(proj.projectedFinishISO)}.`
+          : `At this pace you finish ${fmtDate(proj.projectedFinishISO)} — ${proj.daysOverDeadline} day(s) late.`)
+      );
+      if (!proj.paceSufficient && proj.gapPerDay > 0) {
+        recoveryLines.push(`Gap to close: ${proj.gapPerDay.toFixed(2)} ${proj.rateLabel} extra.`);
+      }
+    } else {
+      recoveryLines.push(`Zero recent activity. Required pace ${proj.requiredRate.toFixed(1)} ${proj.rateLabel} — start TODAY or you finish past deadline.`);
+    }
+  }
+
+  // Category-specific guidance layered on top of the math
+  let tone = 'info', extra = '';
 
   if (catId === 'cv') {
     if (h.status === 'behind' || (h.status === 'at-risk' && h.daysLeft <= 3)) {
-      return { tone: 'danger', text: `CV/LinkedIn/GitHub deadline is in ${h.daysLeft} day(s). Block 2 hours tomorrow morning. No new tasks until ${h.target - h.actual} of these are checked off. Lowest-hanging fruit on the whole plan.` };
+      tone = 'danger';
+      extra = `Block 2 hours tomorrow morning. No new tasks until ${h.target - h.actual} CV items are done. Lowest-hanging fruit on the whole plan.`;
+    } else if (h.status === 'at-risk') {
+      tone = 'warn';
+      extra = 'CV pace slipping with deadline approaching. Tomorrow morning, not "this weekend".';
     }
-    if (h.actualPct >= 1) return { tone: 'success', text: 'CV/LinkedIn/GitHub: shipped. Lock it in. Move to AWS.' };
   }
 
   if (catId === 'aws') {
-    const awsTasks = state.tasks.filter(t => t.category === 'aws');
-    const done = awsTasks.filter(t => t.status === 'done').length;
-    const pct = done / (awsTasks.length || 1);
-    if (week >= 3 && pct < 0.4) {
-      return { tone: 'danger', text: `AWS progress is ${Math.round(pct * 100)}% by Week ${week}. Add 1 hour/day Maarek video for the next 7 days. If you can't, push the exam booking from May 25 to May 30 — but BOOK it this week regardless. Exam pressure forces completion.` };
-    }
     if (week >= 5 && h.status === 'behind') {
-      return { tone: 'danger', text: `AWS still under target in Week ${week}. The exam is the forcing function — book it for the next available slot regardless of practice score.` };
+      tone = 'danger';
+      extra = 'The exam is the forcing function — book it for the next available slot regardless of practice score. Worst case is a $100 rebook.';
+    } else if (week >= 3 && h.actualPct < 0.4) {
+      tone = 'danger';
+      extra = `AWS at ${Math.round(h.actualPct * 100)}% by W${week}. Add 1 hour/day Maarek for the next 7 days, or push exam booking by 5 days — but BOOK it this week regardless.`;
+    } else if (h.status === 'at-risk') {
+      tone = 'warn';
+      extra = 'Watch the pace. The cert gates several Tier 1 applications.';
     }
-    if (h.actualPct >= 1) return { tone: 'success', text: 'AWS Cloud Practitioner: passed. Add it to LinkedIn + CV today.' };
   }
 
   if (catId === 'deploy') {
-    if (week >= 5 && h.actualPct < 0.2) {
-      return { tone: 'danger', text: `Deploy is ${Math.round(h.actualPct * 100)}% by Week ${week}. If AWS deployment is fighting you and you have less than 5 working days — flip the escape hatch: ship on Render or Railway. The cert is enough; the deployed project doesn't need to be on AWS.` };
-    }
     if (week >= 6 && h.actualPct < 0.5) {
-      return { tone: 'danger', text: `Deploy < 50% by Week ${week}. Activate escape hatch TODAY. A live URL by Friday is the only goal.` };
+      tone = 'danger';
+      extra = 'Activate escape hatch TODAY — Render or Railway. A live URL by Friday is the only goal. Cert keeps cloud literacy on the CV; deploy doesn\'t need to be on AWS.';
+    } else if (week >= 5 && h.actualPct < 0.2) {
+      tone = 'danger';
+      extra = `Deploy at ${Math.round(h.actualPct * 100)}% by W${week}. If AWS deployment is fighting you and you have <5 working days — flip the escape hatch.`;
+    } else if (h.status === 'at-risk') {
+      tone = 'warn';
+      extra = 'Pace insufficient. Pick the simplest path that ships.';
     }
-    if (h.actualPct >= 1) return { tone: 'success', text: 'Deployed. Live URL on the CV and in every application opener.' };
   }
 
   if (catId === 'apps') {
     const sent = state.applications.length;
     const expected = h.expectedActual;
     if (week >= 2 && sent < expected - 3) {
-      return { tone: 'danger', text: `Behind on applications: ${sent} sent vs target ~${expected} by today. Tomorrow do ${Math.max(1, expected - sent)} in one sitting. Tier 1 first — they have hard deadlines. Volume > polish.` };
+      tone = 'danger';
+      extra = `Tomorrow do ${Math.max(1, expected - sent)} in one sitting. Tier 1 first — hard deadlines. Volume > polish.`;
     }
     if (week >= 6 && sent >= 30 && (state.metrics.callbacks || 0) === 0) {
-      return { tone: 'warn', text: `Branch point trigger: ${sent}+ apps with zero callbacks. Re-read the CV summary line and role framing. Same dissertation, same cert, same deployed project — sharper framing, not random pivoting.` };
+      tone = 'warn';
+      extra = (extra ? extra + ' ' : '') + `Branch-point trigger: ${sent}+ apps with zero callbacks. Re-read the CV summary line. Same dissertation, sharper framing.`;
     }
-    if (sent >= appTarget()) return { tone: 'success', text: `${sent} applications submitted. You hit the volume floor.` };
   }
 
   if (catId === 'coding') {
     const repsThisWeek = countRitualsDoneThisWeek('coding');
     if (week >= 3 && h.actualPct < h.expectedPct - 0.15) {
-      return { tone: 'danger', text: `Coding fluency is lagging. Do not hide in videos. Today: one no-AI rep, then explain one dissertation route/security function out loud and log the weak point.` };
+      tone = 'danger';
+      extra = 'Do not hide in videos. Today: one no-AI rep, then explain one dissertation route/security function out loud and log the weak point.';
+    } else if (week >= 5 && repsThisWeek < 3) {
+      tone = 'warn';
+      extra = `Only ${repsThisWeek} coding ritual(s) done this week. Minimum is 5. You need typing reps, not more planning.`;
     }
-    if (week >= 5 && repsThisWeek < 3) {
-      return { tone: 'warn', text: `Only ${repsThisWeek} coding ritual(s) done this week. Minimum is 5. You need typing reps, not more planning.` };
-    }
-    if (h.actualPct >= 1) return { tone: 'success', text: 'Coding track complete enough for junior screening. Keep daily reps warm until interviews.' };
   }
-  return null;
+
+  // No problem detected and we already know it's not complete → just informational pace.
+  if (!extra && !recoveryLines.length) return null;
+  if (!extra && recoveryLines.length && (h.status === 'on-track' || h.status === 'ahead')) {
+    tone = 'info';
+  }
+
+  const text = [extra, recoveryLines.join(' ')].filter(Boolean).join(' ');
+  return { tone, text };
 }
 
 /* =====================================================================
@@ -2709,8 +3105,27 @@ function renderToday() {
   const worstScore = q.overdue.reduce((m, t) => Math.max(m, taskSeverityScore(t)), 0);
   const worstBand = severityBand(worstScore);
 
-  // overdue
-  $('#t-overdue').innerHTML = q.overdue.length ? `
+  // ritual-streak alerts (per category)
+  const alertThreshold = Number(settings().ritualStreakAlertDays) || 2;
+  const codingMissed = getRitualStreak('coding');
+  const appsMissed = getRitualStreak('apps');
+  let ritualAlertHTML = '';
+  if (codingMissed >= alertThreshold || appsMissed >= alertThreshold) {
+    const alerts = [];
+    if (codingMissed >= alertThreshold) alerts.push(`<strong>${codingMissed} day${codingMissed > 1 ? 's' : ''}</strong> without a coding ritual`);
+    if (appsMissed >= alertThreshold) alerts.push(`<strong>${appsMissed} day${appsMissed > 1 ? 's' : ''}</strong> without an application`);
+    ritualAlertHTML = `
+      <div class="block callout ${Math.max(codingMissed, appsMissed) >= 4 ? 'danger' : 'warn'}" style="margin:6px 0 10px">
+        <div class="callout-icon">${Math.max(codingMissed, appsMissed) >= 4 ? '🔥' : '⚠️'}</div>
+        <div class="callout-body">
+          Ritual streak broken: ${alerts.join(' · ')}.
+          One no-AI rep + one application is the daily floor — cheaper to do today than apologize for on Sunday.
+        </div>
+      </div>
+    `;
+  }
+
+  $('#t-overdue').innerHTML = ritualAlertHTML + (q.overdue.length ? `
     <div class="block toggle expanded" data-toggle-section="overdue">
       <div class="toggle-head">
         <button class="toggle-chev"></button>
@@ -2724,7 +3139,7 @@ function renderToday() {
         ${q.overdue.map(t => todoBlock(t)).join('')}
       </div>
     </div>
-  ` : '';
+  ` : '');
 
   // today (rituals + scheduled)
   const rituals = getRitualsForWeek(week || 1);
@@ -2781,12 +3196,114 @@ function renderMission() {
   $('#m-current').textContent = week === 0 ? 'Pre-launch' : `Week ${week} of 8`;
   $('#mission-window').textContent = `${planStart()} → ${planEnd()}`;
 
-  $('#mission-grid').innerHTML = getOutcomes().map(o => {
+  // ---- velocity panel ----
+  const taskV = getTotalVelocity(7);
+  const appV = getAppVelocity(7);
+  const ritualV = getRitualVelocity(7);
+  const taskV30 = getTotalVelocity(30);
+  const trendArrow = (recent, longer) => {
+    if (longer === 0) return '';
+    const diff = (recent - longer) / Math.max(0.01, longer);
+    if (diff > 0.15) return '<span style="color:var(--c-green-fg)">↑</span>';
+    if (diff < -0.15) return '<span style="color:var(--c-red-fg)">↓</span>';
+    return '<span style="color:var(--ink-fade)">→</span>';
+  };
+
+  // ---- time-budget realism ----
+  const budget = getTimeBudgetTotal();
+  const weekBudget = week >= 1 && week <= 8 ? getTimeBudgetForWeek(week) : null;
+  const budgetTone = budget.utilization > 1.2 ? 'danger' : (budget.utilization > 0.9 ? 'warn' : 'info');
+  const budgetMsg = budget.utilization > 1.2
+    ? `<strong>Plan is fantasy at this load.</strong> Cut ${Math.round((budget.utilization - 1) * budget.daysRemaining * budget.cap / 60)} hours of pending work, push deadlines, or accept some tasks won't ship.`
+    : budget.utilization > 0.9
+    ? '<strong>Tight.</strong> Most days will be fully booked. No cushion for a bad day.'
+    : '<strong>Realistic load.</strong> Some days will be quieter — use them to pull tasks forward.';
+
+  const velocityHTML = `
+    <div class="outcome" style="margin-bottom:14px">
+      <div class="outcome-h">
+        <div>
+          <div class="outcome-name">📈 Velocity · last 7 days</div>
+          <div class="outcome-deadline">rolling rate, projected against plan window</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px">
+        <div style="background:rgba(255,255,255,0.025);border:1px solid var(--line);border-radius:var(--r-md);padding:10px 12px">
+          <div style="font-size:11px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:0.05em">Tasks closed</div>
+          <div style="font-size:22px;font-weight:600">${taskV.toFixed(1)}<span style="font-size:13px;color:var(--ink-mute);font-weight:400">/day</span> ${trendArrow(taskV, taskV30)}</div>
+          <div style="font-size:11px;color:var(--ink-mute);margin-top:2px">30-day avg ${taskV30.toFixed(1)}/day</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.025);border:1px solid var(--line);border-radius:var(--r-md);padding:10px 12px">
+          <div style="font-size:11px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:0.05em">Apps sent</div>
+          <div style="font-size:22px;font-weight:600">${appV.toFixed(1)}<span style="font-size:13px;color:var(--ink-mute);font-weight:400">/day</span></div>
+          <div style="font-size:11px;color:var(--ink-mute);margin-top:2px">${state.applications.length} of ${appTarget()} total</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.025);border:1px solid var(--line);border-radius:var(--r-md);padding:10px 12px">
+          <div style="font-size:11px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:0.05em">Ritual reps</div>
+          <div style="font-size:22px;font-weight:600">${ritualV.toFixed(1)}<span style="font-size:13px;color:var(--ink-mute);font-weight:400">/day</span></div>
+          <div style="font-size:11px;color:var(--ink-mute);margin-top:2px">target ~3/day</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="outcome" style="margin-bottom:14px">
+      <div class="outcome-h">
+        <div>
+          <div class="outcome-name">⏱️ Time-budget realism</div>
+          <div class="outcome-deadline">pending effort vs daily capacity ${Math.round(budget.cap)} min</div>
+        </div>
+        <span class="tag ${budgetTone === 'danger' ? 'red' : (budgetTone === 'warn' ? 'orange' : 'green')} lg">${(budget.utilization * 100).toFixed(0)}% load</span>
+      </div>
+      <div class="bar">
+        <div class="fill" style="width:${Math.min(150, budget.utilization * 100)}%;background:${budgetTone === 'danger' ? 'var(--c-red-fg)' : (budgetTone === 'warn' ? 'var(--c-orange-fg)' : 'var(--c-green-fg)')}"></div>
+      </div>
+      <div class="bar-meta">
+        <span><strong>${budget.taskCount}</strong> pending tasks · <strong>${budget.totalHours.toFixed(1)}</strong> hours total</span>
+        <span><strong>${budget.hoursPerDay.toFixed(1)}</strong> hr/day across ${budget.daysRemaining} days</span>
+      </div>
+      <div class="block callout ${budgetTone}" style="margin-top:10px">
+        <div class="callout-icon">${budgetTone === 'danger' ? '🔥' : (budgetTone === 'warn' ? '⚠️' : '✓')}</div>
+        <div class="callout-body" style="font-size:14px">${budgetMsg}${weekBudget ? ` This week alone: ${(weekBudget.minutesPerDay / 60).toFixed(1)} hr/day across ${weekBudget.taskCount} tasks.` : ''}</div>
+      </div>
+    </div>
+  `;
+
+  $('#mission-grid').innerHTML = velocityHTML + getOutcomes().map(o => {
     const h = getHealth(o.id);
     const adj = getAdjustment(o.id);
+    const proj = getProjection(o.id);
     const pct = Math.min(1, h.actualPct);
     const expectedPct = Math.min(1, h.expectedPct);
     const statusBand = h.status === 'on-track' ? 'blue' : (h.status === 'ahead' ? 'green' : (h.status === 'at-risk' ? 'orange' : 'red'));
+
+    // Projection sub-line
+    let projHTML = '';
+    if (proj && !proj.complete) {
+      const projTone = proj.paceSufficient ? 'green' : (proj.daysOverDeadline === Infinity ? 'red' : (proj.daysOverDeadline > 7 ? 'red' : 'orange'));
+      const projText = proj.currentRate === 0
+        ? `0 ${proj.rateLabel} last 7 days · need ${proj.requiredRate.toFixed(1)} ${proj.rateLabel}`
+        : (proj.paceSufficient
+          ? `Projected finish ${fmtDate(proj.projectedFinishISO)} · on pace`
+          : `Projected finish ${fmtDate(proj.projectedFinishISO)} · ${proj.daysOverDeadline === Infinity ? '∞' : proj.daysOverDeadline}d late`);
+      projHTML = `
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:var(--ink-mute)">
+          <span class="tag ${projTone}">📊 forecast</span>
+          <span>${projText}</span>
+        </div>
+      `;
+    }
+
+    // Auto-defer milestone offer
+    let deferOffer = '';
+    if (o.id === 'aws' || o.id === 'deploy' || o.id === 'cv' || o.id === 'apps') {
+      const milestoneTask = state.tasks.find(t => t.milestoneKey && t.category === o.id);
+      if (milestoneTask && taskIsOverdue(milestoneTask)) {
+        const daysPast = Math.abs(h.daysLeft);
+        deferOffer = `
+          <button class="btn" data-action="defer-milestone" data-cat="${o.id}" data-days="${Math.max(7, daysPast + 3)}" style="margin-top:8px">⏩ Shift this milestone +${Math.max(7, daysPast + 3)} days &amp; cascade</button>
+        `;
+      }
+    }
 
     return `
       <div class="outcome">
@@ -2805,10 +3322,12 @@ function renderMission() {
           <span><strong>${h.actual}</strong> of ${h.target} ${o.id === 'apps' ? 'sent' : 'tasks done'}</span>
           <span>expected by today: ~${h.expectedActual}</span>
         </div>
+        ${projHTML}
         <div style="font-size:13px;color:var(--ink-mute);margin-top:8px;line-height:1.5">${escapeHTML(o.hint)}</div>
+        ${deferOffer}
         ${adj ? `
-          <div class="block callout ${adj.tone === 'success' ? 'success' : (adj.tone === 'warn' ? 'warn' : 'danger')}" style="margin-top:14px">
-            <div class="callout-icon">${adj.tone === 'success' ? '✓' : '⚡'}</div>
+          <div class="block callout ${adj.tone === 'success' ? 'success' : (adj.tone === 'warn' ? 'warn' : (adj.tone === 'info' ? 'info' : 'danger'))}" style="margin-top:14px">
+            <div class="callout-icon">${adj.tone === 'success' ? '✓' : (adj.tone === 'info' ? 'ℹ️' : '⚡')}</div>
             <div class="callout-body" style="font-size:14px;line-height:1.5;color:var(--ink)">${escapeHTML(adj.text)}</div>
           </div>
         ` : ''}
@@ -3571,6 +4090,20 @@ function renderSettings() {
           ${settingsRow('appTarget', 'Application target count', s.appTarget, 'number')}
           ${settingsRow('defaultTaskDueTime', 'Default due time for date-only tasks', s.defaultTaskDueTime || '23:59', 'time')}
           ${settingsRow('autoCatchupMax', 'Max catch-up tasks generated at once', s.autoCatchupMax || 5, 'number')}
+          <tr><td colspan="2" style="padding-top:14px;color:var(--ink-mute);font-size:12px;letter-spacing:0.05em;text-transform:uppercase">Dynamic engine</td></tr>
+          ${settingsRow('workHoursStart', 'Work hours start (catch-up scheduling floor)', s.workHoursStart || '09:00', 'time')}
+          ${settingsRow('workHoursEnd', 'Work hours end (catch-up ceiling)', s.workHoursEnd || '18:00', 'time')}
+          ${settingsRow('dailyCapacityMinutes', 'Daily work capacity (minutes) — drives time-budget realism', s.dailyCapacityMinutes || 240, 'number')}
+          ${settingsRow('ritualStreakAlertDays', 'Warn when ritual missed for N consecutive days', s.ritualStreakAlertDays || 2, 'number')}
+          <tr>
+            <td style="width:260px;color:var(--ink-mute)">Cascade dependents on date moves</td>
+            <td>
+              <select class="input" data-setting-key="cascadeDependents">
+                <option value="true" ${s.cascadeDependents !== false ? 'selected' : ''}>On — push downstream tasks when a predecessor moves later</option>
+                <option value="false" ${s.cascadeDependents === false ? 'selected' : ''}>Off — date edits only affect the edited task</option>
+              </select>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -3581,10 +4114,11 @@ function renderSettings() {
     <div class="help-row">
       <div class="help-card"><strong><span class="badge-dot" style="background:var(--c-green-fg)"></span>Save settings + update dynamic tasks</strong><br>Safe/default button. Updates the plan rules, exact milestone anchors, and non-manual seed tasks from the current Week 1 start/deadlines. It protects dates you manually chose on normal tasks.</div>
       <div class="help-card"><strong><span class="badge-dot" style="background:var(--c-orange-fg)"></span>Force reflow all seed-task dates</strong><br>Strong rebuild button. Rebuilds every original/seed task date from your current Week 1 start and deadlines, including week-only tasks. It may overwrite manual date edits on original/seed tasks, but it does not delete custom tasks, applications, companies, or reviews.</div>
+      <div class="help-card"><strong><span class="badge-dot" style="background:var(--c-blue-fg)"></span>Cascade dependents</strong><br>When you push a task forward, the engine walks the dependency graph and pushes any task that needs this one to finish first. Walks chains too. Done/skipped tasks never get auto-moved.</div>
     </div>
     <div class="block callout warn">
       <div class="callout-icon">⚠️</div>
-      <div class="callout-body">Export a JSON backup before major deadline changes. The planner now has two layers: milestone tasks are exact anchors, while normal seed tasks are generated from your Week 1 start, week number, and category/deadline rules.</div>
+      <div class="callout-body">Export a JSON backup before major deadline changes. The planner now has two layers: milestone tasks are exact anchors, while normal seed tasks are generated from your Week 1 start, week number, and category/deadline rules. Dependency edges are baked into the seed schema and survive reflow.</div>
     </div>
     <div class="block h3">Milestone anchors</div>
     <div class="block bullet"><div class="b-text">AWS exam task follows <code class="inline">AWS CP exam target date</code>, not the old May 25 text.</div></div>
@@ -3605,7 +4139,14 @@ function settingsRow(key, label, value, type) {
 function saveSettingsFromForm() {
   const next = { ...settings() };
   $$('[data-setting-key]').forEach(el => {
-    next[el.dataset.settingKey] = el.type === 'number' ? Number(el.value || 0) : el.value;
+    const key = el.dataset.settingKey;
+    if (key === 'cascadeDependents') {
+      next[key] = el.value === 'true';
+    } else if (el.type === 'number') {
+      next[key] = Number(el.value || 0);
+    } else {
+      next[key] = el.value;
+    }
   });
   if (!next.planStart || !next.planEnd) {
     alert('Plan start and end are required.');
@@ -3615,7 +4156,7 @@ function saveSettingsFromForm() {
   rescheduleSeedTasks(false);
   save();
   rerender();
-  alert('Settings saved. Safe dynamic update applied: countdowns, scores, anchored milestones, and non-manual seed dates were regenerated from your current Week 1 start/deadlines. Manual dates on normal tasks were protected.');
+  alert('Settings saved. Safe dynamic update applied: countdowns, scores, anchored milestones, non-manual seed dates, and dependency cascades were regenerated from your current Week 1 start/deadlines. Manual dates on normal tasks were protected.');
 }
 
 function saveReviewFromForm() {
@@ -3714,6 +4255,8 @@ function generateCatchupTasks() {
     adds.push({
       title: `Catch-up: ${t.title}`,
       cat: t.category,
+      criticality: t.criticality || 'high',
+      estMinutes: Math.min(60, Math.max(15, Math.round((t.estMinutes || 30) / 2))),
       notes: `${autoCatchupSuggestion(t)} Original due: ${taskDueLabel(t)}. Original task id: ${t.id}.`
     });
   }
@@ -3724,19 +4267,23 @@ function generateCatchupTasks() {
       const h = getHealth(o.id);
       if (h.status === 'behind' || h.status === 'at-risk') {
         if (o.id === 'apps') {
-          adds.push({ title: `Catch-up: submit ${Math.max(1, h.expectedActual - h.actual)} targeted application(s)`, cat: 'apps', notes: 'Generated because the applications outcome is below expected pace.' });
+          adds.push({ title: `Catch-up: submit ${Math.max(1, h.expectedActual - h.actual)} targeted application(s)`, cat: 'apps', criticality: 'high', estMinutes: 60, notes: 'Generated because the applications outcome is below expected pace.' });
         } else if (o.id === 'coding') {
-          adds.push({ title: 'Catch-up: 1 no-AI coding rep + explain one dissertation route out loud', cat: 'coding', notes: 'Generated because the coding fluency outcome is below expected pace.' });
+          adds.push({ title: 'Catch-up: 1 no-AI coding rep + explain one dissertation route out loud', cat: 'coding', criticality: 'normal', estMinutes: 30, notes: 'Generated because the coding fluency outcome is below expected pace.' });
         } else {
-          adds.push({ title: `Catch-up: move ${o.id} outcome one visible step forward`, cat: o.id, notes: `Generated because ${o.id} is ${h.status.replace('-', ' ')}.` });
+          adds.push({ title: `Catch-up: move ${o.id} outcome one visible step forward`, cat: o.id, criticality: 'high', estMinutes: 45, notes: `Generated because ${o.id} is ${h.status.replace('-', ' ')}.` });
         }
       }
     }
   }
 
+  // Stagger catch-ups across the remaining work hours rather than collapsing
+  // them all to "one hour from now". Respects settings.workHoursStart / End.
+  const slots = computeStaggeredSlots(adds.length);
   const existingTitles = new Set(state.tasks.map(t => t.title));
   let added = 0;
-  for (const item of adds) {
+  for (let i = 0; i < adds.length; i++) {
+    const item = adds[i];
     if (existingTitles.has(item.title)) continue;
     state.tasks.push({
       id: 't' + Date.now() + Math.random().toString(16).slice(2),
@@ -3746,9 +4293,12 @@ function generateCatchupTasks() {
       category: item.cat,
       week,
       dueDate: today,
-      dueTime: oneHourFromNowTime(),
+      dueTime: slots[i] || oneHourFromNowTime(),
       status: 'pending',
       notes: item.notes || 'Generated from catch-up algorithm.',
+      estMinutes: item.estMinutes || 30,
+      criticality: item.criticality || 'normal',
+      deps: [],
       createdAt: today,
       completedAt: null,
     });
@@ -3756,7 +4306,42 @@ function generateCatchupTasks() {
   }
   save();
   rerender();
-  alert(added ? `${added} catch-up task(s) added to today with due times.` : 'No new catch-up tasks needed right now.');
+  alert(added ? `${added} catch-up task(s) added to today, staggered across the workday.` : 'No new catch-up tasks needed right now.');
+}
+
+/* Compute N evenly-spaced work-hour timestamps starting from "1 hour from now",
+   bounded by the workHoursEnd setting. Falls back to oneHourFromNowTime if N=0. */
+function computeStaggeredSlots(count) {
+  if (!count) return [];
+  const s = settings();
+  const endHour = parseInt((s.workHoursEnd || '18:00').split(':')[0]) || 18;
+  const endMin  = parseInt((s.workHoursEnd || '18:00').split(':')[1]) || 0;
+  const now = nowLocal();
+  // Start floor: 1 hour from now, but no earlier than workHoursStart
+  const startHourCandidate = new Date(now);
+  startHourCandidate.setHours(startHourCandidate.getHours() + 1, 0, 0, 0);
+  const startHour = parseInt((s.workHoursStart || '09:00').split(':')[0]) || 9;
+  const startMin  = parseInt((s.workHoursStart || '09:00').split(':')[1]) || 0;
+  const workStartToday = new Date(now);
+  workStartToday.setHours(startHour, startMin, 0, 0);
+  const start = startHourCandidate < workStartToday ? workStartToday : startHourCandidate;
+  const end = new Date(now);
+  end.setHours(endHour, endMin, 0, 0);
+  // If end is already past, use 90-min spacing from "now+1h"
+  const totalMs = end - start;
+  const spacingMs = count > 1 ? Math.max(45 * 60 * 1000, totalMs / count) : 0;
+  const slots = [];
+  for (let i = 0; i < count; i++) {
+    const t = new Date(start.getTime() + i * spacingMs);
+    if (totalMs <= 0) {
+      // workday over — fall back to 90-min ladder from now+1h
+      const fallback = new Date(now.getTime() + (60 + i * 90) * 60 * 1000);
+      slots.push(`${String(fallback.getHours()).padStart(2,'0')}:${String(fallback.getMinutes()).padStart(2,'0')}`);
+    } else {
+      slots.push(`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`);
+    }
+  }
+  return slots;
 }
 
 /* =====================================================================
@@ -3821,6 +4406,9 @@ function quickAdd() {
     dueTime: settings().defaultTaskDueTime || '23:59',
     status: 'pending',
     notes: '',
+    estMinutes: 30,
+    criticality: 'normal',
+    deps: [],
     createdAt: todayISO(),
     completedAt: null,
   });
@@ -3882,6 +4470,15 @@ function newTask(prefilledStatus) {
     <select class="input" id="m-task-cat">
       ${Object.entries(CAT_META).map(([k, v]) => `<option value="${k}">${v.emoji} ${v.name}</option>`).join('')}
     </select>
+    <label class="sect-h" style="margin-top:10px">Estimated effort (minutes)</label>
+    <input class="input" type="number" id="m-task-est" min="5" step="5" value="30" />
+    <label class="sect-h" style="margin-top:10px">Criticality</label>
+    <select class="input" id="m-task-crit">
+      <option value="low">Low — nice to have</option>
+      <option value="normal" selected>Normal</option>
+      <option value="high">High — moves the needle</option>
+      <option value="critical">Critical — milestone-blocking</option>
+    </select>
     <label class="sect-h" style="margin-top:10px">Due date (optional)</label>
     <input class="input" type="date" id="m-task-due" />
     <label class="sect-h" style="margin-top:10px">Due time (optional)</label>
@@ -3904,6 +4501,9 @@ function newTask(prefilledStatus) {
       dueTime: cleanTime($('#m-task-time').value),
       status: prefilledStatus || 'pending',
       notes: '',
+      estMinutes: Math.max(5, Number($('#m-task-est').value) || 30),
+      criticality: $('#m-task-crit').value || 'normal',
+      deps: [],
       createdAt: todayISO(),
       completedAt: null,
     });
@@ -4010,6 +4610,69 @@ function openTaskDrawer(id) {
         </div>
       </div>
     ` : ''}
+    <div class="page-divider"></div>
+
+    <div class="sect-h">Effort & priority</div>
+    <div class="row" style="gap:14px;flex-wrap:wrap;margin-bottom:8px">
+      <div style="flex:1;min-width:180px">
+        <label style="font-size:11px;color:var(--ink-mute);text-transform:uppercase">Estimated minutes</label>
+        <input type="number" min="5" step="5" class="input" data-action="set-est" data-id="${t.id}" value="${Number(t.estMinutes) || 30}" style="margin-top:4px" />
+      </div>
+      <div style="flex:1;min-width:180px">
+        <label style="font-size:11px;color:var(--ink-mute);text-transform:uppercase">Criticality</label>
+        <select class="input" data-action="set-criticality" data-id="${t.id}" style="margin-top:4px">
+          <option value="low" ${t.criticality === 'low' ? 'selected' : ''}>Low — nice to have</option>
+          <option value="normal" ${(t.criticality || 'normal') === 'normal' ? 'selected' : ''}>Normal</option>
+          <option value="high" ${t.criticality === 'high' ? 'selected' : ''}>High — moves the needle</option>
+          <option value="critical" ${t.criticality === 'critical' ? 'selected' : ''}>Critical — milestone-blocking</option>
+        </select>
+      </div>
+    </div>
+
+    ${(() => {
+      // Dependency panels: prerequisites (this task waits for) + dependents (this gates)
+      const prereqs = getPrerequisites(t);
+      const dependents = t.seedId ? getDependents(t.seedId) : [];
+      const blockedBy = prereqs.filter(p => p.status !== 'done');
+      let html = '';
+      if (prereqs.length || dependents.length) {
+        html += `<div class="sect-h">Dependencies</div>`;
+        if (prereqs.length) {
+          html += `
+            <div style="margin-bottom:10px">
+              <div style="font-size:12px;color:var(--ink-mute);margin-bottom:4px">⬅️ Waits for ${prereqs.length} task(s)${blockedBy.length ? ` · ${blockedBy.length} still pending` : ' · all done ✓'}</div>
+              ${prereqs.map(p => `
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg-hover-soft);border:1px solid var(--line);border-radius:var(--r);margin-bottom:4px;font-size:13px;cursor:pointer" data-action="open-task" data-id="${p.id}">
+                  <span class="tag ${STATUS_META[p.status].color}" style="flex-shrink:0">${STATUS_META[p.status].name}</span>
+                  <span style="flex:1;${p.status === 'done' ? 'text-decoration:line-through;color:var(--ink-mute)' : ''}">${escapeHTML(p.title)}</span>
+                  ${p.dueDate ? `<span style="font-size:11px;color:var(--ink-mute)">${fmtDate(p.dueDate)}</span>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+        if (dependents.length) {
+          const candidatesForPull = (t.status === 'done' || t.status === 'pending') && t.dueDate ? findPullForwardCandidates(t.seedId) : [];
+          html += `
+            <div>
+              <div style="font-size:12px;color:var(--ink-mute);margin-bottom:4px">➡️ Blocks ${dependents.length} task(s)${candidatesForPull.length ? ` · <strong style="color:var(--c-blue-fg)">${candidatesForPull.length} could pull forward</strong>` : ''}</div>
+              ${dependents.map(d => `
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg-hover-soft);border:1px solid var(--line);border-radius:var(--r);margin-bottom:4px;font-size:13px;cursor:pointer" data-action="open-task" data-id="${d.id}">
+                  <span class="tag ${STATUS_META[d.status].color}" style="flex-shrink:0">${STATUS_META[d.status].name}</span>
+                  <span style="flex:1">${escapeHTML(d.title)}</span>
+                  ${d.dueDate ? `<span style="font-size:11px;color:var(--ink-mute)">${fmtDate(d.dueDate)}</span>` : ''}
+                </div>
+              `).join('')}
+              ${candidatesForPull.length ? `<button class="btn" data-action="pull-forward" data-id="${t.id}" style="margin-top:6px">⏪ Pull ${candidatesForPull.length} dependent(s) forward</button>` : ''}
+            </div>
+          `;
+        }
+      } else if (t.userAdded) {
+        html += `<div style="font-size:12px;color:var(--ink-fade);font-style:italic">Custom task — no dependencies tracked. Edit JSON in backup to add deps array if needed.</div>`;
+      }
+      return html;
+    })()}
+
     <div class="page-divider"></div>
     <div class="sect-h">Notes</div>
     <div class="block text" style="min-height:120px;background:var(--bg-input);padding:12px;border-radius:var(--r-md);outline:none;color:var(--ink)" contenteditable data-action="set-notes" data-id="${t.id}" data-placeholder="Add notes, links, blockers...">${escapeHTML(t.notes || '')}</div>
@@ -4136,6 +4799,8 @@ document.addEventListener('click', (e) => {
       case 'close-review-week': closeReviewWeek(Number(action.dataset.week)); break;
       case 'generate-catchup': generateCatchupTasks(); break;
       case 'reschedule-seed-tasks': rescheduleSeedTasks(true); save(); rerender(); alert('Force reflow complete. Every original/seed task date was rebuilt from your current Week 1 start/deadlines. Milestones match their exact setting dates. Custom user-added tasks were not deleted.'); break;
+      case 'defer-milestone': deferMilestone(action.dataset.cat, Number(action.dataset.days)); break;
+      case 'pull-forward': pullForwardDependents(action.dataset.id); break;
       case 'del-app': delApp(id); break;
       case 'edit-app': openAppEdit(id); break;
       case 'push-task': pushTask(id); closeDrawer(); break;
@@ -4219,14 +4884,31 @@ document.addEventListener('change', (e) => {
       if (anchor && e.target.value) {
         state.settings[anchor.key] = e.target.value;
         rescheduleSeedTasks(false);
+        // Settings reflow may have moved many tasks — cascade from the milestone too
+        const moves = cascadeForward(t.seedId || t.id);
+        save(); rerender();
+        if (moves.length) {
+          alert(`Milestone moved. ${moves.length} downstream task(s) auto-shifted to respect dependencies.`);
+        }
       } else {
+        const oldDate = t.dueDate;
         t.dueDate = e.target.value || null;
         t.manualDue = true;
         if (t.dueDate) t.week = weekNumberFromDate(t.dueDate, settings());
+        // Cascade if the date moved later
+        let cascadeNote = '';
+        if (oldDate && t.dueDate && dayDiff(oldDate, t.dueDate) > 0) {
+          const moves = cascadeForward(t.seedId || t.id);
+          if (moves.length) cascadeNote = ` ${moves.length} downstream task(s) auto-shifted.`;
+        }
+        save(); rerender();
+        if (cascadeNote) alert('Date moved.' + cascadeNote);
       }
-      save(); rerender(); break;
+      break;
     }
     case 'set-due-time': t.dueTime = cleanTime(e.target.value); t.manualDue = true; save(); rerender(); break;
+    case 'set-est': t.estMinutes = Math.max(5, Number(e.target.value) || 30); save(); rerender(); break;
+    case 'set-criticality': t.criticality = e.target.value || 'normal'; save(); rerender(); break;
   }
 });
 
@@ -4349,11 +5031,92 @@ function openAppEdit(id) {
 function pushTask(id) {
   const t = state.tasks.find(x => x.id === id);
   if (!t) return;
+  const oldDate = t.dueDate;
   t.dueDate = addDays(todayISO(), 1);
   t.dueTime = cleanTime(t.dueTime) || settings().defaultTaskDueTime || '23:59';
   t.manualDue = true;
+  // Cascade dependents forward
+  let cascadeNote = '';
+  if (oldDate && dayDiff(oldDate, t.dueDate) > 0) {
+    const moves = cascadeForward(t.seedId || t.id);
+    if (moves.length) cascadeNote = `\nAlso shifted ${moves.length} dependent task(s).`;
+  }
   save(); rerender();
+  if (cascadeNote) console.log('[cascade]' + cascadeNote);
 }
+
+/* Public helper: move a task to an arbitrary date and cascade dependents.
+   Returns count of cascade moves (callers can summarize for the user). */
+function moveTaskWithCascade(id, newDateISO) {
+  const t = state.tasks.find(x => x.id === id);
+  if (!t) return 0;
+  const oldDate = t.dueDate;
+  t.dueDate = newDateISO;
+  t.manualDue = true;
+  if (newDateISO) t.week = weekNumberFromDate(newDateISO, settings());
+  let cascadeCount = 0;
+  if (oldDate && newDateISO && dayDiff(oldDate, newDateISO) > 0) {
+    cascadeCount = cascadeForward(t.seedId || t.id).length;
+  }
+  return cascadeCount;
+}
+
+/* Defer a milestone by N days. Updates the underlying setting key, reflows
+   all seed tasks, then cascades dependents. */
+function deferMilestone(catId, days) {
+  const cat = getOutcomes().find(o => o.id === catId);
+  if (!cat) return;
+  const keyMap = { cv: 'cvDeadline', aws: 'awsDeadline', deploy: 'deployDeadline', coding: 'codingDeadline', apps: 'appsDeadline' };
+  const key = keyMap[catId];
+  if (!key) return;
+  const oldDate = settings()[key];
+  const newDate = addDays(oldDate, days);
+  if (!confirm(
+    `Shift the ${catId.toUpperCase()} milestone deadline from ${fmtDate(oldDate)} → ${fmtDate(newDate)} (+${days} days)?\n\n` +
+    `Dependent tasks downstream will also be pushed to respect dependencies.`
+  )) return;
+  state.settings[key] = newDate;
+  if (catId === 'aws') state.settings.awsExam = newDate;
+  rescheduleSeedTasks(false);
+  const milestoneSeedIds = { cv: 'M-cv', aws: 'aws-take', deploy: 'M-deploy', coding: 'M-coding', apps: 'M-apps' };
+  const seedId = milestoneSeedIds[catId];
+  let moves = [];
+  if (seedId) moves = cascadeForward(seedId);
+  save(); rerender();
+  alert(`Milestone shifted to ${fmtDate(newDate)}.${moves.length ? ` ${moves.length} downstream task(s) auto-cascaded.` : ''}`);
+}
+
+/* Offer to pull forward any dependents that could now move earlier. */
+function pullForwardDependents(taskId) {
+  const t = state.tasks.find(x => x.id === taskId);
+  if (!t || !t.dueDate) return;
+  const candidates = findPullForwardCandidates(t.seedId || t.id);
+  if (!candidates.length) {
+    alert('No dependent tasks could be pulled forward.');
+    return;
+  }
+  const summary = candidates.slice(0, 8).map(c =>
+    `• "${c.title}" (currently ${fmtDate(c.dueDate)})`
+  ).join('\n');
+  if (!confirm(
+    `Pull these ${candidates.length} dependent task(s) forward to start right after this one?\n\n` +
+    summary +
+    (candidates.length > 8 ? `\n... and ${candidates.length - 8} more` : '') +
+    `\n\nNew start date: ${fmtDate(addDays(t.dueDate, 1))}`
+  )) return;
+  const targetDate = addDays(t.dueDate, 1);
+  let moved = 0;
+  for (const c of candidates) {
+    c.dueDate = targetDate;
+    c.week = weekNumberFromDate(targetDate, settings());
+    c.manualDue = true;
+    c.notes = `${c.notes || ''}\n[${nowLocalLabel()}] Pulled forward — predecessor "${t.title}" finished early.`.trim();
+    moved++;
+  }
+  save(); rerender();
+  alert(`Pulled ${moved} task(s) forward.`);
+}
+
 function skipTask(id) {
   const t = state.tasks.find(x => x.id === id);
   if (!t) return;
