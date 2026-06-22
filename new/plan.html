@@ -2832,8 +2832,10 @@ function getTodayQueue() {
   ).sort((a, b) => taskSeverityScore(b) - taskSeverityScore(a) || taskDueDateTime(a) - taskDueDateTime(b));
 
   const todayDue = state.tasks.filter(t =>
-    t.status === 'pending' && t.dueDate === today && !taskIsOverdue(t, now)
-  ).sort((a, b) => taskDueDateTime(a) - taskDueDateTime(b));
+    t.dueDate === today &&
+    (t.status === 'pending' || (t.status === 'done' && t.completedAt === today)) &&
+    !taskIsOverdue(t, now)
+  ).sort((a, b) => (a.status === 'done' ? 1 : 0) - (b.status === 'done' ? 1 : 0) || taskDueDateTime(a) - taskDueDateTime(b));
 
   const weekPending = state.tasks.filter(t =>
     t.status === 'pending' && t.week === week && !t.dueDate
