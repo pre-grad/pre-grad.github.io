@@ -1523,8 +1523,8 @@ select.input {
         <div class="block callout info" style="margin-top:30px">
           <div class="callout-icon">📌</div>
           <div class="callout-body">
-            <strong>Apply in this order:</strong>
-            direct junior/fresh-grad roles + startups first (Careem, Talabat, Tabby, Property Finder, Noon, Bayzat, Sarwa), then cloud-leaning (Amazon MENA Cloud Support, G42, du/e&), then watch grad programmes for 2027 intake (Revolut, ByteDance, PwC/EY/Deloitte) and bank junior-tech tracks. Tailor every CV to the posting\u2019s keywords. Quality + follow-up beats spray.
+            <strong>Target the 12–15k AED tier (junior backend / data / cloud), apply in this order:</strong>
+            Python/backend juniors at startups + fintech (Careem, Talabat, Tabby, Sarwa, Property Finder, Noon, Bayzat) — your Flask + WebAuthn auth project is a real edge here; then data/analyst + AI-leaning roles (your ML marks + the LLM-feature stretch fit the premium/shortage); then cloud (Amazon MENA, G42, du/e&). Reality check: many backend posts demand 2–4 yrs or UAE experience, so a standout portfolio is what gets you past that wall, and the 12–15k offer may land past week 8. Fallback: take a slightly-lower starter and jump at 6 months — the visa puts no clock on you. Mirror each posting\u2019s keywords; quality + follow-up beats spray.
           </div>
         </div>
       </section>
@@ -1656,10 +1656,21 @@ select.input {
         <div class="block h2">📅 The daily formula</div>
         <div class="block bullet"><div class="b-text"><span class="tag blue">45–60 min</span> &nbsp; main deliverable (profile / AWS / deploy / applications)</div></div>
         <div class="block bullet"><div class="b-text"><span class="tag pink">15–20 min</span> &nbsp; daily no-AI coding rep (LeetCode Easy)</div></div>
-        <div class="block bullet"><div class="b-text"><span class="tag blue">20–30 min</span> &nbsp; boot.dev DSA — fluency module (the interview-relevant slice)</div></div>
+        <div class="block bullet"><div class="b-text"><span class="tag blue">20–30 min</span> &nbsp; boot.dev backend path — fluency module (SQL → DSA → HTTP servers → Docker)</div></div>
         <div class="block bullet"><div class="b-text"><span class="tag green">1–2</span> &nbsp; tailored applications submitted + logged (weeks 2–8)</div></div>
         <div class="block bullet"><div class="b-text"><span class="tag orange">15–30 min</span> &nbsp; Fabric mod — small push (light side-thread)</div></div>
         <div class="block bullet"><div class="b-text"><span class="tag gray">5 min</span> &nbsp; log progress + follow up one contact</div></div>
+
+        <div class="block h2">🎯 Target stack &amp; where to learn it (12–15k junior backend)</div>
+        <div class="block text">What Dubai backend/Python JDs ask for, mapped to a no-AI source you can actually follow:</div>
+        <div class="block bullet"><div class="b-text"><strong>Python + a framework (Flask/FastAPI)</strong> — you have Python+OOP &amp; Flask; deepen via FastAPI/Flask official docs + build one small API.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>REST APIs + HTTP + Docker</strong> — boot.dev "Learn HTTP Servers" + "Learn Docker".</div></div>
+        <div class="block bullet"><div class="b-text"><strong>SQL / PostgreSQL</strong> — boot.dev "Learn SQL"; swap your project's SQLite for Postgres.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Git + Linux/CLI</strong> — boot.dev "Learn Git" + "Learn Linux" (quick if rusty).</div></div>
+        <div class="block bullet"><div class="b-text"><strong>DSA for the live screen</strong> — boot.dev "Learn DSA/Algorithms" + LeetCode Easy→Medium.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Cloud vocabulary</strong> — AWS CP (Maarek) + Tutorials Dojo practice exams.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Differentiator: LLM/RAG</strong> — OpenAI API docs + a tiny RAG demo (Chroma/Pinecone free tier). Hot in Dubai JDs, fits your ML background.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Portfolio = proof</strong> — deployed WebAuthn app (auth is rare in junior portfolios) + one small API built from scratch. This is what gets you past the "needs experience" wall.</div></div>
 
         <div class="block h2">✅ Algorithm priority order</div>
         <div class="block num"><div class="num-marker">1.</div><div>Deadline task for today</div></div>
@@ -1803,7 +1814,7 @@ function getOutcomes() {
     { id: 'aws',    name: 'AWS Cloud Practitioner passed (SAA stretch)', deadline: deadline('awsDeadline'),  color: 'orange', hint: 'Maarek CP course → 2 practice exams ≥75% → pass. Only start SAA after CP if pace + apps allow.' },
     { id: 'deploy', name: 'Dissertation deployed publicly (portfolio)', deadline: deadline('deployDeadline'), color: 'green',  hint: 'SQLite-first live demo. Render/Railway is fine if it ships faster than AWS. A live URL in every application.' },
     { id: 'apps',   name: `${appTarget()} tailored applications → interviews → offer`, deadline: deadline('appsDeadline'), color: 'purple', hint: 'Direct junior/fresh-grad roles + startups now; 2027 grad programmes as they open. Mirror each posting\u2019s keywords. Convert to live interviews.' },
-    { id: 'coding', name: 'Interview-ready: defend project + work a problem unaided without freezing', deadline: deadline('codingDeadline'), color: 'blue', hint: 'You can already code unaided (boot.dev proves it) — close the layer above OOP: continue boot.dev DSA/Algorithms, ramp LeetCode Easy→Medium narrating out loud, and rebuild pieces of your own code with no AI. Defend the dissertation with real understanding that survives "what if we changed X?", not rehearsed answers.' },
+    { id: 'coding', name: 'Junior-backend ready: build + defend a REST API unaided, pass a practical screen', deadline: deadline('codingDeadline'), color: 'blue', hint: 'Target stack from Dubai JDs: Python (Flask/FastAPI), REST APIs, SQL/PostgreSQL, Git, Linux, Docker. Spine = boot.dev backend path (SQL → DSA → HTTP servers → Docker), your proven no-AI vehicle. Portfolio = the deployed WebAuthn app (auth is a real edge) + one small API you build from scratch. Defend it with understanding that survives "what if we changed X?", not rehearsed answers.' },
   ];
 }
 
@@ -1972,7 +1983,7 @@ const SEED_TASKS = [
   { id: 'interview-prep1', title: 'Behavioral prep — STAR stories for 8 common questions + each project', cat: 'coding', week: 5, due: '2026-07-25', estMinutes: 90, criticality: 'high', deps: ['diss-reread'] },
   { id: 'app-py-read',     title: 'Read app.py top to bottom — write a 1-paragraph summary per route (interview defense)', cat: 'coding', week: 5, due: '2026-07-23', estMinutes: 90, criticality: 'normal', deps: ['diss-reread'] },
   { id: 'security-read',   title: 'Annotate security.py + helpers.py — what each piece does / why / what it protects', cat: 'coding', week: 5, due: '2026-07-25', estMinutes: 90, criticality: 'normal', deps: ['app-py-read'] },
-  { id: 'dsa-w5',          title: 'Continue boot.dev — Learn Data Structures & Algorithms (your proven no-AI path): Big-O, arrays, stacks, queues, linked lists', cat: 'coding', week: 5, due: '2026-07-25', estMinutes: 120, criticality: 'normal' },
+  { id: 'dsa-w5',          title: 'boot.dev — Learn SQL (PostgreSQL): schema design, joins, queries. Every backend JD lists a SQL database — this closes that gap', cat: 'coding', week: 5, due: '2026-07-25', estMinutes: 120, criticality: 'normal' },
   { id: 'mod-w5',          title: 'Fabric mod (light) — push progress', cat: 'coding', week: 5, due: '2026-07-25', estMinutes: 45, criticality: 'normal', deps: ['mod-w4'] },
   { id: 'plan-w5',         title: 'Sunday review (20 min)', cat: 'planning', week: 5, due: '2026-07-26', estMinutes: 20, criticality: 'normal' },
 
@@ -1980,7 +1991,7 @@ const SEED_TASKS = [
   { id: 'models-read',     title: 'Read models.py + run the prototype locally — deliberately break is_valid(), watch the test fail, then fix it', cat: 'coding', week: 6, due: '2026-07-30', estMinutes: 90, criticality: 'high', deps: ['security-read'] },
   { id: 'mock-record',     title: 'Mock deep-dive — explain your system, then have someone (or yourself) hit every answer with "what if we changed X?" Rehearsed answers fail here; only real understanding survives. Record + listen back', cat: 'coding', week: 6, due: '2026-07-31', estMinutes: 120, criticality: 'critical', deps: ['interview-prep1','models-read','rebuild-hand'] },
   { id: 'leetcode-reps',   title: '3× timed LeetCode Easy live-coding dry runs (explain out loud, no AI)', cat: 'coding', week: 6, due: '2026-08-01', estMinutes: 135, criticality: 'critical' },
-  { id: 'dsa-w6',          title: 'boot.dev — finish DSA + start Learn Algorithms: hashmaps, trees, graphs (BFS/DFS)', cat: 'coding', week: 6, due: '2026-08-01', estMinutes: 120, criticality: 'normal', deps: ['dsa-w5'] },
+  { id: 'dsa-w6',          title: 'boot.dev — Learn DSA + Algorithms (Big-O, arrays, hashmaps, trees, graphs/BFS-DFS, sorting). This is the live-coding-screen layer', cat: 'coding', week: 6, due: '2026-08-01', estMinutes: 120, criticality: 'normal', deps: ['dsa-w5'] },
   { id: 'rebuild-hand',    title: 'Rebuild one real piece of the dissertation from scratch — NO AI — then diff against the original. The core anti-dependency rep: it builds fluency AND deep-dive understanding at once', cat: 'coding', week: 6, due: '2026-07-30', estMinutes: 90, criticality: 'high', deps: ['models-read'] },
   { id: 'apps-w6',         title: '8 more tailored applications', cat: 'apps', week: 6, due: '2026-08-01', estMinutes: 200, criticality: 'high', deps: ['apps-w5'] },
   { id: 'saa-start',       title: 'STRETCH: start SAA-C03 (Maarek SAA) — ONLY if CP is passed and apps are under control', cat: 'aws', week: 6, due: '2026-08-01', estMinutes: 180, criticality: 'low', deps: ['aws-take'] },
@@ -1990,7 +2001,8 @@ const SEED_TASKS = [
   // WEEK 7 · Push (Aug 3-9) ----------------------------------------
   { id: 'mock-leetcode2',  title: '3 more live-coding dry runs + system-design-lite walkthrough of your deployed app', cat: 'coding', week: 7, due: '2026-08-08', estMinutes: 135, criticality: 'critical', deps: ['leetcode-reps'] },
   { id: 'portfolio-final', title: 'Final portfolio polish — README screenshots, "Known Limitations", demo link in every application', cat: 'deploy', week: 7, due: '2026-08-07', estMinutes: 90, criticality: 'high', deps: ['deploy-debug','readme-arch'] },
-  { id: 'dsa-w7',          title: 'boot.dev — Learn Algorithms: sorting + recursion patterns, then review the patterns for live-coding', cat: 'coding', week: 7, due: '2026-08-08', estMinutes: 90, criticality: 'normal', deps: ['dsa-w6'] },
+  { id: 'dsa-w7',          title: 'boot.dev — Learn HTTP Servers + Docker basics (build & containerise a small server). Plus Git/Linux modules if rusty — all on the JD stack', cat: 'coding', week: 7, due: '2026-08-07', estMinutes: 90, criticality: 'normal', deps: ['dsa-w6'] },
+  { id: 'build-api',       title: 'Build a small REST API from scratch — NO AI: a few CRUD endpoints + a Postgres/SQLite DB + basic auth, then deploy it. This is your 2nd portfolio piece and the exact thing a backend screen tests', cat: 'coding', week: 7, due: '2026-08-08', estMinutes: 180, criticality: 'high', deps: ['rebuild-hand','dsa-w5'] },
   { id: 'apps-w7',         title: '8 more applications + aggressive follow-ups on everything sent', cat: 'apps', week: 7, due: '2026-08-08', estMinutes: 240, criticality: 'high', deps: ['apps-w6'] },
   { id: 'saa-w7',          title: 'STRETCH: SAA → ~50% if pursuing', cat: 'aws', week: 7, due: '2026-08-08', estMinutes: 180, criticality: 'low', deps: ['saa-start'] },
   { id: 'mod-w7',          title: 'Fabric mod (light) — push progress', cat: 'coding', week: 7, due: '2026-08-08', estMinutes: 45, criticality: 'normal', deps: ['mod-w6'] },
@@ -2000,6 +2012,7 @@ const SEED_TASKS = [
   { id: 'interview-live',  title: 'Sit scheduled interviews; debrief + send thank-you notes the same day', cat: 'apps', week: 8, due: '2026-08-14', estMinutes: 240, criticality: 'high', deps: ['mock-leetcode2'] },
   { id: 'apps-w8',         title: 'Final application push + convert live conversations toward interviews/offers', cat: 'apps', week: 8, due: '2026-08-15', estMinutes: 240, criticality: 'critical', deps: ['apps-w7'] },
   { id: 'saa-w8',          title: 'STRETCH: SAA practice exam / book if clearly on track', cat: 'aws', week: 8, due: '2026-08-15', estMinutes: 120, criticality: 'low', deps: ['saa-w7'] },
+  { id: 'llm-feature',     title: 'STRETCH (differentiator): add a small LLM-API feature to a project — e.g. an OpenAI-powered endpoint or a tiny RAG demo with a vector DB. Dubai Python JDs increasingly list LLM APIs/RAG, and it plays to your ML background', cat: 'coding', week: 8, due: '2026-08-15', estMinutes: 150, criticality: 'low', deps: ['build-api'] },
   { id: 'deploy-rds',      title: 'STRETCH (only if everything else is done): migrate the deployed app SQLite → AWS RDS Postgres', cat: 'deploy', week: 8, due: '2026-08-15', estMinutes: 240, criticality: 'low', deps: ['portfolio-final'] },
   { id: 'mod-w8',          title: 'Fabric mod (light) — tag a release if it is demo-ready', cat: 'coding', week: 8, due: '2026-08-15', estMinutes: 60, criticality: 'normal', deps: ['mod-w7'] },
   { id: 'review-final',    title: 'Final review — pipeline status; if no offer yet, plan the next cycle (Abu Dhabi, internships, remote)', cat: 'planning', week: 8, due: '2026-08-16', estMinutes: 30, criticality: 'high' },
@@ -2032,7 +2045,7 @@ function getRitualsForWeek(W) {
 
   // boot.dev — your proven no-AI path; this is the layer above OOP you haven't drilled yet
   if (inDubai) rituals.push({ title: 'Optional: a boot.dev DSA/Algorithms module on a quiet evening', cat: 'coding' });
-  else rituals.push({ title: '20–30 min · boot.dev — next DSA / Algorithms module (no AI)', cat: 'coding' });
+  else rituals.push({ title: '20–30 min · boot.dev backend path — next module (SQL → DSA → HTTP servers → Docker), no AI', cat: 'coding' });
 
   // From week 4: rebuild a real piece by hand, no AI — the core anti-dependency rep
   if (W >= 4 && !inDubai) rituals.push({ title: 'Rebuild a small piece of your own code from scratch, no AI, then check it', cat: 'coding' });
