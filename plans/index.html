@@ -1726,9 +1726,10 @@ select.input {
         <div class="block bullet"><div class="b-text">Only the next 14 days become ready. Later tasks stay weekly, and unselected branches create no tasks. Previous course percentages or AI-assisted output do not prove completion.</div></div>
         <div class="block bullet"><div class="b-text">For a strict no-AI task, attempt and score the work independently. AI may critique the result only after the attempt; generated implementation cannot substitute for the pass check.</div></div>
         <div class="block bullet"><div class="b-text"><strong>Re-angle; do not restart.</strong> No new course, certification, language, project, or planner redesign enters the active plan unless a current task, verified employer response, or confirmed programme requirement creates the need.</div></div>
-        <div class="block bullet"><div class="b-text"><strong>The UAE search starts in September.</strong> Build the truthful baseline profile and calibrate ten live roles first, then submit 3–4 qualified applications per week from Week 6 while foundations and Project One continue. The public FastAPI/PostgreSQL release strengthens and scales the search; it does not start it.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>No UAE job application is scheduled before 31 August 2026.</strong> Build the truthful baseline profile and calibrate ten live roles first. The first low-volume cycle starts on 31 August at 3–4 qualified applications per week while foundations continue; the public FastAPI/PostgreSQL release later strengthens and scales the search.</div></div>
         <div class="block h2">Explicitly skipped or postponed</div>
         <div class="block bullet"><div class="b-text">Do not continue unrelated Boot.dev courses merely because they exist. Finish only Linux, SQL, DSA/DSA2, HTTP Clients, Docker, AWS and Job Search as mapped to active outcomes; use the uploaded roadmap.sh maps only to close selected Python-project, networking, API-design, QA, secure-engineering and activated data-service gaps.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Boot.dev published durations are planning baselines, not pass timers.</strong> When a task requires the full course, budget the current catalogue workload, finish the course and its practical acceptance check, and record actual time. Re-estimate after major course updates instead of pretending a 30-hour course is a four-hour task.</div></div>
         <div class="block bullet"><div class="b-text">Do not start Functional Programming, AI Agent, Static Site Generator, Memory Management, JavaScript, TypeScript, Go, RAG or another backend language before the job-ready release unless a real assessment or employer requirement changes the plan.</div></div>
         <div class="block bullet"><div class="b-text">Project One remains a bounded career-pipeline API. No payments, multi-tenancy, billing, microservices, Kubernetes, multiple providers or large frontend are required for the umbrella goal.</div></div>
         <div class="block bullet"><div class="b-text">The dissertation gets one six-hour bridge attempt. Publish it only when it runs, contains no exposed secrets, survives one independent repair, and can be explained honestly. Otherwise stop and continue Project One; the bridge may never become a second roadmap.</div></div>
@@ -1841,14 +1842,14 @@ select.input {
    STATE
    ===================================================================== */
 const KEY = 'hamza-master-execution-v2';
-const SCHEMA_VERSION = 44;
-const CATALOGUE_VERSION = '2026.08.02-september-job-search-v19.0';
+const SCHEMA_VERSION = 45;
+const CATALOGUE_VERSION = '2026.08.08-bootdev-realistic-end-aug-jobs-v21.0';
 const PLAN_WEEK_COUNT = 62;
 
 const DEFAULT_SETTINGS = {
   "planStart": "2026-08-01",
   "planEnd": "2027-09-30",
-  "foundationDeadline": "2026-09-30",
+  "foundationDeadline": "2026-10-04",
   "productDeadline": "2027-01-31",
   "assessmentDeadline": "2027-07-18",
   "marketDeadline": "2026-12-31",
@@ -1884,14 +1885,14 @@ const OUTCOME_GATE_DEFS = [
     "deadline": "foundationDeadline",
     "color": "blue",
     "criteria": [
-      "PYTHON-TRANSFER",
+      "PYTHON-EXIT",
       "LINUX-EXIT",
       "POSTGRES-EXIT",
       "DSA-FOUNDATION-EXIT",
       "NETWORKING-SERVICE-LAB",
       "HTTP-COURSE"
     ],
-    "hint": "The foundation closes after a small number of real checks, not a separate proof task for every lesson."
+    "hint": "The foundation closes after the full mapped course workload plus a small number of real independent checks; course timers are planning baselines, not pass timers."
   },
   {
     "id": "product",
@@ -1902,6 +1903,7 @@ const OUTCOME_GATE_DEFS = [
       "PROJECT-POSTGRES",
       "PYTEST-CORE",
       "PROJECT-SECURITY-BASELINE",
+      "DOCKER-COURSE",
       "PROJECT-DOCKER",
       "PROJECT-CI",
       "PROJECT-CLEAN-CLONE",
@@ -1947,7 +1949,7 @@ const OUTCOME_GATE_DEFS = [
       "APP-CYCLE-1"
     ],
     "dynamic": "market-signal",
-    "hint": "Qualified applications, replies, screens, and interviews matter more than administration."
+    "hint": "No job applications are scheduled before 31 August 2026. The first cycle is low-volume and truthful; later project-backed cycles scale only from real response data."
   },
   {
     "id": "admissions",
@@ -3979,136 +3981,136 @@ const BRANCH_TEMPLATES = {
 };
 const WEEK_OUTCOMES = {
   "W01": {
-    "engineering": "The roadmap starts with the two-hour Python transfer check; no easier administrative task replaces it.",
-    "career": "No application volume target yet; use only truthful existing facts.",
-    "admissions": "The Vancouver programme basket is confirmed without displacing the Python start.",
-    "theme": "Start with independent Python, then programme shortlist"
+    "engineering": "The programme shortlist anchors the start; the oversized packaged Python transfer gate is not part of Week 1.",
+    "career": "No job applications are scheduled. Use only truthful existing facts.",
+    "admissions": "The Vancouver programme basket is confirmed without displacing the technical start.",
+    "theme": "Programme shortlist and clean start"
   },
   "W02": {
-    "engineering": "Linux fluency progresses while the dissertation receives one six-hour bridge attempt and no more.",
-    "career": "A truthful baseline CV, LinkedIn, and GitHub profile exist before early market contact.",
-    "admissions": "Eligibility blockers and reusable documents are resolved within the weekly capacity.",
-    "theme": "Linux, baseline profile, and capped dissertation bridge"
+    "engineering": "Restart the updated Linux course from Lesson 1; stale historical progress is not treated as current mastery.",
+    "career": "No job applications. Career work is limited to accurate baseline facts.",
+    "admissions": "Close the overdue admissions document pack and material eligibility blockers.",
+    "theme": "Linux restart and admissions catch-up"
   },
   "W03": {
-    "engineering": "SQL/PostgreSQL moves from structured learning into a working schema and queries.",
-    "career": "Ten current UAE roles calibrate the lane; only 2–4 unusually strong early matches may be submitted.",
-    "admissions": "Programme work remains bounded and does not replace the technical foundation.",
-    "theme": "SQL/PostgreSQL plus bounded market calibration"
+    "engineering": "Finish the full Linux course and pass the Linux exit; do not start SQL early just to make the calendar look green.",
+    "career": "Build the truthful baseline CV/LinkedIn/GitHub. Still no job submissions.",
+    "admissions": "Complete only the admissions blockers or statement work that is actually ready.",
+    "theme": "Linux completion, Linux exit, and truthful baseline profile"
   },
   "W04": {
-    "engineering": "SQL/PostgreSQL skills progress from course work to a clean no-AI schema/query exit.",
-    "career": "Career evidence remains truthful; no premature cloud/data claims.",
-    "admissions": "Eligibility questions and statement evidence continue without displacing foundations.",
-    "theme": "SQL and PostgreSQL foundation"
+    "engineering": "Complete the first 15-hour planning block of Boot.dev SQL; the six-hour dissertation bridge is capped and cannot expand.",
+    "career": "No job submissions. Do not let portfolio cleanup displace SQL.",
+    "admissions": "Admissions work remains bounded to real blockers/deadlines.",
+    "theme": "SQL foundations and capped bridge project"
   },
   "W05": {
-    "engineering": "SQL/PostgreSQL skills progress from course work to a clean no-AI schema/query exit.",
-    "career": "Career evidence remains truthful; no premature cloud/data claims.",
-    "admissions": "Eligibility questions and statement evidence continue without displacing foundations.",
-    "theme": "SQL and PostgreSQL foundation"
+    "engineering": "Finish Boot.dev SQL, run the small Python independence check, and leave PostgreSQL for the next week.",
+    "career": "Calibrate 10 UAE roles and freeze filters. Submit zero applications before 31 August.",
+    "admissions": "Close the English/referee tasks that are ready without pushing the week over capacity.",
+    "theme": "Finish SQL and prepare the end-of-August job launch"
   },
   "W06": {
-    "engineering": "DSA and service networking continue without being displaced by the job search.",
-    "career": "The active UAE search starts: 3–4 qualified applications per week using only the truthful baseline profile and defensible work.",
-    "admissions": "English, references, maths evidence, live checklists, and cost feasibility remain bounded inside weekly capacity.",
-    "theme": "DSA, service networking and September job-search launch"
+    "engineering": "Build/reproduce PostgreSQL and begin the first realistic DSA course block.",
+    "career": "The first UAE application cycle starts on 31 August: 3–4 qualified applications per week, with no unfinished skills claimed.",
+    "admissions": "Admissions work stays bounded while foundations remain first priority.",
+    "theme": "PostgreSQL, DSA block 1, and first applications"
   },
   "W07": {
-    "engineering": "Graphs, traversal and HTTP become usable while independent Coding Gym practice continues.",
-    "career": "September applications continue; live responses take priority over adding more volume.",
-    "admissions": "Programme readiness continues only where live deadlines or blockers require it.",
-    "theme": "Graphs, HTTP and active UAE applications"
+    "engineering": "Finish Boot.dev DSA in Python through the second capacity block.",
+    "career": "The low-volume search continues; screens or assessments take priority over adding more volume.",
+    "admissions": "Only deadline-driven admissions work interrupts the technical block.",
+    "theme": "DSA course 1 completion and active applications"
   },
   "W08": {
-    "engineering": "The foundation exit is completed and Project One is bounded before implementation.",
-    "career": "The active search continues at 3–4 qualified applications per week without claiming unfinished project or cloud work.",
-    "admissions": "Only eligible and feasible programme work remains active.",
-    "theme": "Foundation exit, project scope and active applications"
+    "engineering": "Begin Boot.dev DSA 2 with search, heaps, and trees.",
+    "career": "Applications continue at the same low volume; do not inflate the CV with in-progress DSA or backend claims.",
+    "admissions": "Prepare only live application material that has a real upcoming use.",
+    "theme": "DSA 2: search, heaps, trees"
   },
   "W09": {
-    "engineering": "Professional Python structure and FastAPI routes begin from an empty project.",
-    "career": "The September search continues; the flagship may be described only as in development when accurate.",
-    "admissions": "Programme work remains bounded to confirmed requirements.",
-    "theme": "FastAPI build and active applications"
+    "engineering": "Finish Boot.dev DSA 2 and pass the mixed three-hour no-AI DSA exit.",
+    "career": "Complete the four-week first application cycle and respond immediately to any live employer process.",
+    "admissions": "Admissions work remains bounded to live deadlines.",
+    "theme": "DSA 2 completion, DSA exit, and September cycle close"
   },
   "W10": {
-    "engineering": "PostgreSQL integration progresses while the first month of employer feedback is reviewed.",
-    "career": "The September funnel is measured and exactly one targeting, CV, assessment or interview change is selected.",
-    "admissions": "The verified programme basket and submission material continue without displacing Project One.",
-    "theme": "PostgreSQL integration and September funnel review"
+    "engineering": "Diagnose the networking failures, finish Boot.dev HTTP Clients in Python, and freeze the smallest Project One scope.",
+    "career": "Review September results and change exactly one thing before the next project-backed cycle.",
+    "admissions": "Live programme checklists proceed only where needed.",
+    "theme": "Networking, HTTP, project scope, and funnel review"
   },
   "W11": {
-    "engineering": "Meaningful automated tests cover real success and failure paths.",
-    "career": "Applications remain active at a sustainable level; any assessment or interview preparation takes priority over volume.",
+    "engineering": "Implement the FastAPI routes from the frozen scope.",
+    "career": "Low-volume applications may continue; any real screen/assessment outranks extra browsing.",
     "admissions": "Only activated programme work proceeds.",
-    "theme": "Automated tests and active applications"
+    "theme": "FastAPI routes and active applications"
   },
   "W12": {
-    "engineering": "Project One gains practical secure defaults and tested failure behavior.",
-    "career": "The active search uses only completed skills; unfinished security or cloud work is not claimed.",
-    "admissions": "Programme drafts and submissions continue only in activated branches.",
-    "theme": "Security baseline and active applications"
+    "engineering": "Connect Project One to PostgreSQL with migrations and reliable persistence.",
+    "career": "Applications remain truthful; the project is still in development.",
+    "admissions": "Admissions tasks remain bounded to confirmed requirements.",
+    "theme": "Project PostgreSQL integration"
   },
   "W13": {
-    "engineering": "Project One becomes reproducible through Docker without pausing the active search.",
-    "career": "Applications, screens and interviews continue alongside project delivery.",
-    "admissions": "Live programme deadlines remain bounded.",
-    "theme": "Docker and active applications"
+    "engineering": "Add meaningful tests and the practical security baseline.",
+    "career": "Use completed evidence only; unfinished Docker/cloud work stays off the CV.",
+    "admissions": "Programme submissions continue only in activated branches.",
+    "theme": "Tests and security baseline"
   },
   "W14": {
-    "engineering": "CI and the README make Project One understandable and repeatable.",
-    "career": "Current job targets are refreshed and the search continues while public release approaches.",
-    "admissions": "Programme work remains limited to confirmed needs.",
-    "theme": "CI, README and active applications"
+    "engineering": "Complete the full Boot.dev Docker course before containerising the project.",
+    "career": "Applications/screens continue without displacing the 18-hour Docker learning block.",
+    "admissions": "Only live deadlines interrupt the shipping block.",
+    "theme": "Boot.dev Docker and active applications"
   },
   "W15": {
-    "engineering": "Project One passes the clean-clone test, deploys publicly and freezes version 1.",
-    "career": "The live URL and factual project blurb are added to the already-active search.",
-    "admissions": "Activated application branches continue without displacing release week.",
-    "theme": "Public release strengthens the active search"
+    "engineering": "Containerise Project One, add CI, and write the README a stranger can use.",
+    "career": "Keep the search sustainable; prepare for any live interview instead of chasing volume.",
+    "admissions": "Admissions work stays bounded.",
+    "theme": "Docker implementation, CI, and README"
   },
   "W16": {
-    "engineering": "The public release is defended through a realistic change-and-debug session.",
-    "career": "The existing search scales to a project-backed two-week cycle using the live FastAPI/PostgreSQL service.",
-    "admissions": "Programme-specific drafts and submissions continue only in activated branches.",
-    "theme": "Project-backed application scale-up and defence"
+    "engineering": "Pass the clean-clone check, deploy publicly, and publish the job-ready release by 15 November.",
+    "career": "The live project can now be added truthfully to profiles and used to strengthen applications.",
+    "admissions": "Submission receipts and live deadlines are tracked.",
+    "theme": "Public deployment and job-ready release"
   },
   "W17": {
-    "engineering": "The job-ready release remains stable while employer feedback is collected.",
-    "career": "The project-backed cycle continues; screens and assessments take priority over application volume.",
-    "admissions": "Submission receipts and deadlines are tracked.",
-    "theme": "Project-backed application cycle"
+    "engineering": "Defend Project One and complete the Boot.dev job-search course without creating duplicate planning systems.",
+    "career": "Begin scaling from the public project; apply course lessons directly to the existing funnel.",
+    "admissions": "Programme deadlines remain bounded.",
+    "theme": "Project defence and job-search course"
   },
   "W18": {
-    "engineering": "The job-ready release remains stable and interview weaknesses are repaired directly.",
-    "career": "The project-backed cycle closes with current statuses and a next action for every response.",
-    "admissions": "Submission receipts and deadlines are tracked.",
-    "theme": "Project-backed cycle close and adjustment"
+    "engineering": "Keep the released project stable while the first project-backed application cycle completes.",
+    "career": "Use real replies/screens to decide what to improve next; do not add random courses.",
+    "admissions": "Only live programme actions proceed.",
+    "theme": "Project-backed application cycle"
   },
   "W19": {
-    "engineering": "Project One becomes Dockerized, CI-checked, documented, and reproducible from a clean clone.",
-    "career": "Applications, screens and interviews continue while AWS evidence is added only after it exists.",
-    "admissions": "Programme-specific drafts/submissions continue only in activated branches.",
-    "theme": "AWS delivery in parallel with the active UAE search"
+    "engineering": "Complete the first half of Boot.dev AWS in disposable labs.",
+    "career": "Applications continue; AWS is claimed only as in-progress until evidence exists.",
+    "admissions": "Application decisions/requests are monitored at a bounded cadence.",
+    "theme": "AWS course block 1 and active search"
   },
   "W20": {
-    "engineering": "Project One becomes Dockerized, CI-checked, documented, and reproducible from a clean clone.",
-    "career": "Applications, screens and interviews continue while AWS evidence is added only after it exists.",
-    "admissions": "Programme-specific drafts/submissions continue only in activated branches.",
-    "theme": "AWS delivery in parallel with the active UAE search"
+    "engineering": "Finish Boot.dev Learn AWS and freeze the simplest Project One AWS architecture.",
+    "career": "Applications continue; cloud claims must match completed work.",
+    "admissions": "Application decisions/requests are monitored at a bounded cadence.",
+    "theme": "AWS course completion"
   },
   "W21": {
-    "engineering": "The job-ready release remains stable while application evidence is collected.",
-    "career": "Applications, screens and interviews continue while AWS evidence is added only after it exists.",
-    "admissions": "Submission receipts and live deadlines are tracked.",
-    "theme": "AWS delivery in parallel with the active UAE search"
+    "engineering": "Repeat the core AWS labs from a blank state with teardown.",
+    "career": "Applications/screens continue; live employer work takes priority over optional certification prep.",
+    "admissions": "Application decisions/requests are monitored at a bounded cadence.",
+    "theme": "AWS independent labs"
   },
   "W22": {
-    "engineering": "The job-ready release remains stable while application evidence is collected.",
-    "career": "Applications, screens and interviews continue while AWS evidence is added only after it exists.",
+    "engineering": "Deploy Project One to AWS with the required HTTPS, secrets, database, logs, and rollback path.",
+    "career": "Applications continue and can add only the cloud evidence that now exists.",
     "admissions": "Submission receipts and live deadlines are tracked.",
-    "theme": "AWS delivery in parallel with the active UAE search"
+    "theme": "AWS deployment and active search"
   },
   "W23": {
     "engineering": "The job-ready release remains stable while application evidence is collected.",
@@ -4464,154 +4466,154 @@ const WEEK_INFO = [
     "code": "W01",
     "start": "2026-08-01",
     "end": "2026-08-02",
-    "theme": "Start: Python baseline and programme shortlist",
+    "theme": "Programme shortlist and clean start",
     "emoji": "▶"
   },
   {
     "code": "W02",
     "start": "2026-08-03",
     "end": "2026-08-09",
-    "theme": "Linux, truthful baseline profile, and six-hour dissertation bridge",
+    "theme": "Linux restart and admissions catch-up",
     "emoji": "🧱"
   },
   {
     "code": "W03",
     "start": "2026-08-10",
     "end": "2026-08-16",
-    "theme": "SQL/PostgreSQL build and bounded UAE market calibration",
-    "emoji": "🗄️"
+    "theme": "Finish Linux, pass Linux exit, and build baseline profile",
+    "emoji": "🧱"
   },
   {
     "code": "W04",
     "start": "2026-08-17",
     "end": "2026-08-23",
-    "theme": "PostgreSQL exit and DSA fundamentals",
-    "emoji": "🧠"
+    "theme": "Boot.dev SQL foundations and capped dissertation bridge",
+    "emoji": "🗄️"
   },
   {
     "code": "W05",
     "start": "2026-08-24",
     "end": "2026-08-30",
-    "theme": "Stacks, recursion, statement, referees, and English decision",
-    "emoji": "🧩"
+    "theme": "Finish SQL, Python exit, and prepare Aug 31 search launch",
+    "emoji": "🗄️"
   },
   {
     "code": "W06",
     "start": "2026-08-31",
     "end": "2026-09-06",
-    "theme": "Trees, search, service networking, and September applications",
-    "emoji": "🌲"
+    "theme": "PostgreSQL, DSA block 1, and first UAE applications",
+    "emoji": "🧠"
   },
   {
     "code": "W07",
     "start": "2026-09-07",
     "end": "2026-09-13",
-    "theme": "Graphs, traversal, HTTP, and active applications",
-    "emoji": "🔌"
+    "theme": "Finish DSA course 1 and continue low-volume applications",
+    "emoji": "🧩"
   },
   {
     "code": "W08",
     "start": "2026-09-14",
     "end": "2026-09-20",
-    "theme": "Foundation exit, bounded project scope, and active applications",
-    "emoji": "✓"
+    "theme": "DSA 2: search, heaps, trees, and active applications",
+    "emoji": "🌲"
   },
   {
     "code": "W09",
     "start": "2026-09-21",
     "end": "2026-09-27",
-    "theme": "Python project setup, FastAPI routes, and active applications",
-    "emoji": "🏗️"
+    "theme": "Finish DSA 2, mixed exit, and close September cycle",
+    "emoji": "🧠"
   },
   {
     "code": "W10",
     "start": "2026-09-28",
     "end": "2026-10-04",
-    "theme": "PostgreSQL integration and September funnel review",
-    "emoji": "🏗️"
+    "theme": "Networking, HTTP Clients in Python, project scope, funnel review",
+    "emoji": "🔌"
   },
   {
     "code": "W11",
     "start": "2026-10-05",
     "end": "2026-10-11",
-    "theme": "Meaningful automated tests and active applications",
-    "emoji": "🧪"
+    "theme": "FastAPI routes and active applications",
+    "emoji": "🏗️"
   },
   {
     "code": "W12",
     "start": "2026-10-12",
     "end": "2026-10-18",
-    "theme": "Practical security baseline and active applications",
-    "emoji": "🔐"
+    "theme": "Project PostgreSQL integration",
+    "emoji": "🏗️"
   },
   {
     "code": "W13",
     "start": "2026-10-19",
     "end": "2026-10-25",
-    "theme": "Dockerise the project while the search continues",
-    "emoji": "🐳"
+    "theme": "Tests and security baseline",
+    "emoji": "🧪"
   },
   {
     "code": "W14",
     "start": "2026-10-26",
     "end": "2026-11-01",
-    "theme": "CI, README, job targets, and active applications",
-    "emoji": "⚙️"
+    "theme": "Boot.dev Docker and active applications",
+    "emoji": "🐳"
   },
   {
     "code": "W15",
     "start": "2026-11-02",
     "end": "2026-11-08",
-    "theme": "Clean clone, public deployment, and stronger active search",
-    "emoji": "🚀"
+    "theme": "Project Docker, CI, and README",
+    "emoji": "⚙️"
   },
   {
     "code": "W16",
     "start": "2026-11-09",
     "end": "2026-11-15",
-    "theme": "Project-backed applications and project defence",
-    "emoji": "📤"
+    "theme": "Clean clone, public deployment, and job-ready release",
+    "emoji": "🚀"
   },
   {
     "code": "W17",
     "start": "2026-11-16",
     "end": "2026-11-22",
-    "theme": "Project-backed application cycle and one useful adjustment",
+    "theme": "Project defence and Boot.dev job-search course",
     "emoji": "📤"
   },
   {
     "code": "W18",
     "start": "2026-11-23",
     "end": "2026-11-29",
-    "theme": "Project-backed application cycle and one useful adjustment",
+    "theme": "Project-backed application cycle",
     "emoji": "📤"
   },
   {
     "code": "W19",
     "start": "2026-11-30",
     "end": "2026-12-06",
-    "theme": "AWS learning in context while applications continue",
+    "theme": "Boot.dev AWS course block 1",
     "emoji": "☁️"
   },
   {
     "code": "W20",
     "start": "2026-12-07",
     "end": "2026-12-13",
-    "theme": "AWS learning in context while applications continue",
+    "theme": "Finish Boot.dev AWS",
     "emoji": "☁️"
   },
   {
     "code": "W21",
     "start": "2026-12-14",
     "end": "2026-12-20",
-    "theme": "AWS foundation labs and active job search",
+    "theme": "AWS independent labs",
     "emoji": "☁️"
   },
   {
     "code": "W22",
     "start": "2026-12-21",
     "end": "2026-12-27",
-    "theme": "AWS deployment and another measured application cycle",
+    "theme": "AWS deployment and active search",
     "emoji": "☁️"
   },
   {
@@ -4899,11 +4901,11 @@ const LEARNING_MODULES = [
   {
     "id": "L1",
     "title": "Python independence and bridge-project ownership",
-    "window": "Weeks 1–2",
+    "window": "Weeks 4–5",
     "requirement": "required",
-    "description": "Write, test, and explain a small Python program independently, then time-box the old dissertation as a bridge project without allowing it to replace Project One.",
+    "description": "Run one small Python ownership check and a strictly time-boxed dissertation bridge without letting either become a new project.",
     "skillTaskIds": [
-      "PYTHON-TRANSFER",
+      "PYTHON-EXIT",
       "DISSERTATION-BRIDGE"
     ],
     "sourceRefs": [
@@ -4916,9 +4918,9 @@ const LEARNING_MODULES = [
   {
     "id": "L2",
     "title": "Linux for backend work",
-    "window": "Week 2",
+    "window": "Weeks 2–3",
     "requirement": "required",
-    "description": "Use the shell, permissions, processes, logs, environment variables, ports, and basic SSH concepts.",
+    "description": "Redo the updated Boot.dev Linux course, then use the shell, permissions, processes, logs, PATH, ports, and basic SSH concepts independently.",
     "skillTaskIds": [
       "LINUX-COURSE",
       "LINUX-EXIT"
@@ -4931,10 +4933,11 @@ const LEARNING_MODULES = [
   {
     "id": "L3",
     "title": "SQL and PostgreSQL",
-    "window": "Weeks 3–4",
+    "window": "Weeks 4–6",
     "requirement": "required",
-    "description": "Finish SQL, build a relational schema, use migrations and transactions, and reproduce the core work from blank.",
+    "description": "Budget the full current Boot.dev SQL course across two capacity-safe blocks, then build and independently reproduce the PostgreSQL work.",
     "skillTaskIds": [
+      "SQL-COURSE-FOUNDATIONS",
       "SQL-COURSE-CORE",
       "POSTGRES-SCHEMA",
       "POSTGRES-EXIT"
@@ -4947,9 +4950,9 @@ const LEARNING_MODULES = [
   {
     "id": "L4",
     "title": "Data structures and algorithms",
-    "window": "Weeks 4–8",
+    "window": "Weeks 6–9",
     "requirement": "required",
-    "description": "Complete four bounded DSA blocks, then pass one honest mixed assessment without AI.",
+    "description": "Budget both current Boot.dev Python DSA courses at their published workload, split them into four bounded weekly blocks, then pass one honest mixed assessment without AI.",
     "skillTaskIds": [
       "DSA-ARRAYS",
       "DSA-STACKS-RECURSION",
@@ -4965,9 +4968,9 @@ const LEARNING_MODULES = [
   {
     "id": "L5",
     "title": "Networking and HTTP",
-    "window": "Weeks 6–7",
+    "window": "Week 10",
     "requirement": "required",
-    "description": "Diagnose service connectivity problems and understand the HTTP behaviour the API depends on.",
+    "description": "Diagnose service connectivity problems and complete Boot.dev HTTP Clients in Python before the FastAPI build.",
     "skillTaskIds": [
       "NETWORKING-SERVICE-LAB",
       "HTTP-COURSE"
@@ -4981,7 +4984,7 @@ const LEARNING_MODULES = [
   {
     "id": "L6",
     "title": "FastAPI and PostgreSQL project",
-    "window": "Weeks 8–12",
+    "window": "Weeks 10–13",
     "requirement": "required",
     "description": "Build one useful API, connect it to PostgreSQL, test it, and add a practical security baseline.",
     "skillTaskIds": [
@@ -5002,10 +5005,11 @@ const LEARNING_MODULES = [
   {
     "id": "L7",
     "title": "Docker, CI, and release discipline",
-    "window": "Weeks 13–15",
+    "window": "Weeks 14–16",
     "requirement": "required",
-    "description": "Containerise, automate checks, prove a clean clone, deploy publicly, and publish a release a stranger can run and inspect.",
+    "description": "Complete Boot.dev Docker, then containerise Project One, automate checks, prove a clean clone, deploy publicly, and publish the release.",
     "skillTaskIds": [
+      "DOCKER-COURSE",
       "PROJECT-DOCKER",
       "PROJECT-CI",
       "PROJECT-README",
@@ -5024,9 +5028,10 @@ const LEARNING_MODULES = [
     "title": "AWS deployment and operations",
     "window": "Weeks 19–26",
     "requirement": "required",
-    "description": "Learn the relevant AWS services, deploy the project, operate it, recover it, and understand the cost.",
+    "description": "Budget the full current Boot.dev AWS course across two weekly blocks, then deploy, operate, recover, and understand the cost.",
     "skillTaskIds": [
       "AWS-COURSE-1",
+      "AWS-COURSE-2",
       "AWS-LABS",
       "AWS-DEPLOY",
       "AWS-OPERATE",
@@ -5040,13 +5045,15 @@ const LEARNING_MODULES = [
   {
     "id": "L9",
     "title": "UAE job search and interview defence",
-    "window": "Weeks 2–34",
+    "window": "Weeks 3–34",
     "requirement": "required",
-    "description": "Create a truthful baseline profile, calibrate the live UAE market early, then run full application cycles only after the public backend release.",
+    "description": "Create a truthful baseline profile, calibrate the UAE market without submitting early, start the first low-volume cycle on 31 August, then use the public project and Boot.dev job-search course to scale the funnel.",
     "skillTaskIds": [
       "CV-LANES",
       "JOB-SEARCH-SYSTEM",
+      "APP-CYCLE-SEPT",
       "PROJECT-DEFENCE",
+      "BOOTDEV-JOB-COURSE",
       "APP-CYCLE-1",
       "FUNNEL-REVIEW-1",
       "APP-CYCLE-2",
@@ -5088,13 +5095,62 @@ const LEARNING_MODULES = [
 ];
 
 const PHASE_INFO = [
-  { id:'foundation', name:'Foundation + September search launch', emoji:'🧱', startWeek:1, endWeek:7, focus:'Become independently usable in Python, Linux, SQL, PostgreSQL, DSA and HTTP; launch a low-volume truthful UAE search from Week 6.' },
-  { id:'project', name:'Flagship project + active applications', emoji:'🏗️', startWeek:8, endWeek:15, focus:'Build, test, secure, Dockerize, document and release one credible backend service while the September search continues.' },
-  { id:'launch', name:'Project-backed search scale-up', emoji:'📤', startWeek:16, endWeek:18, focus:'Add the public project to the active search, increase qualified application volume, and repair only the first real market weakness.' },
-  { id:'cloud', name:'AWS + active job search', emoji:'☁️', startWeek:19, endWeek:26, focus:'Deploy and operate the project on AWS while applications, screens and interviews continue. Certifications remain optional proof, not gates.' },
-  { id:'market', name:'Sustained search, interviews and one optional overlay', emoji:'🎯', startWeek:27, endWeek:39, focus:'Continue the UAE search, re-angle from actual results, prepare for interviews and activate at most one optional overlay.' },
-  { id:'decision', name:'Offers and master’s decision', emoji:'⚖️', startWeek:40, endWeek:45, focus:'Compare real job and admission outcomes, then choose the route that exists in reality.' },
-  { id:'transition', name:'Transition and maintenance', emoji:'🚀', startWeek:46, endWeek:62, focus:'Start the selected route and maintain only work that still serves it.' },
+  {
+    "id": "foundation",
+    "name": "Foundation + end-of-August search launch",
+    "emoji": "🧱",
+    "startWeek": 1,
+    "endWeek": 10,
+    "focus": "Complete the realistic Linux, SQL/PostgreSQL, DSA, networking and HTTP workload. Career work before 31 August is preparation only; the first low-volume UAE applications start on 31 August."
+  },
+  {
+    "id": "project",
+    "name": "Flagship project + active applications",
+    "emoji": "🏗️",
+    "startWeek": 11,
+    "endWeek": 16,
+    "focus": "Build, test, secure, complete Docker learning, containerise, document and publicly release one credible FastAPI/PostgreSQL service while the low-volume search continues."
+  },
+  {
+    "id": "launch",
+    "name": "Project-backed search scale-up",
+    "emoji": "📤",
+    "startWeek": 17,
+    "endWeek": 18,
+    "focus": "Defend the public project, complete the Boot.dev job-search course, increase qualified application volume, and repair only the first real market weakness."
+  },
+  {
+    "id": "cloud",
+    "name": "AWS + active job search",
+    "emoji": "☁️",
+    "startWeek": 19,
+    "endWeek": 26,
+    "focus": "Complete the current Boot.dev AWS workload in two bounded blocks, then deploy and operate the project while applications continue."
+  },
+  {
+    "id": "market",
+    "name": "Sustained search, interviews and one optional overlay",
+    "emoji": "🎯",
+    "startWeek": 27,
+    "endWeek": 39,
+    "focus": "Continue the UAE search, re-angle from actual results, prepare for interviews and activate at most one optional overlay."
+  },
+  {
+    "id": "decision",
+    "name": "Offers and master’s decision",
+    "emoji": "⚖️",
+    "startWeek": 40,
+    "endWeek": 45,
+    "focus": "Compare real job and admission outcomes, then choose the route that exists in reality."
+  },
+  {
+    "id": "transition",
+    "name": "Transition and maintenance",
+    "emoji": "🚀",
+    "startWeek": 46,
+    "endWeek": 62,
+    "focus": "Start the selected route and maintain only work that still serves it."
+  }
 ];
 function phaseForWeek(week){
   return PHASE_INFO.find(p => Number(week) >= p.startWeek && Number(week) <= p.endWeek) || PHASE_INFO[PHASE_INFO.length - 1];
@@ -5119,47 +5175,6 @@ const PAGES = [
 
 /* Source-backed seed tasks. Canonical dates are generated from the plan anchor; readiness remains limited to the rolling 14-day window. */
 const SEED_TASKS = [
-  {
-    "id": "PYTHON-TRANSFER",
-    "title": "Build a small Python CLI from an empty folder without generated implementation",
-    "description": "Start the roadmap by proving that completed Python coursework transfers into a program you can write, test, and explain independently.",
-    "definitionOfDone": "Within two focused hours, the CLI reads a CSV, validates rows, produces the required summary, handles bad input, passes six tests, and can be explained without generated implementation.",
-    "source": "Deep Research Report 10 · One-Year Execution Plan; Python 3 Documentation; pytest Getting Started; implementation_plan.md; planner_task_design_analysis.md",
-    "workMode": "strict-no-ai",
-    "failureRoute": "Stop after the first failed acceptance check. Identify the exact failure, repair only that capability, then repeat the check with changed input and no generated implementation.",
-    "type": "assessment",
-    "requirement": "required",
-    "dateMode": "weekly",
-    "cat": "foundation",
-    "week": 1,
-    "estMinutes": 120,
-    "criticality": "critical",
-    "deps": [],
-    "workBlock": "practice",
-    "gateIds": [],
-    "sourceRefs": [
-      "SRC-MD10",
-      "SRC-PYTHON",
-      "SRC-PYTEST"
-    ],
-    "sourceFreshness": "stable",
-    "goalIds": [
-      "G1",
-      "G2",
-      "G11"
-    ],
-    "subtasks": [
-      "Create the package and command-line entry point from an empty folder.",
-      "Parse and validate a small CSV file.",
-      "Calculate useful summaries and handle invalid input.",
-      "Write six pytest cases.",
-      "Explain the design and one edge case aloud; stop at two hours and use the result to target the next learning task."
-    ],
-    "learnRead": [
-      "Python 3 Documentation — https://docs.python.org/3/",
-      "pytest Getting Started — https://docs.pytest.org/en/stable/getting-started.html"
-    ]
-  },
   {
     "id": "ADM-PROGRAMME-MATRIX",
     "title": "Confirm which Vancouver master’s programmes you can actually apply to",
@@ -5562,18 +5577,18 @@ const SEED_TASKS = [
   },
   {
     "id": "LINUX-COURSE",
-    "title": "Finish Boot.dev Learn Linux and practise the commands you still forget",
-    "description": "Complete the remaining lessons, then use the weak commands in a local terminal instead of creating separate study notes.",
-    "definitionOfDone": "The course is complete and you can use navigation, permissions, pipes, processes, environment variables, SSH concepts, logs, and port inspection.",
+    "title": "Redo the updated Boot.dev Learn Linux course and practise the commands you still forget",
+    "description": "Restart the July-2026-updated Boot.dev Learn Linux course from Lesson 1 because the previous progress is stale, then reproduce uncertain commands in the local shell. The current catalogue baseline is 66 lessons / about 10 hours.",
+    "definitionOfDone": "Boot.dev Learn Linux is 66/66 complete from the restart, uncertain commands have been reproduced locally, and navigation, permissions, pipes, processes, PATH/environment, logs, ports, and basic SSH concepts can be explained at a practical level.",
     "source": "Deep Research Report 10 · One-Year Execution Plan; Boot.dev Backend Developer Path; Linux Foundation · Introduction to Linux; implementation_plan.md; planner_task_design_analysis.md",
     "workMode": "docs-only",
     "failureRoute": "Pause progression, isolate the missing concept in a 15–30 minute exercise, reproduce it without copying, then rerun the original acceptance check with different input.",
     "type": "learning",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "foundation",
-    "week": 2,
-    "estMinutes": 240,
+    "week": 3,
+    "estMinutes": 600,
     "criticality": "high",
     "deps": [],
     "workBlock": "build",
@@ -5581,22 +5596,31 @@ const SEED_TASKS = [
     "sourceRefs": [
       "SRC-MD10",
       "SRC-BOOTDEV",
-      "SRC-LINUX"
+      "SRC-LINUX",
+      "SRC-ROADMAP",
+      "SRC-BOOTDEV-CATALOGUE-20260808"
     ],
-    "sourceFreshness": "stable",
+    "sourceFreshness": "volatile",
     "goalIds": [
       "G2",
       "G11"
     ],
     "subtasks": [
-      "Finish the remaining Boot.dev lessons.",
-      "Repeat every command you hesitate on in a local shell.",
-      "Create one small script that combines files, pipes, permissions, and process inspection."
+      "Restart Boot.dev Learn Linux from Lesson 1 and work forward; do not delete historical progress unless the platform requires it.",
+      "Move quickly through material you can genuinely reproduce and slow down on commands you hesitate on.",
+      "Reproduce uncertain filesystem, permission, pipe, process, PATH/environment, log, port, and SSH commands in the local shell.",
+      "Finish all 66 lessons; record the actual time rather than trying to match the advertised duration."
     ],
     "learnRead": [
       "Boot.dev Backend Developer Path — https://www.boot.dev/tracks/backend",
       "Linux Foundation · Introduction to Linux — https://training.linuxfoundation.org/training/introduction-to-linux/"
-    ]
+    ],
+    "estimateOptimisticMinutes": 480,
+    "estimateLikelyMinutes": 600,
+    "estimatePessimisticMinutes": 720,
+    "reverifyAfter": "If Boot.dev materially updates Learn Linux, its lesson count, or published duration.",
+    "due": "2026-08-12",
+    "availableFrom": "2026-08-08"
   },
   {
     "id": "LINUX-EXIT",
@@ -5608,9 +5632,9 @@ const SEED_TASKS = [
     "failureRoute": "Stop after the first failed acceptance check. Identify the exact failure, repair only that capability, then repeat the check with changed input and no generated implementation.",
     "type": "assessment",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "assessment",
-    "week": 2,
+    "week": 3,
     "estMinutes": 90,
     "criticality": "high",
     "deps": [
@@ -5639,22 +5663,23 @@ const SEED_TASKS = [
     "learnRead": [
       "Linux Foundation · Introduction to Linux — https://training.linuxfoundation.org/training/introduction-to-linux/",
       "Pro Git — https://git-scm.com/book/en/v2"
-    ]
+    ],
+    "due": "2026-08-13"
   },
   {
-    "id": "SQL-COURSE-CORE",
-    "title": "Finish Boot.dev SQL and use the important topics in one working database",
-    "description": "Complete the SQL course as one learning block. Do not split every chapter into a separate planner task.",
-    "definitionOfDone": "The course is complete and one SQL file demonstrates CRUD, constraints, joins, aggregation, a subquery or CTE, a window function, and a transaction.",
+    "id": "SQL-COURSE-FOUNDATIONS",
+    "title": "Complete the first half of Boot.dev Learn SQL and reproduce the foundations locally",
+    "description": "Work through roughly the first half of the current 95-lesson / 30-hour Boot.dev Learn SQL course. This is one capacity split, not chapter-by-chapter planner bureaucracy.",
+    "definitionOfDone": "The course is roughly halfway complete and SELECT/WHERE, CRUD, GROUP BY, and COUNT/SUM/AVG/MIN/MAX have been reproduced on changed local data.",
     "source": "Deep Research Report 10 · One-Year Execution Plan; Boot.dev Backend Developer Path; PostgreSQL Official Tutorial; implementation_plan.md; planner_task_design_analysis.md",
     "workMode": "docs-only",
     "failureRoute": "Pause progression, isolate the missing concept in a 15–30 minute exercise, reproduce it without copying, then rerun the original acceptance check with different input.",
     "type": "learning",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "foundation",
-    "week": 3,
-    "estMinutes": 240,
+    "week": 4,
+    "estMinutes": 900,
     "criticality": "high",
     "deps": [],
     "workBlock": "build",
@@ -5662,22 +5687,74 @@ const SEED_TASKS = [
     "sourceRefs": [
       "SRC-MD10",
       "SRC-BOOTDEV",
-      "SRC-POSTGRES"
+      "SRC-POSTGRES",
+      "SRC-BOOTDEV-CATALOGUE-20260808"
     ],
-    "sourceFreshness": "stable",
+    "sourceFreshness": "volatile",
     "goalIds": [
       "G2"
     ],
     "subtasks": [
-      "Finish the remaining Boot.dev SQL lessons.",
-      "Create a small database and valid/invalid sample rows.",
+      "Complete Boot.dev Learn SQL from the start to roughly the halfway checkpoint.",
+      "Reproduce SELECT/WHERE and CRUD operations in a local database.",
+      "Use GROUP BY with COUNT, SUM, AVG, MIN, and MAX on changed sample rows.",
+      "Do not create separate chapter tasks; stop at the course halfway checkpoint."
+    ],
+    "learnRead": [
+      "Boot.dev Backend Developer Path — https://www.boot.dev/tracks/backend",
+      "PostgreSQL Official Tutorial — https://www.postgresql.org/docs/current/tutorial.html"
+    ],
+    "due": "2026-08-23",
+    "estimateOptimisticMinutes": 720,
+    "estimateLikelyMinutes": 900,
+    "estimatePessimisticMinutes": 1080,
+    "reverifyAfter": "If Boot.dev materially updates Learn SQL, its lesson count, or published duration."
+  },
+  {
+    "id": "SQL-COURSE-CORE",
+    "title": "Finish the second half of Boot.dev Learn SQL and use it in one working database",
+    "description": "Complete Boot.dev Learn SQL from roughly halfway to 100%, then use the important topics in one working database. This is the second 15-hour planning block of the current 30-hour course estimate.",
+    "definitionOfDone": "The course is complete and one SQL file demonstrates CRUD, constraints, joins, aggregation, a subquery or CTE, a window function, and a transaction.",
+    "source": "Deep Research Report 10 · One-Year Execution Plan; Boot.dev Backend Developer Path; PostgreSQL Official Tutorial; implementation_plan.md; planner_task_design_analysis.md",
+    "workMode": "docs-only",
+    "failureRoute": "Pause progression, isolate the missing concept in a 15–30 minute exercise, reproduce it without copying, then rerun the original acceptance check with different input.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "fixed",
+    "cat": "foundation",
+    "week": 5,
+    "estMinutes": 900,
+    "criticality": "high",
+    "deps": [
+      "SQL-COURSE-FOUNDATIONS"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-MD10",
+      "SRC-BOOTDEV",
+      "SRC-POSTGRES",
+      "SRC-BOOTDEV-CATALOGUE-20260808"
+    ],
+    "sourceFreshness": "volatile",
+    "goalIds": [
+      "G2"
+    ],
+    "subtasks": [
+      "Continue Boot.dev Learn SQL from the halfway checkpoint through 100% completion.",
+      "Create a small database with valid and invalid sample rows.",
       "Write joins, aggregates, a CTE or subquery, and one window function.",
       "Demonstrate commit and rollback."
     ],
     "learnRead": [
       "Boot.dev Backend Developer Path — https://www.boot.dev/tracks/backend",
       "PostgreSQL Official Tutorial — https://www.postgresql.org/docs/current/tutorial.html"
-    ]
+    ],
+    "due": "2026-08-30",
+    "estimateOptimisticMinutes": 720,
+    "estimateLikelyMinutes": 900,
+    "estimatePessimisticMinutes": 1080,
+    "reverifyAfter": "If Boot.dev materially updates Learn SQL, its lesson count, or published duration."
   },
   {
     "id": "POSTGRES-SCHEMA",
@@ -5691,7 +5768,7 @@ const SEED_TASKS = [
     "requirement": "required",
     "dateMode": "weekly",
     "cat": "foundation",
-    "week": 3,
+    "week": 6,
     "estMinutes": 180,
     "criticality": "high",
     "deps": [
@@ -5732,7 +5809,7 @@ const SEED_TASKS = [
     "requirement": "required",
     "dateMode": "weekly",
     "cat": "assessment",
-    "week": 4,
+    "week": 6,
     "estMinutes": 90,
     "criticality": "high",
     "deps": [
@@ -5761,19 +5838,64 @@ const SEED_TASKS = [
     ]
   },
   {
+    "id": "PYTHON-EXIT",
+    "title": "Pass one small Python independence check without packaging ceremony",
+    "description": "Use one later, bounded check to prove that completed Python coursework still transfers into code you can write, test, change, and explain independently. This is intentionally smaller than the removed Week-1 packaged CLI task.",
+    "definitionOfDone": "Within 75 minutes, one plain Python program reads a small CSV, rejects malformed rows without crashing, produces one deterministic aggregate, passes three focused tests, works on changed input, and can be explained without generated implementation.",
+    "source": "implementation_plan.md · PY-EXIT; Python 3 Documentation; pytest Getting Started; planner_task_design_analysis.md",
+    "workMode": "strict-no-ai",
+    "failureRoute": "Stop at the first failed acceptance check. Repair only the failing capability, rerun with changed input, and do not add packaging, entry points, framework structure, or unrelated features.",
+    "type": "assessment",
+    "requirement": "required",
+    "dateMode": "weekly",
+    "cat": "foundation",
+    "week": 5,
+    "estMinutes": 75,
+    "criticality": "high",
+    "deps": [],
+    "workBlock": "practice",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-IMPLEMENTATION",
+      "SRC-PYTHON",
+      "SRC-PYTEST",
+      "SRC-DESIGN"
+    ],
+    "sourceFreshness": "stable",
+    "goalIds": [
+      "G1",
+      "G2",
+      "G11"
+    ],
+    "subtasks": [
+      "Create one plain .py program from a blank folder; no package or console-entry-point setup.",
+      "Read a small CSV and reject malformed rows without crashing.",
+      "Produce one deterministic aggregate summary.",
+      "Write three focused tests for valid input, invalid input, and the summary.",
+      "Run once on changed input and explain one function plus one edge case aloud."
+    ],
+    "learnRead": [
+      "Python 3 Documentation — https://docs.python.org/3/",
+      "pytest Getting Started — https://docs.pytest.org/en/stable/getting-started.html"
+    ],
+    "estimateOptimisticMinutes": 60,
+    "estimateLikelyMinutes": 75,
+    "estimatePessimisticMinutes": 90
+  },
+  {
     "id": "DSA-ARRAYS",
     "title": "Complete DSA block 1: complexity, arrays, strings, and hash maps",
-    "description": "Build the core recognition skills first: analyse complexity, choose arrays or hash maps deliberately, and handle common string patterns.",
-    "definitionOfDone": "The mapped modules are complete and eight unseen or equivalent array/string/hash-map problems pass with stated time and space complexity.",
+    "description": "Begin Boot.dev DSA in Python with complexity, arrays, strings, and hash maps. Blocks 1–2 together budget the current 32-hour DSA 1 course; the split is for weekly capacity, not a claim that chapters are equal length.",
+    "definitionOfDone": "The mapped Boot.dev modules are complete and four representative unseen/equivalent array/string/hash-map problems pass with stated time and space complexity.",
     "source": "Deep Research Report 10 · One-Year Execution Plan; Boot.dev Backend Developer Path; roadmap.sh Role and Skill Maps; implementation_plan.md; planner_task_design_analysis.md",
     "workMode": "docs-only",
     "failureRoute": "Pause progression, isolate the missing concept in a 15–30 minute exercise, reproduce it without copying, then rerun the original acceptance check with different input.",
     "type": "learning",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "foundation",
-    "week": 4,
-    "estMinutes": 450,
+    "week": 6,
+    "estMinutes": 900,
     "criticality": "high",
     "deps": [],
     "workBlock": "build",
@@ -5781,39 +5903,44 @@ const SEED_TASKS = [
     "sourceRefs": [
       "SRC-MD10",
       "SRC-BOOTDEV",
-      "SRC-ROADMAP"
+      "SRC-ROADMAP",
+      "SRC-BOOTDEV-CATALOGUE-20260808"
     ],
-    "sourceFreshness": "stable",
+    "sourceFreshness": "volatile",
     "goalIds": [
       "G2",
       "G5"
     ],
     "subtasks": [
-      "Complete complexity and Big-O modules.",
-      "Complete arrays, strings, and hash-map modules.",
-      "Solve four array/string problems without generated solutions.",
-      "Solve four hash-map/set problems without generated solutions.",
-      "Redo failed patterns after a gap and explain complexity aloud."
+      "Complete the mapped complexity, arrays, strings, and hash-map material in Boot.dev DSA in Python.",
+      "Solve two array/string problems without generated solutions.",
+      "Solve two hash-map/set problems without generated solutions.",
+      "Redo only failed patterns after a gap and explain complexity aloud."
     ],
     "learnRead": [
       "Boot.dev Backend Developer Path — https://www.boot.dev/tracks/backend",
       "roadmap.sh Role and Skill Maps — https://roadmap.sh/"
-    ]
+    ],
+    "estimateOptimisticMinutes": 720,
+    "estimateLikelyMinutes": 900,
+    "estimatePessimisticMinutes": 1080,
+    "reverifyAfter": "If Boot.dev materially updates either Python DSA course, lesson counts, or published durations.",
+    "due": "2026-09-06"
   },
   {
     "id": "DSA-STACKS-RECURSION",
     "title": "Complete DSA block 2: stacks, queues, recursion, and sorting",
-    "description": "Learn the control-flow patterns that sit behind parsing, traversal, backtracking, and ordered processing.",
-    "definitionOfDone": "The mapped modules are complete and eight unseen or equivalent stack/queue/recursion/sorting problems pass with correct complexity and edge-case explanations.",
+    "description": "Continue and finish Boot.dev DSA in Python through stacks, queues, recursion, sorting, and the remaining course material. Blocks 1–2 together budget the current 32-hour DSA 1 course.",
+    "definitionOfDone": "Boot.dev Learn Data Structures and Algorithms in Python is complete and four representative unseen/equivalent stack/queue/recursion/sorting problems pass with correct complexity and edge-case explanations.",
     "source": "Deep Research Report 10 · One-Year Execution Plan; Boot.dev Backend Developer Path; roadmap.sh Role and Skill Maps; implementation_plan.md; planner_task_design_analysis.md",
     "workMode": "docs-only",
     "failureRoute": "Pause progression, isolate the missing concept in a 15–30 minute exercise, reproduce it without copying, then rerun the original problem with different input.",
     "type": "learning",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "foundation",
-    "week": 5,
-    "estMinutes": 450,
+    "week": 7,
+    "estMinutes": 1020,
     "criticality": "high",
     "deps": [
       "DSA-ARRAYS"
@@ -5823,39 +5950,44 @@ const SEED_TASKS = [
     "sourceRefs": [
       "SRC-MD10",
       "SRC-BOOTDEV",
-      "SRC-ROADMAP"
+      "SRC-ROADMAP",
+      "SRC-BOOTDEV-CATALOGUE-20260808"
     ],
-    "sourceFreshness": "stable",
+    "sourceFreshness": "volatile",
     "goalIds": [
       "G2",
       "G5"
     ],
     "subtasks": [
-      "Complete stacks and queues.",
-      "Complete recursion and base-case reasoning.",
-      "Complete core sorting concepts and when built-in sorting is appropriate.",
-      "Solve four stack/queue problems without generated solutions.",
-      "Solve four recursion/sorting problems and explain the termination condition."
+      "Finish the remaining Boot.dev DSA in Python lessons; the course must reach 100% by the end of this block.",
+      "Practise stacks/queues on two changed problems without generated solutions.",
+      "Practise recursion/sorting on two changed problems without generated solutions.",
+      "Explain the chosen structure, base case or ordering, and complexity aloud."
     ],
     "learnRead": [
       "Boot.dev Backend Developer Path — https://www.boot.dev/tracks/backend",
       "roadmap.sh Role and Skill Maps — https://roadmap.sh/"
-    ]
+    ],
+    "estimateOptimisticMinutes": 810,
+    "estimateLikelyMinutes": 1020,
+    "estimatePessimisticMinutes": 1230,
+    "reverifyAfter": "If Boot.dev materially updates either Python DSA course, lesson counts, or published durations.",
+    "due": "2026-09-13"
   },
   {
     "id": "DSA-TREES-SEARCH",
     "title": "Complete DSA block 3: binary search, heaps, and trees",
-    "description": "Build search and hierarchical-data fluency before moving to general graphs.",
-    "definitionOfDone": "The mapped modules are complete and eight unseen or equivalent binary-search/heap/tree problems pass with correct complexity and edge-case explanations.",
+    "description": "Begin Boot.dev DSA 2 in Python, concentrating the practical follow-up on search, heaps, and trees. Blocks 3–4 together budget the current 22-hour DSA 2 course.",
+    "definitionOfDone": "The mapped first portion of Boot.dev DSA 2 is complete and four representative unseen/equivalent search/heap/tree problems pass with correct complexity and edge-case explanations.",
     "source": "Deep Research Report 10 · One-Year Execution Plan; Boot.dev Backend Developer Path; roadmap.sh Role and Skill Maps; implementation_plan.md; planner_task_design_analysis.md",
     "workMode": "docs-only",
     "failureRoute": "Pause progression, isolate the missing concept in a 15–30 minute exercise, reproduce it without copying, then rerun the original problem with different input.",
     "type": "learning",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "foundation",
-    "week": 6,
-    "estMinutes": 450,
+    "week": 8,
+    "estMinutes": 660,
     "criticality": "high",
     "deps": [
       "DSA-STACKS-RECURSION"
@@ -5865,39 +5997,44 @@ const SEED_TASKS = [
     "sourceRefs": [
       "SRC-MD10",
       "SRC-BOOTDEV",
-      "SRC-ROADMAP"
+      "SRC-ROADMAP",
+      "SRC-BOOTDEV-CATALOGUE-20260808"
     ],
-    "sourceFreshness": "stable",
+    "sourceFreshness": "volatile",
     "goalIds": [
       "G2",
       "G5"
     ],
     "subtasks": [
-      "Complete binary-search patterns and boundary handling.",
-      "Complete heaps and priority queues.",
-      "Complete tree representations and traversals.",
-      "Solve four binary-search/heap problems without generated solutions.",
-      "Solve four tree problems and explain recursive versus iterative traversal."
+      "Begin Boot.dev DSA 2 and complete the mapped search, heap, and tree material.",
+      "Solve two binary-search/heap problems without generated solutions.",
+      "Solve two tree problems without generated solutions.",
+      "Explain traversal choice and complexity aloud."
     ],
     "learnRead": [
       "Boot.dev Backend Developer Path — https://www.boot.dev/tracks/backend",
       "roadmap.sh Role and Skill Maps — https://roadmap.sh/"
-    ]
+    ],
+    "estimateOptimisticMinutes": 540,
+    "estimateLikelyMinutes": 660,
+    "estimatePessimisticMinutes": 780,
+    "reverifyAfter": "If Boot.dev materially updates either Python DSA course, lesson counts, or published durations.",
+    "due": "2026-09-20"
   },
   {
     "id": "DSA-GRAPHS",
     "title": "Complete DSA block 4: graphs, BFS, and DFS",
-    "description": "Finish the continuation material by learning graph representations and traversal choices without turning DSA into an endless interview grind.",
-    "definitionOfDone": "The mapped graph modules are complete and eight unseen or equivalent graph/BFS/DFS problems pass with correct representation, complexity, and edge-case explanations.",
+    "description": "Finish Boot.dev DSA 2 in Python, concentrating the practical follow-up on graphs, BFS, DFS, and traversal choices. Blocks 3–4 together budget the current 22-hour DSA 2 course.",
+    "definitionOfDone": "Boot.dev Learn Data Structures and Algorithms 2 in Python is complete and four representative unseen/equivalent graph/BFS/DFS problems pass with correct representation, complexity, and edge-case explanations.",
     "source": "Deep Research Report 10 · One-Year Execution Plan; Boot.dev Backend Developer Path; roadmap.sh Role and Skill Maps; implementation_plan.md; planner_task_design_analysis.md",
     "workMode": "docs-only",
     "failureRoute": "Pause progression, isolate the missing concept in a 15–30 minute exercise, reproduce it without copying, then rerun the original problem with different input.",
     "type": "learning",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "foundation",
-    "week": 7,
-    "estMinutes": 450,
+    "week": 9,
+    "estMinutes": 660,
     "criticality": "high",
     "deps": [
       "DSA-TREES-SEARCH"
@@ -5907,24 +6044,29 @@ const SEED_TASKS = [
     "sourceRefs": [
       "SRC-MD10",
       "SRC-BOOTDEV",
-      "SRC-ROADMAP"
+      "SRC-ROADMAP",
+      "SRC-BOOTDEV-CATALOGUE-20260808"
     ],
-    "sourceFreshness": "stable",
+    "sourceFreshness": "volatile",
     "goalIds": [
       "G2",
       "G5"
     ],
     "subtasks": [
-      "Complete adjacency-list and adjacency-matrix representations.",
-      "Complete BFS and shortest unweighted path patterns.",
-      "Complete DFS, connected components, and cycle-detection patterns.",
-      "Solve four BFS problems without generated solutions.",
-      "Solve four DFS/graph problems and explain the chosen representation."
+      "Finish Boot.dev DSA 2; the course must reach 100% by the end of this block.",
+      "Practise graph representation and BFS on two changed problems without generated solutions.",
+      "Practise DFS/connected-component or cycle reasoning on two changed problems without generated solutions.",
+      "Explain why the chosen representation/traversal fits the problem."
     ],
     "learnRead": [
       "Boot.dev Backend Developer Path — https://www.boot.dev/tracks/backend",
       "roadmap.sh Role and Skill Maps — https://roadmap.sh/"
-    ]
+    ],
+    "estimateOptimisticMinutes": 540,
+    "estimateLikelyMinutes": 660,
+    "estimatePessimisticMinutes": 780,
+    "reverifyAfter": "If Boot.dev materially updates either Python DSA course, lesson counts, or published durations.",
+    "due": "2026-09-26"
   },
   {
     "id": "DSA-FOUNDATION-EXIT",
@@ -5936,9 +6078,9 @@ const SEED_TASKS = [
     "failureRoute": "Stop after the first failed acceptance check. Identify the exact failure, repair only that capability, then repeat the check with changed input and no generated implementation.",
     "type": "assessment",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "assessment",
-    "week": 8,
+    "week": 9,
     "estMinutes": 180,
     "criticality": "high",
     "deps": [
@@ -5966,7 +6108,8 @@ const SEED_TASKS = [
     "learnRead": [
       "Boot.dev Backend Developer Path — https://www.boot.dev/tracks/backend",
       "roadmap.sh Role and Skill Maps — https://roadmap.sh/"
-    ]
+    ],
+    "due": "2026-09-27"
   },
   {
     "id": "NETWORKING-SERVICE-LAB",
@@ -5978,9 +6121,9 @@ const SEED_TASKS = [
     "failureRoute": "Stop at the first unexplained layer. Record the observed symptom, test DNS then TCP/port then process/bind then HTTP/TLS in order, repair only the failed layer, and rerun with a changed port or hostname.",
     "type": "assessment",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "assessment",
-    "week": 6,
+    "week": 10,
     "estMinutes": 120,
     "criticality": "high",
     "deps": [
@@ -6010,22 +6153,23 @@ const SEED_TASKS = [
       "roadmap.sh Role and Skill Maps — https://roadmap.sh/",
       "Linux Foundation · Introduction to Linux — https://training.linuxfoundation.org/training/introduction-to-linux/",
       "Python `http.server` documentation — https://docs.python.org/3/library/http.server.html"
-    ]
+    ],
+    "due": "2026-09-28"
   },
   {
     "id": "HTTP-COURSE",
-    "title": "Finish Boot.dev HTTP Clients and build a small HTTP behaviour lab",
-    "description": "Cover methods, status codes, headers, parameters, timeouts, retries, CORS, and idempotency before FastAPI.",
-    "definitionOfDone": "The course is complete and the lab demonstrates the named behaviours with working requests and tests.",
+    "title": "Finish Boot.dev HTTP Clients in Python and build a small HTTP behaviour lab",
+    "description": "Complete the current 52-lesson / about 14-hour Boot.dev Learn HTTP Clients in Python course, then verify methods, status codes, headers, parameters, timeouts, retries, CORS, and idempotency in a small behaviour lab before FastAPI.",
+    "definitionOfDone": "Boot.dev Learn HTTP Clients in Python is complete and the small behaviour lab can send/inspect requests, explain status/header/body behaviour, handle a timeout or retry case, and explain one idempotency or CORS case.",
     "source": "Deep Research Report 10 · One-Year Execution Plan; Boot.dev Backend Developer Path; roadmap.sh API Design and Backend maps; FastAPI Tutorial; implementation_plan.md; planner_task_design_analysis.md",
     "workMode": "docs-only",
     "failureRoute": "Pause progression, isolate the missing concept in a 15–30 minute exercise, reproduce it without copying, then rerun the original acceptance check with different input.",
     "type": "learning",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "foundation",
-    "week": 7,
-    "estMinutes": 180,
+    "week": 10,
+    "estMinutes": 840,
     "criticality": "high",
     "deps": [
       "NETWORKING-SERVICE-LAB"
@@ -6035,24 +6179,30 @@ const SEED_TASKS = [
     "sourceRefs": [
       "SRC-MD10",
       "SRC-BOOTDEV",
+      "SRC-ROADMAP",
       "SRC-FASTAPI",
-      "SRC-ROADMAP"
+      "SRC-BOOTDEV-CATALOGUE-20260808"
     ],
-    "sourceFreshness": "stable",
+    "sourceFreshness": "volatile",
     "goalIds": [
       "G2",
       "G3"
     ],
     "subtasks": [
-      "Finish the remaining HTTP course lessons.",
-      "Send GET, POST, PATCH, and DELETE requests.",
-      "Handle status codes, timeouts, and retries.",
-      "Demonstrate CORS and one idempotent operation."
+      "Complete all 52 lessons of Boot.dev Learn HTTP Clients in Python.",
+      "Inspect methods, status codes, headers, query/path parameters, and JSON bodies on changed requests.",
+      "Reproduce one timeout/retry failure and one client-side error case.",
+      "Explain CORS and idempotency at the level needed to design the FastAPI service."
     ],
     "learnRead": [
       "Boot.dev Backend Developer Path — https://www.boot.dev/tracks/backend",
       "FastAPI Tutorial — https://fastapi.tiangolo.com/tutorial/"
-    ]
+    ],
+    "due": "2026-10-03",
+    "estimateOptimisticMinutes": 660,
+    "estimateLikelyMinutes": 840,
+    "estimatePessimisticMinutes": 1020,
+    "reverifyAfter": "If Boot.dev materially updates HTTP Clients in Python, lesson count, or published duration."
   },
   {
     "id": "PROJECT-SCOPE",
@@ -6064,9 +6214,9 @@ const SEED_TASKS = [
     "failureRoute": "Reduce the problem to the smallest failing command, request, test, or deployment step. Fix that slice, rerun from a clean state, and understand the root cause before moving on. Do not create a separate proof file.",
     "type": "action",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "product",
-    "week": 8,
+    "week": 10,
     "estMinutes": 120,
     "criticality": "high",
     "deps": [
@@ -6099,7 +6249,8 @@ const SEED_TASKS = [
       "FastAPI Tutorial — https://fastapi.tiangolo.com/tutorial/",
       "PostgreSQL Official Tutorial — https://www.postgresql.org/docs/current/tutorial.html",
       "pytest Getting Started — https://docs.pytest.org/en/stable/getting-started.html"
-    ]
+    ],
+    "due": "2026-10-04"
   },
   {
     "id": "FASTAPI-ROUTES",
@@ -6111,9 +6262,9 @@ const SEED_TASKS = [
     "failureRoute": "Reduce the problem to the smallest failing command, request, test, or deployment step. Fix that slice, rerun from a clean state, and understand the root cause before moving on. Do not create a separate proof file.",
     "type": "build",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "product",
-    "week": 9,
+    "week": 11,
     "estMinutes": 600,
     "criticality": "high",
     "deps": [
@@ -6143,7 +6294,8 @@ const SEED_TASKS = [
     "learnRead": [
       "FastAPI Tutorial — https://fastapi.tiangolo.com/tutorial/",
       "pytest Getting Started — https://docs.pytest.org/en/stable/getting-started.html"
-    ]
+    ],
+    "due": "2026-10-11"
   },
   {
     "id": "PROJECT-POSTGRES",
@@ -6155,9 +6307,9 @@ const SEED_TASKS = [
     "failureRoute": "Reduce the problem to the smallest failing command, request, test, or deployment step. Fix that slice, rerun from a clean state, and understand the root cause before moving on. Do not create a separate proof file.",
     "type": "build",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "product",
-    "week": 10,
+    "week": 12,
     "estMinutes": 480,
     "criticality": "high",
     "deps": [
@@ -6186,7 +6338,8 @@ const SEED_TASKS = [
       "PostgreSQL Official Tutorial — https://www.postgresql.org/docs/current/tutorial.html",
       "FastAPI Tutorial — https://fastapi.tiangolo.com/tutorial/",
       "pytest Getting Started — https://docs.pytest.org/en/stable/getting-started.html"
-    ]
+    ],
+    "due": "2026-10-18"
   },
   {
     "id": "PYTEST-CORE",
@@ -6198,9 +6351,9 @@ const SEED_TASKS = [
     "failureRoute": "Reduce the failure to one test and one behaviour. Fix the product code or test assumption causing that mismatch, rerun the focused test, then rerun the clean-database suite.",
     "type": "build",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "product",
-    "week": 11,
+    "week": 13,
     "estMinutes": 480,
     "criticality": "high",
     "deps": [
@@ -6231,7 +6384,8 @@ const SEED_TASKS = [
       "pytest Getting Started — https://docs.pytest.org/en/stable/getting-started.html",
       "FastAPI Tutorial — https://fastapi.tiangolo.com/tutorial/",
       "PostgreSQL Official Tutorial — https://www.postgresql.org/docs/current/tutorial.html"
-    ]
+    ],
+    "due": "2026-10-24"
   },
   {
     "id": "PROJECT-SECURITY-BASELINE",
@@ -6243,9 +6397,9 @@ const SEED_TASKS = [
     "failureRoute": "Reduce the control to one threat and one failing test. Repair the smallest auth, secret, CORS, rate-limit, permission, or error-leak path; rerun with a changed credential/input and document the remaining limitation.",
     "type": "build",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "product",
-    "week": 12,
+    "week": 13,
     "estMinutes": 300,
     "criticality": "high",
     "deps": [
@@ -6280,7 +6434,56 @@ const SEED_TASKS = [
       "FastAPI Security tutorial — https://fastapi.tiangolo.com/tutorial/security/",
       "PostgreSQL privileges — https://www.postgresql.org/docs/current/ddl-priv.html",
       "roadmap.sh Role and Skill Maps — https://roadmap.sh/"
-    ]
+    ],
+    "due": "2026-10-25"
+  },
+  {
+    "id": "DOCKER-COURSE",
+    "title": "Finish Boot.dev Learn Docker before containerising Project One",
+    "description": "Complete the current 43-lesson / about 18-hour Boot.dev Learn Docker course, then use that knowledge in the separate Project One Docker task. The course and the project implementation are not the same deliverable.",
+    "definitionOfDone": "Boot.dev Learn Docker is complete and you can explain/build basic images and containers, use volumes and networks, read a Dockerfile/Compose file, inspect logs, and remove disposable resources before touching the Project One containerisation task.",
+    "source": "Deep Research Report 10 · One-Year Execution Plan; Boot.dev Backend Developer Path; Docker Get Started; roadmap.sh Docker and Backend maps; implementation_plan.md; planner_task_design_analysis.md",
+    "workMode": "docs-only",
+    "failureRoute": "Pause at the first Docker concept you cannot reproduce. Use the course or Docker docs, repeat the smallest container/image/volume/network action on changed input, then continue; do not redesign Project One during the course.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "fixed",
+    "cat": "product",
+    "week": 14,
+    "estMinutes": 1080,
+    "criticality": "high",
+    "deps": [
+      "PROJECT-SECURITY-BASELINE"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-MD10",
+      "SRC-BOOTDEV",
+      "SRC-DOCKER",
+      "SRC-ROADMAP",
+      "SRC-BOOTDEV-CATALOGUE-20260808"
+    ],
+    "sourceFreshness": "volatile",
+    "goalIds": [
+      "G2",
+      "G3"
+    ],
+    "subtasks": [
+      "Complete all 43 lessons of Boot.dev Learn Docker.",
+      "Reproduce image/container lifecycle, bind/volume persistence, and container networking on disposable examples.",
+      "Read and modify a small Dockerfile and Compose configuration from the course material.",
+      "Inspect logs/state and remove every disposable resource before Project One containerisation."
+    ],
+    "learnRead": [
+      "Boot.dev Backend Developer Path — https://www.boot.dev/tracks/backend",
+      "Docker Get Started — https://docs.docker.com/get-started/"
+    ],
+    "due": "2026-11-01",
+    "estimateOptimisticMinutes": 870,
+    "estimateLikelyMinutes": 1080,
+    "estimatePessimisticMinutes": 1290,
+    "reverifyAfter": "If Boot.dev materially updates Learn Docker, lesson count, or published duration."
   },
   {
     "id": "PROJECT-DOCKER",
@@ -6294,10 +6497,11 @@ const SEED_TASKS = [
     "requirement": "required",
     "dateMode": "weekly",
     "cat": "product",
-    "week": 13,
+    "week": 15,
     "estMinutes": 300,
     "criticality": "high",
     "deps": [
+      "DOCKER-COURSE",
       "PROJECT-SECURITY-BASELINE"
     ],
     "workBlock": "build",
@@ -6337,7 +6541,7 @@ const SEED_TASKS = [
     "requirement": "required",
     "dateMode": "weekly",
     "cat": "product",
-    "week": 14,
+    "week": 15,
     "estMinutes": 240,
     "criticality": "high",
     "deps": [
@@ -6383,7 +6587,7 @@ const SEED_TASKS = [
     "requirement": "required",
     "dateMode": "weekly",
     "cat": "product",
-    "week": 14,
+    "week": 15,
     "estMinutes": 120,
     "criticality": "normal",
     "deps": [
@@ -6426,9 +6630,9 @@ const SEED_TASKS = [
     "failureRoute": "Stop after the first failed acceptance check. Identify the exact failure, repair only that capability, then repeat the check with changed input and no generated implementation.",
     "type": "assessment",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "assessment",
-    "week": 15,
+    "week": 16,
     "estMinutes": 120,
     "criticality": "high",
     "deps": [
@@ -6460,7 +6664,8 @@ const SEED_TASKS = [
       "Docker Get Started — https://docs.docker.com/get-started/",
       "GitHub Actions Documentation — https://docs.github.com/en/actions",
       "pytest Getting Started — https://docs.pytest.org/en/stable/getting-started.html"
-    ]
+    ],
+    "due": "2026-11-10"
   },
   {
     "id": "PROJECT-PUBLIC-DEPLOY",
@@ -6472,9 +6677,9 @@ const SEED_TASKS = [
     "failureRoute": "Isolate the first failing layer: build, start command, environment, database, migration, network, or health check. After two focused debugging sessions on the same host-specific blocker, move to a simpler supported host or configuration while keeping PostgreSQL, HTTPS, tests, migrations, and the health check. Do not redesign the application.",
     "type": "build",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "product",
-    "week": 15,
+    "week": 16,
     "estMinutes": 360,
     "criticality": "critical",
     "deps": [
@@ -6507,7 +6712,8 @@ const SEED_TASKS = [
       "FastAPI deployment concepts — https://fastapi.tiangolo.com/deployment/",
       "Docker documentation — https://docs.docker.com/",
       "Use the current official deployment guide for the selected host."
-    ]
+    ],
+    "due": "2026-11-14"
   },
   {
     "id": "PROJECT-JOB-RELEASE",
@@ -6519,9 +6725,9 @@ const SEED_TASKS = [
     "failureRoute": "Reduce the problem to the smallest failing command, request, test, or deployment step. Fix that slice, rerun from a clean state, and understand the root cause before moving on. Do not create a separate proof file.",
     "type": "action",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "product",
-    "week": 15,
+    "week": 16,
     "estMinutes": 60,
     "criticality": "critical",
     "deps": [
@@ -6549,13 +6755,14 @@ const SEED_TASKS = [
     ],
     "learnRead": [
       "UAE Official Employer Career Pages and Major Job Boards — https://www.linkedin.com/jobs/"
-    ]
+    ],
+    "due": "2026-11-15"
   },
   {
     "id": "CV-LANES",
     "title": "Create a truthful baseline CV and align LinkedIn and GitHub before the main project",
-    "description": "Package the degree, UAE Golden Visa/work availability, and only work you can defend now. This is the baseline for early market contact; PROJECT-JOB-RELEASE later adds the new FastAPI/PostgreSQL release.",
-    "definitionOfDone": "A one-page baseline CV states First Class Honours, UAE Golden Visa/no sponsorship requirement, accurate current skills, and only defensible project links; LinkedIn and GitHub use the same facts and every link opens.",
+    "description": "Package only completed, defensible facts so the profile is ready before the end-of-August application launch. PROJECT-JOB-RELEASE later adds the FastAPI/PostgreSQL release.",
+    "definitionOfDone": "A one-page baseline CV states the verified degree result and current work eligibility, accurate current skills, and only defensible project links; LinkedIn and GitHub use the same facts and every link opens.",
     "source": "Deep Research Report 8 · Vancouver Masters and Umbrella Stack; Deep Research Report 10 · One-Year Execution Plan; UAE Official Employer Career Pages and Major Job Boards; implementation_plan.md; planner_task_design_analysis.md",
     "workMode": "ai-review-after-attempt",
     "failureRoute": "Diagnose the failing funnel stage before increasing volume. Change one variable only—targeting, CV evidence, outreach, assessment prep, or interview performance—then compare the next measured cycle.",
@@ -6563,12 +6770,10 @@ const SEED_TASKS = [
     "requirement": "required",
     "dateMode": "weekly",
     "cat": "career",
-    "week": 2,
+    "week": 3,
     "estMinutes": 90,
     "criticality": "normal",
-    "deps": [
-      "PYTHON-TRANSFER"
-    ],
+    "deps": [],
     "workBlock": "market",
     "gateIds": [],
     "sourceRefs": [
@@ -6605,12 +6810,10 @@ const SEED_TASKS = [
     "requirement": "required",
     "dateMode": "weekly",
     "cat": "product",
-    "week": 2,
+    "week": 4,
     "estMinutes": 360,
     "criticality": "normal",
-    "deps": [
-      "PYTHON-TRANSFER"
-    ],
+    "deps": [],
     "workBlock": "build",
     "gateIds": [],
     "sourceRefs": [
@@ -6641,9 +6844,9 @@ const SEED_TASKS = [
   },
   {
     "id": "JOB-SEARCH-SYSTEM",
-    "title": "Calibrate the UAE market with 10 current roles before the September launch",
-    "description": "Use ten genuinely eligible roles to confirm titles, recurring requirements and search filters. Submit up to four unusually suitable early matches when they exist; the sustained low-volume search starts in Week 6.",
-    "definitionOfDone": "Ten current roles are classified by hard eligibility and repeated requirements; the role filters for September are set; up to four unusually suitable early applications are submitted when such roles exist, or none are submitted because none met the hard requirements.",
+    "title": "Calibrate 10 UAE roles and freeze the search filters before the 31 August launch",
+    "description": "Use ten genuinely eligible live roles to confirm titles, recurring requirements, and search filters. This is research/preparation only: the planner schedules no UAE job applications before 31 August 2026.",
+    "definitionOfDone": "Ten current roles are classified by hard eligibility and repeated requirements, the five most repeated requirements are identified, and the search filters for the 31 August launch are ready. Zero applications are submitted as part of this task.",
     "source": "Deep Research Report 8 · Vancouver Masters and Umbrella Stack; Deep Research Report 10 · One-Year Execution Plan; UAE Official Employer Career Pages and Major Job Boards; implementation_plan.md; planner_task_design_analysis.md",
     "workMode": "docs-only",
     "failureRoute": "Diagnose the failing funnel stage before increasing volume. Change one variable only—targeting, CV evidence, outreach, assessment prep, or interview performance—then compare the next measured cycle.",
@@ -6651,7 +6854,7 @@ const SEED_TASKS = [
     "requirement": "required",
     "dateMode": "weekly",
     "cat": "career",
-    "week": 3,
+    "week": 5,
     "estMinutes": 120,
     "criticality": "normal",
     "deps": [
@@ -6673,8 +6876,8 @@ const SEED_TASKS = [
       "Search official career pages and major UAE job boards across the agreed role lanes.",
       "Reject roles whose hard eligibility requirements you do not meet and identify the five most repeated requirements.",
       "Record ten strong current roles with company, title, link, hard requirements, and eligibility decision.",
-      "Submit up to four unusually suitable early roles using the truthful baseline CV.",
-      "Set the September search filters and return to SQL/PostgreSQL; the sustained cycle begins in Week 6."
+      "Freeze the search filters and target lanes for the first application cycle.",
+      "Submit no applications before 31 August; return to the technical roadmap when calibration is complete."
     ],
     "learnRead": [
       "UAE Official Employer Career Pages and Major Job Boards — https://www.linkedin.com/jobs/"
@@ -6682,9 +6885,9 @@ const SEED_TASKS = [
   },
   {
     "id": "APP-CYCLE-SEPT",
-    "title": "Run a four-week September UAE application cycle while the technical roadmap continues",
-    "description": "Start the real search on 31 August/1 September rather than waiting for Project One. Submit 3–4 qualified applications per week using the truthful baseline CV and any dissertation bridge that passed its six-hour limit. Continue foundations and do not claim unfinished FastAPI or AWS work.",
-    "definitionOfDone": "Across four weeks, 12–16 qualified applications are submitted when suitable roles exist, or a lower total is justified by a thin eligible pool or live interviews; every application is tracked, every response has a next action, and the technical roadmap continues.",
+    "title": "Start the first UAE application cycle on 31 August and run it for four weeks",
+    "description": "This is the planner’s first job-submission task. Start on 31 August 2026, submit 3–4 qualified applications per week using the truthful baseline CV, continue foundations, and never claim unfinished FastAPI, Docker, AWS, or deployment work.",
+    "definitionOfDone": "From 31 August through 27 September, 12–16 qualified applications are submitted when suitable roles exist, or a lower total is justified by a thin eligible pool or live interviews; every application is tracked and the technical roadmap continues.",
     "source": "Deep Research Report 8 · Vancouver Masters and Umbrella Stack; Deep Research Report 10 · One-Year Execution Plan; UAE Official Employer Career Pages and Major Job Boards; DUBAI_PLAN.pdf · application execution principles; implementation_plan.md; planner_task_design_analysis.md",
     "workMode": "docs-only",
     "failureRoute": "Do not replace learning with application volume. Cap routine searching and tailoring at two hours per week unless a live assessment or interview requires preparation; diagnose eligibility, targeting, CV, assessment, or interview issues before changing the roadmap.",
@@ -6713,16 +6916,17 @@ const SEED_TASKS = [
       "G12"
     ],
     "subtasks": [
-      "Each week identify live roles across junior backend/Python, software trainee, QA automation, application support, cloud support, paid internship, and contract-to-hire lanes.",
+      "Do not submit before 31 August; on/after that date identify live roles across junior backend/Python, software trainee, QA automation, application support, cloud support, paid internship, and contract-to-hire lanes.",
       "Submit 3–4 qualified applications per week with the truthful baseline CV; use the dissertation link only if DISSERTATION-BRIDGE passed.",
       "Describe Project One only as in development when accurate and never claim unfinished FastAPI, Docker, AWS, or deployment work.",
       "Track status and next action for every application and prepare immediately for any screen, assessment, or interview.",
-      "Cap routine search and tailoring at two hours per week so foundations and Project One continue."
+      "Cap routine search and tailoring at about two hours per week so foundations and Project One continue."
     ],
     "learnRead": [
       "UAE Official Employer Career Pages and Major Job Boards — https://www.linkedin.com/jobs/"
     ],
-    "due": "2026-09-27"
+    "due": "2026-09-27",
+    "availableFrom": "2026-08-31"
   },
   {
     "id": "PROJECT-DEFENCE",
@@ -6734,9 +6938,9 @@ const SEED_TASKS = [
     "failureRoute": "Stop after the first failed acceptance check. Identify the exact failure, repair only that capability, then repeat the check with changed input and no generated implementation.",
     "type": "assessment",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "assessment",
-    "week": 16,
+    "week": 17,
     "estMinutes": 120,
     "criticality": "high",
     "deps": [
@@ -6772,7 +6976,55 @@ const SEED_TASKS = [
       "FastAPI Tutorial — https://fastapi.tiangolo.com/tutorial/",
       "PostgreSQL Official Tutorial — https://www.postgresql.org/docs/current/tutorial.html",
       "pytest Getting Started — https://docs.pytest.org/en/stable/getting-started.html"
-    ]
+    ],
+    "due": "2026-11-17"
+  },
+  {
+    "id": "BOOTDEV-JOB-COURSE",
+    "title": "Finish Boot.dev How to Find a Programming Job and apply only useful lessons to the existing UAE funnel",
+    "description": "Complete the current 52-lesson / about 12-hour Boot.dev job-search course after the public project exists. Use it to improve the existing CV, targeting, interview preparation, and application funnel; do not create another tracker, another CV system, or another portfolio project.",
+    "definitionOfDone": "Boot.dev How to Find a Programming Job is complete and any useful changes have been applied directly to the existing UAE search materials/funnel without creating duplicate planning systems.",
+    "source": "Deep Research Report 10 · One-Year Execution Plan; Boot.dev Backend Developer Path; UAE Official Employer Career Pages and Major Job Boards; planner_task_design_analysis.md",
+    "workMode": "docs-only",
+    "failureRoute": "Apply one useful lesson at a time to the existing funnel. If a recommendation does not match the UAE target or current evidence, skip it rather than creating a new process.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "fixed",
+    "cat": "career",
+    "week": 17,
+    "estMinutes": 720,
+    "criticality": "normal",
+    "deps": [
+      "PROJECT-JOB-RELEASE"
+    ],
+    "workBlock": "market",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-MD10",
+      "SRC-BOOTDEV",
+      "SRC-UAE-JOBS",
+      "SRC-BOOTDEV-CATALOGUE-20260808"
+    ],
+    "sourceFreshness": "volatile",
+    "goalIds": [
+      "G6",
+      "G9"
+    ],
+    "subtasks": [
+      "Complete all 52 lessons of Boot.dev How to Find a Programming Job.",
+      "Apply useful CV/profile lessons to the existing baseline and project-backed CV rather than making a new CV system.",
+      "Apply useful targeting/outreach lessons to the existing application funnel.",
+      "Apply useful interview lessons to PROJECT-DEFENCE and later interview preparation; skip advice that does not fit the UAE target."
+    ],
+    "learnRead": [
+      "Boot.dev Backend Developer Path — https://www.boot.dev/tracks/backend",
+      "UAE Official Employer Career Pages and Major Job Boards — https://www.linkedin.com/jobs/"
+    ],
+    "due": "2026-11-22",
+    "estimateOptimisticMinutes": 570,
+    "estimateLikelyMinutes": 720,
+    "estimatePessimisticMinutes": 870,
+    "reverifyAfter": "If Boot.dev materially updates the job-search course, lesson count, or published duration."
   },
   {
     "id": "APP-CYCLE-1",
@@ -6786,7 +7038,7 @@ const SEED_TASKS = [
     "requirement": "required",
     "dateMode": "fixed",
     "cat": "career",
-    "week": 16,
+    "week": 18,
     "estMinutes": 360,
     "criticality": "high",
     "deps": [
@@ -6817,7 +7069,8 @@ const SEED_TASKS = [
     "learnRead": [
       "UAE Official Employer Career Pages and Major Job Boards — https://www.linkedin.com/jobs/"
     ],
-    "due": "2026-11-22"
+    "due": "2026-11-29",
+    "availableFrom": "2026-11-16"
   },
   {
     "id": "FUNNEL-REVIEW-1",
@@ -6829,7 +7082,7 @@ const SEED_TASKS = [
     "failureRoute": "Diagnose the failing funnel stage before increasing volume. Change one variable only—targeting, CV evidence, outreach, assessment prep, or interview performance—then compare the next measured cycle.",
     "type": "action",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "career",
     "week": 10,
     "estMinutes": 45,
@@ -6855,22 +7108,23 @@ const SEED_TASKS = [
     ],
     "learnRead": [
       "UAE Official Employer Career Pages and Major Job Boards — https://www.linkedin.com/jobs/"
-    ]
+    ],
+    "due": "2026-10-01"
   },
   {
     "id": "AWS-COURSE-1",
-    "title": "Complete the Boot.dev AWS path and use the relevant services in small labs",
-    "description": "Learn IAM, networking, compute, storage, databases, monitoring, deployment, reliability, and cost control as one course block.",
-    "definitionOfDone": "The mapped AWS path is complete and every retained service is used in a small lab or explicitly rejected as unnecessary.",
+    "title": "Complete the first half of Boot.dev Learn AWS and practise the essential services",
+    "description": "Complete roughly the first half of the current 92-lesson Boot.dev Learn AWS course. This 12-hour block is half of the current 24-hour published duration and focuses on essential cloud, IAM, network, compute, storage, and database concepts.",
+    "definitionOfDone": "Boot.dev Learn AWS is roughly halfway complete and the essential services covered so far have been used in small disposable labs with teardown.",
     "source": "Deep Research Report 10 · One-Year Execution Plan; Boot.dev Backend Developer Path; AWS Documentation and Skill Builder; implementation_plan.md; planner_task_design_analysis.md",
     "workMode": "docs-only",
     "failureRoute": "Reduce the problem to the smallest failing command, request, test, or deployment step. Fix that slice, rerun from a clean state, and understand the root cause before moving on. Do not create a separate proof file.",
     "type": "learning",
     "requirement": "required",
-    "dateMode": "weekly",
+    "dateMode": "fixed",
     "cat": "cloud",
     "week": 19,
-    "estMinutes": 900,
+    "estMinutes": 720,
     "criticality": "high",
     "deps": [
       "PROJECT-JOB-RELEASE"
@@ -6880,7 +7134,8 @@ const SEED_TASKS = [
     "sourceRefs": [
       "SRC-MD10",
       "SRC-BOOTDEV",
-      "SRC-AWS"
+      "SRC-AWS",
+      "SRC-BOOTDEV-CATALOGUE-20260808"
     ],
     "sourceFreshness": "volatile",
     "goalIds": [
@@ -6889,15 +7144,68 @@ const SEED_TASKS = [
       "G12"
     ],
     "subtasks": [
-      "Complete the remaining Boot.dev AWS lessons.",
-      "Practise least-privilege IAM, networking, compute, storage, and a managed database.",
-      "Set logs, a health check, and a budget alert.",
+      "Complete roughly the first half of Boot.dev Learn AWS.",
+      "Practise least-privilege IAM as it appears in the course.",
+      "Use the essential network, compute, storage, and database services introduced so far.",
       "Tear down every temporary resource."
     ],
     "learnRead": [
       "Boot.dev Backend Developer Path — https://www.boot.dev/tracks/backend",
       "AWS Documentation and Skill Builder — https://skillbuilder.aws/"
-    ]
+    ],
+    "due": "2026-12-06",
+    "estimateOptimisticMinutes": 570,
+    "estimateLikelyMinutes": 720,
+    "estimatePessimisticMinutes": 900,
+    "reverifyAfter": "If Boot.dev materially updates Learn AWS, lesson count, or published duration."
+  },
+  {
+    "id": "AWS-COURSE-2",
+    "title": "Finish Boot.dev Learn AWS and connect the retained services to the deployment plan",
+    "description": "Complete the second half of the current 92-lesson Boot.dev Learn AWS course. This 12-hour block completes the current 24-hour published course baseline; retain only services relevant to Project One and target backend/cloud-support work.",
+    "definitionOfDone": "Boot.dev Learn AWS is complete, every retained service has been used in a small lab or explicitly rejected as unnecessary, and the simplest AWS architecture for Project One can be stated and defended.",
+    "source": "Deep Research Report 10 · One-Year Execution Plan; Boot.dev Backend Developer Path; AWS Documentation and Skill Builder; implementation_plan.md; planner_task_design_analysis.md",
+    "workMode": "docs-only",
+    "failureRoute": "Reduce the problem to the smallest failing command, request, test, or deployment step. Fix that slice, rerun from a clean state, and understand the root cause before moving on. Do not create a separate proof file.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "fixed",
+    "cat": "cloud",
+    "week": 20,
+    "estMinutes": 720,
+    "criticality": "high",
+    "deps": [
+      "AWS-COURSE-1"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-MD10",
+      "SRC-BOOTDEV",
+      "SRC-AWS",
+      "SRC-BOOTDEV-CATALOGUE-20260808"
+    ],
+    "sourceFreshness": "volatile",
+    "goalIds": [
+      "G3",
+      "G8",
+      "G12"
+    ],
+    "subtasks": [
+      "Finish the remaining Boot.dev Learn AWS lessons.",
+      "Use the retained IAM, networking, compute, storage, managed database, logging/monitoring, and cost-control concepts in small disposable labs.",
+      "State the simplest AWS architecture for Project One and reject unnecessary services.",
+      "Tear down every temporary resource."
+    ],
+    "learnRead": [
+      "Boot.dev Backend Developer Path — https://www.boot.dev/tracks/backend",
+      "AWS Documentation and Skill Builder — https://skillbuilder.aws/"
+    ],
+    "due": "2026-12-13",
+    "estimateOptimisticMinutes": 570,
+    "estimateLikelyMinutes": 720,
+    "estimatePessimisticMinutes": 900,
+    "reverifyAfter": "If Boot.dev materially updates Learn AWS, lesson count, or published duration."
   },
   {
     "id": "AWS-LABS",
@@ -6915,7 +7223,7 @@ const SEED_TASKS = [
     "estMinutes": 480,
     "criticality": "high",
     "deps": [
-      "AWS-COURSE-1"
+      "AWS-COURSE-2"
     ],
     "workBlock": "practice",
     "gateIds": [],
@@ -7624,8 +7932,16 @@ const SOURCE_REGISTRY = [
     "title": "Boot.dev Backend Developer Path",
     "kind": "structured course library",
     "freshness": "volatile",
-    "purpose": "Primary structured learning path; complete only modules mapped to an active task.",
+    "purpose": "Primary structured learning path. Complete only modules mapped to an active task; use current published course durations as planning baselines and recheck after major updates.",
     "url": "https://www.boot.dev/tracks/backend"
+  },
+  {
+    "id": "SRC-BOOTDEV-CATALOGUE-20260808",
+    "title": "Boot.dev course catalogue snapshot · 8 Aug 2026",
+    "kind": "user-supplied course catalogue snapshot",
+    "freshness": "volatile — recheck after major course updates",
+    "purpose": "Planning-duration baseline only: Linux 10h; SQL 30h; DSA in Python 32h; DSA 2 in Python 22h; HTTP Clients in Python 14h; Docker 18h; AWS 24h; How to Find a Programming Job 12h. Completion is based on the course and practical task, not spending the advertised number of hours.",
+    "url": ""
   },
   {
     "id": "SRC-PYTHON",
@@ -8424,9 +8740,13 @@ function migrateState(s) {
     if (stable && !existingByStable.has(stable)) existingByStable.set(stable,{...t,seedId:stable});
   }
 
+  const previousSettings = { ...(s.settings || {}) };
   s.schemaVersion = SCHEMA_VERSION;
   s.catalogueVersion = CATALOGUE_VERSION;
-  s.settings = { ...DEFAULT_SETTINGS, ...(s.settings || {}) };
+  s.settings = { ...DEFAULT_SETTINGS, ...previousSettings };
+  // v21 workload migration: move only the old default foundation date.
+  // A manually customised foundation deadline is preserved.
+  if (previousSettings.foundationDeadline === '2026-09-30') s.settings.foundationDeadline = '2026-10-04';
   s.applications = (s.applications || []).map(a => ({contact:'',nextAction:'',deadline:'',priority:'Medium',notes:'',...a}));
   s.targetCompanies = s.targetCompanies && s.targetCompanies.length ? s.targetCompanies : makeDefaultTargets();
   s.targetCompanies = s.targetCompanies.map((t,i)=>({id:t.id || 'tc'+i,status:t.status || 'target',notes:t.notes || '',...t}));
@@ -8890,7 +9210,11 @@ function getProjection(catId) {
    ===================================================================== */
 
 function weeklyCapacityMinutes() {
-  return (settings().scheduleMode || 'unemployed') === 'employed' ? 600 : 1200;
+  if ((settings().scheduleMode || 'unemployed') === 'employed') return 600;
+  const initial = Number(settings().initialWeeklyCapacityMinutes || 1320);
+  const maximum = Number(settings().maximumWeeklyCapacityMinutes || 1800);
+  const earned = Number(state?.metrics?.earnedWeeklyCapacityMinutes || initial);
+  return Math.max(60, Math.min(maximum, Math.max(initial, earned)));
 }
 function getTimeBudgetForWeek(week) {
   const range = weekRange(week);
@@ -10405,10 +10729,18 @@ function getSelectedReviewWeek() {
 function weeklyAppTarget(week) {
   if ((settings().scheduleMode || 'unemployed') === 'employed') return 0;
   const w = Number(week || 1);
-  if (w < 16) return 0;
   const activeInterview = state.applications.some(a => ['screen','interview','offer'].includes(a.status));
-  if (activeInterview) return 4;
-  return 8;
+  // No submissions before Week 6, which starts 31 Aug 2026 in the default plan.
+  if (w < 6) return 0;
+  // First four-week cycle: deliberately low-volume while foundations continue.
+  if (w <= 9) return activeInterview ? 2 : 3;
+  // Project-build period: keep a small live-market presence without stealing build time.
+  if (w <= 16) return activeInterview ? 1 : 2;
+  // After the public release, scale only moderately; live interviews take priority.
+  if (w <= 26) return activeInterview ? 3 : 5;
+  // Sustained-search phase uses the later 3–5/week cadence.
+  if (w <= 39) return activeInterview ? 2 : 4;
+  return 0;
 }
 
 function reviewKey(week) { return 'week-' + week; }
