@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Hamza · Execution Planner v27.15 · Final Curated Labuladong Core + Hybrid Retrieval</title>
+<title>Hamza · Execution Planner v27.21 · Tick Boxes</title>
 <meta name="description" content="Concrete task-first execution planner · rolling 14-day planning · August 2026 to September 2027" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50%25' y='55%25' font-size='80' text-anchor='middle' dominant-first result='middle'%3E🎯%3C/text%3E%3C/svg%3E" />
 <style>
@@ -1553,6 +1553,125 @@ select.input {
     .compare-lock-card{margin:14px 0;background:color-mix(in srgb,var(--gold) 8%,var(--bg-card));color:var(--ink)}
     .compare-lock-card>div{margin-top:5px;color:var(--ink-mute)}
 
+
+/* =====================================================================
+   v27.17 · CHOICE ENGINE
+   ===================================================================== */
+.ce-lane[data-lane="build"], .ce-session[data-lane="build"] { --lane-fg: var(--c-purple-fg); --lane-bg: var(--c-purple-bg); }
+.ce-lane[data-lane="career"], .ce-session[data-lane="career"] { --lane-fg: var(--c-green-fg); --lane-bg: var(--c-green-bg); }
+.ce-lane[data-lane="skills"], .ce-session[data-lane="skills"] { --lane-fg: var(--c-blue-fg); --lane-bg: var(--c-blue-bg); }
+
+.ce-session {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  margin: 2px 0 16px; padding: 12px 14px;
+  border: 1px solid var(--lane-fg); border-radius: var(--r-lg);
+  background: var(--lane-bg);
+}
+.ce-session-main { flex: 1 1 260px; min-width: 0; }
+.ce-session-k { font-size: 12px; color: var(--lane-fg); font-weight: 600; }
+.ce-session-title { color: var(--ink-strong); font-weight: 600; margin-top: 2px; overflow-wrap: anywhere; }
+.ce-session-time { font-size: 22px; font-weight: 650; color: var(--ink-strong); font-variant-numeric: tabular-nums; }
+
+.ce-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 4px 0 2px; }
+.ce-budget { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.ce-budget-num { font-size: 36px; line-height: 1.1; font-weight: 700; letter-spacing: -0.015em; color: var(--ink-strong); font-variant-numeric: tabular-nums; }
+.ce-budget-sub { font-size: 14px; color: var(--ink-mute); }
+.ce-links { display: flex; gap: 14px; flex-wrap: wrap; }
+.ce-links button, .ce-link {
+  font-size: 13px; color: var(--ink-mute);
+  text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 3px;
+}
+.ce-links button:hover, .ce-link:hover { color: var(--ink); }
+
+.ce-total { display: flex; gap: 6px 18px; flex-wrap: wrap; margin: 4px 0 2px; font-size: 13px; color: var(--ink-mute); font-variant-numeric: tabular-nums; }
+.ce-total span:first-child { color: var(--c-blue-fg); }
+.ce-extra-note { margin: 12px 0 -4px; font-size: 13px; color: var(--c-orange-fg); }
+.ce-plan-line { margin: 2px 0; font-size: 13px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.ce-badges { display: flex; gap: 4px; flex-wrap: wrap; }
+.ce-tickbox { display: inline-flex; align-items: center; gap: 8px; padding: 5px 10px 5px 8px; border: 1px solid var(--line-strong);
+  border-radius: var(--r-md); font-size: 13px; color: var(--ink); }
+.ce-tickbox:hover { background: var(--bg-hover); border-color: var(--accent); }
+.ce-tickbox:hover .ce-box { border-color: var(--accent); }
+.ce-tickbox:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ce-box { width: 15px; height: 15px; border: 1.5px solid var(--ink-mute); border-radius: 3px; flex: none; }
+.ce-ticked { margin: 2px 0 12px; font-size: 13px; color: var(--ink-mute); display: flex; gap: 4px 10px; flex-wrap: wrap; }
+.ce-restart { --lane-fg: var(--c-purple-fg); --lane-bg: var(--c-purple-bg);
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  margin: 12px 0 4px; padding: 14px 16px; border: 1px solid var(--lane-fg); border-left-width: 4px;
+  border-radius: var(--r-lg); background: var(--lane-bg); }
+.ce-restart[data-lane="career"] { --lane-fg: var(--c-green-fg); --lane-bg: var(--c-green-bg); }
+.ce-restart-main { flex: 1 1 280px; min-width: 0; }
+.ce-restart-k { font-size: 12px; font-weight: 650; color: var(--lane-fg); text-transform: uppercase; letter-spacing: .04em; }
+.ce-restart-title { font-size: 16px; font-weight: 650; color: var(--ink-strong); margin-top: 2px; overflow-wrap: anywhere; }
+.ce-restart-why { font-size: 13px; color: var(--ink); margin-top: 4px; line-height: 1.45; }
+.ce-replan {
+  margin: 12px 0 6px; padding: 12px 14px; font-size: 13.5px; line-height: 1.5; color: var(--ink);
+  border: 1px solid var(--c-orange-fg); border-radius: var(--r-lg); background: var(--c-orange-bg);
+}
+.ce-muted { color: var(--ink-fade); font-size: 13px; }
+.ce-explain { margin: 6px 0 4px; font-size: 13px; color: var(--ink-mute); }
+.ce-explain summary { cursor: pointer; width: fit-content; }
+.ce-explain summary:hover { color: var(--ink); }
+.ce-explain-grid {
+  display: grid; grid-template-columns: max-content 1fr; gap: 4px 18px;
+  margin: 8px 0 6px; padding: 10px 12px;
+  border: 1px solid var(--line); border-radius: var(--r-md); background: rgba(255,255,255,0.02);
+}
+.ce-explain-grid span:nth-child(odd) { color: var(--ink-mute); }
+.ce-explain-grid span:nth-child(even) { color: var(--ink); font-variant-numeric: tabular-nums; }
+.ce-explain-note { font-size: 12px; color: var(--ink-fade); }
+
+.ce-lanes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 14px 0 8px; }
+.ce-lane {
+  display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  padding: 12px; border: 1px solid var(--line); border-radius: var(--r-lg);
+  border-top: 3px solid var(--lane-fg); background: rgba(255,255,255,0.015);
+}
+.ce-lane-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ce-lane-name { font-size: 13px; font-weight: 650; color: var(--lane-fg); }
+.ce-opt { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.ce-opt + .ce-opt, .ce-alts .ce-opt { padding-top: 10px; border-top: 1px solid var(--line); }
+.ce-opt-title { text-align: left; color: var(--ink-strong); font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.ce-opt:not(.primary) .ce-opt-title { font-weight: 500; }
+.ce-opt-title:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ce-opt-meta { font-size: 12px; color: var(--ink-mute); font-variant-numeric: tabular-nums; }
+.ce-reason { font-size: 13px; line-height: 1.45; color: var(--ink); }
+.ce-opt:not(.primary) .ce-reason { color: var(--ink-mute); }
+.ce-empty { font-size: 13px; color: var(--ink-mute); flex: 1; }
+.ce-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
+.ce-btn {
+  padding: 5px 11px; border-radius: var(--r-md);
+  border: 1px solid var(--line-strong); color: var(--ink); font-size: 13px;
+}
+.ce-btn:hover { background: var(--bg-hover); }
+.ce-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
+.ce-btn.primary:hover { background: rgb(28,116,202); }
+.ce-btn:disabled { opacity: .45; cursor: not-allowed; }
+.ce-btn:focus-visible, .ce-links button:focus-visible, .ce-opt-title:focus-visible, .ce-alts-toggle:focus-visible, .ce-link:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+.ce-alts-toggle { align-self: flex-start; font-size: 12px; color: var(--ink-mute); }
+.ce-alts-toggle:hover { color: var(--ink); }
+.ce-alts { display: none; flex-direction: column; gap: 10px; }
+.ce-lane.show-alts .ce-alts { display: flex; }
+.ce-avoid {
+  font-size: 13px; color: var(--ink); padding: 8px 10px;
+  border: 1px dashed var(--c-yellow-fg); border-radius: var(--r-md); background: var(--c-yellow-bg);
+}
+.ce-stop-row { display: flex; justify-content: flex-end; margin: 0 0 14px; }
+.ce-stopped { margin: 14px 0; font-size: 14px; color: var(--ink-mute); }
+.ce-parked { margin-top: 6px; }
+.ce-park-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13px;
+}
+.ce-park-row:last-child { border-bottom: 0; }
+.ce-park-when { font-size: 12px; color: var(--ink-mute); margin-top: 2px; }
+
+@media (max-width: 900px) {
+  .ce-lanes { grid-template-columns: 1fr; }
+  .ce-budget-num { font-size: 30px; }
+}
 </style>
 </head>
 
@@ -1567,7 +1686,7 @@ select.input {
     <div class="sb-top">
       <div class="sb-workspace">
         <div class="icon">🎯</div>
-        <div class="name">Hamza · Planner v27.15 · Final Curated Labuladong Core + Hybrid Retrieval</div>
+        <div class="name">Hamza · Planner v27.21 · Tick Boxes</div>
         <div class="chev">⌄</div>
       </div>
     </div>
@@ -1629,10 +1748,10 @@ select.input {
         <div class="page-divider"></div>
 
         <div class="stats-row">
-          <div class="stat"><div class="lbl">Days to foundation milestone</div><div class="val" id="s-aws">—</div></div>
-          <div class="stat"><div class="lbl">Days to flagship v1.0</div><div class="val" id="s-deploy">—</div></div>
+          <div class="stat"><div class="lbl" id="s-aws-lbl">Projected v1.0</div><div class="val" id="s-aws">—</div></div>
+          <div class="stat"><div class="lbl">This week</div><div class="val" id="s-deploy">—</div></div>
           <div class="stat"><div class="lbl">Apps sent</div><div class="val" id="s-apps">—</div></div>
-          <div class="stat"><div class="lbl">Days to route decision</div><div class="val" id="s-dubai">—</div></div>
+          <div class="stat"><div class="lbl">Coding Gym this week</div><div class="val" id="s-dubai">—</div></div>
         </div>
 
         <div id="t-datenav"></div>
@@ -1667,10 +1786,10 @@ select.input {
         <h1 class="ph-title">Next 2 Weeks</h1>
         <div class="ph-meta">
           <div class="ph-meta-row"><div class="label">📅 Window</div><div id="rolling-window">—</div></div>
-          <div class="ph-meta-row"><div class="label">🚦 WIP</div><div id="rolling-wip">—</div></div>
+          <div class="ph-meta-row"><div class="label">🔎 Mode</div><div id="rolling-wip">—</div></div>
         </div>
         <div class="page-divider"></div>
-        <div class="block text" style="color:var(--ink-mute)">Only real tasks appear here. The next 14 days become actionable after dependencies pass; later work stays at week level and dormant branches create nothing until selected.</div>
+        <div class="block text" style="color:var(--ink-mute)">A read-only forecast. Today is where you choose; nothing here needs placing or maintaining.</div>
         <div id="rolling-body"></div>
       </section>
 
@@ -1894,19 +2013,20 @@ select.input {
         <div class="block num"><div class="num-marker">3.</div><div><code class="inline">DUBAI_PLAN.pdf</code> contributes execution patterns only: honest project ownership, interview honesty and re-angle-not-restart. Its expired trip, visa, AWS-first, bridge-project and eight-week assumptions do not control this plan.</div></div>
         <div class="block num"><div class="num-marker">4.</div><div>This HTML is the execution layer: it may sequence and test the MD goals, but it may not silently replace them with an older specialization.</div></div>
         <div class="block num"><div class="num-marker">5.</div><div>Reverify official vacancies, university rules, exam details, immigration rules and deadlines before paying or submitting.</div></div>
-        <div class="block num"><div class="num-marker">6.</div><div>Only the next 14 days need exact placement. Later work stays inside broad phases until it becomes relevant.</div></div>
+        <div class="block num"><div class="num-marker">6.</div><div>Every task has a <strong>target date</strong> from the plan's designed order at your real capacity; targets stay fixed until a deliberate change, a milestone, or a re-plan. Missing targets shows as plan slip and never adds minutes to a day. Only real outside <strong>deadlines</strong> (admissions, interviews, take-homes, recruiter timelines, redo dates) can be missed.</div></div>
         <div class="block h2">Workload rules</div>
-        <div class="block bullet"><div class="b-text">Start at roughly 22 focused hours per week. Earn any increase through four weeks of finished work, not optimism. After full-time employment, switch immediately to a reduced role-first schedule.</div></div>
-        <div class="block bullet"><div class="b-text">Only the next 14 days become ready. Later tasks stay weekly, and unselected branches create no tasks. Previous course percentages or AI-assisted output do not prove completion.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Today sizes itself.</strong> Main work targets about 13 hours a week (780 min), spread over the active days left in the week; the Coding Gym runs on top at its own cadence, for roughly 20 hours in total. Main work plus Coding Gym is capped at 240 minutes a day. Falling behind moves the projected finish date, never tomorrow's minutes, and unused minutes are dropped at the Monday reset. After three logged weeks the main-work target follows what you actually did, by at most an hour a week. After full-time employment, switch to a reduced role-first schedule.</div></div>
+        <div class="block bullet"><div class="b-text"><strong>Late tasks and zero days are different problems.</strong> A task you could have done whose target has passed shows “Due … · N days late” and keeps leading its lane; tasks behind it show “Waiting on …” and are never late themselves. If you work on other things for two days while it waits, the planner asks once: do it today, park it, or mark it blocked (which pauses its late clock until you unblock it). A day with nothing started is a starting problem, not a task problem: the next day opens with a 25-minute restart, the day never grows to make up for it, and after three such days the day becomes a light day (Coding Gym plus 25 minutes). Missed minutes move the forecast instead.</div></div>
+<div class="block bullet"><div class="b-text"><strong>Tick it when it's done.</strong> There is no timer: ticking a task marks it done and credits its estimate, and that's what the day's minutes, the plan and the forecast run on. Undo is on Today for anything ticked by mistake.</div></div>
+<div class="block bullet"><div class="b-text"><strong>You choose the work.</strong> Today offers one option per lane: Build (the next task in the plan's order on the path to the current finish line), Career / External, and Skills once a parked course has come back. Secondary work is parked, not deleted, and returns in a fixed order after v1.0. Unselected branches create no tasks. Previous course percentages or AI-assisted output do not prove completion.</div></div>
         <div class="block bullet"><div class="b-text">Do not create standalone “exit” exercises just to prove a completed course. Independence is checked where it matters: building, debugging, changing and explaining the real backend project or handling an actual interview-style task.</div></div>
         <div class="block bullet"><div class="b-text"><strong>Re-angle; do not restart.</strong> No new course, certification, language, project, or planner redesign enters the active plan unless a current task, verified employer response, or confirmed programme requirement creates the need.</div></div>
         <div class="block bullet"><div class="b-text"><strong>DSA is mandatory, not a gate in front of backend work.</strong> Once SQL/PostgreSQL is usable, HTTP and FastAPI may proceed while DSA continues in parallel. Do not delay employer-visible backend evidence just to finish every algorithm lesson first.</div></div>
         <div class="block bullet"><div class="b-text"><strong>Daily Coding Gym has two independently completable tasks.</strong> Every active day shows (1) Boot.dev Training Grounds · 2× 15-minute retention challenges and separately (2) one 45–50 minute focus block. Most focus blocks alternate LeetCode and Codewars. A required finite Labuladong Pattern Lab can replace that focus block on at most one day/week while DSA2 is active and at most two days/week after DSA2; it never adds a third daily task and unfinished labs recur later rather than becoming extra backlog tasks. LeetCode uses NeetCode 150 only as the curated problem bank, with categories unlocked by completed Boot.dev chapters and selected Labuladong frameworks. One problem is enough. The flow is state-dependent: first find a brute-force foothold; if the concept is genuinely unknown, study sooner instead of staring at the screen; if a viable approach exists, keep working independently. Any solution-level help must be followed immediately by a blank-editor reconstruction and creates a 3-day cold redo. Codewars remains broader implementation/language fluency.</div></div>
-        <div class="block bullet"><div class="b-text"><strong>Course-first rule.</strong> Boot.dev remains the primary DSA foundation. <strong>Labuladong is a required but finite companion framework layer inside the DSA/interview lane</strong>: the selected core eventually has to be completed, but it never gates Project One, applications, FastAPI, AWS, admissions, or general job-readiness. Each Pattern Lab replaces the normal focus block, so it does not add weekly workload; if a lab is missed, it remains unfinished and resurfaces in a later eligible Pattern-Lab slot. The final curated set covers pattern mindset, array/linked-list pointers, sliding window, binary search, tree/BST reasoning, graph cycle/topological reasoning, Union-Find, Dijkstra reinforcement, backtracking, DP foundations/families/sequence DP, prefix sums, monotonic stack, greedy reasoning and LRU composition. <strong>Pattern Labs use a sparse prerequisite graph, not one serialized article chain:</strong> each mini-lesson unlocks from the Boot.dev concept it genuinely needs; DSA2 Linear Programming does not gate unrelated interview patterns. Relevant Labuladong frameworks gate deliberate labelled NeetCode category practice where they provide the missing recognition model, while later category-hidden problems test independent recognition. LeetCode is not another curriculum and has no rigid suffer-for-30-minutes rule: spend the first ~5 minutes parsing examples/constraints and finding a brute-force foothold. No foothold means learn the missing concept; a plausible direction means continue the independent search for roughly 15–25 minutes. After any meaningful hint/solution, close it and reconstruct from blank before the focus block can be called done; the problem then returns cold later. <strong>The Coding Gym mechanism is now frozen; future changes should come from real performance evidence, not more planner redesign.</strong></div></div>
+        <div class="block bullet"><div class="b-text"><strong>Course-first rule.</strong> Boot.dev remains the primary DSA foundation. <strong>Labuladong is a required but finite companion framework layer inside the DSA/interview lane</strong>: because it was added after DSA1 had already been completed, its new Pattern-Lab queue starts on <strong>12 Sep 2026</strong>; historical DSA1/Coding-Gym checkmarks satisfy concept prerequisites but never count as Labuladong reading. The selected core eventually has to be completed, but it never gates Project One, applications, FastAPI, AWS, admissions, or general job-readiness. Each Pattern Lab replaces the normal focus block, so it does not add weekly workload; if a lab is missed, it remains unfinished and resurfaces in a later eligible Pattern-Lab slot. The final curated set covers pattern mindset, array/linked-list pointers, sliding window, binary search, tree/BST reasoning, graph cycle/topological reasoning, Union-Find, Dijkstra reinforcement, backtracking, DP foundations/families/sequence DP, prefix sums, monotonic stack, greedy reasoning and LRU composition. <strong>Pattern Labs use a sparse prerequisite graph, not one serialized article chain:</strong> each mini-lesson unlocks from the Boot.dev concept it genuinely needs; DSA2 Linear Programming does not gate unrelated interview patterns. Relevant Labuladong frameworks gate deliberate labelled NeetCode category practice where they provide the missing recognition model, while later category-hidden problems test independent recognition. LeetCode is not another curriculum and has no rigid suffer-for-30-minutes rule: spend the first ~5 minutes parsing examples/constraints and finding a brute-force foothold. No foothold means learn the missing concept; a plausible direction means continue the independent search for roughly 15–25 minutes. After any meaningful hint/solution, close it and reconstruct from blank before the focus block can be called done; the problem then returns cold later. <strong>The Coding Gym mechanism is now frozen; future changes should come from real performance evidence, not more planner redesign.</strong></div></div>
         <div class="block bullet"><div class="b-text"><strong>The UAE search starts selectively now.</strong> In the current graduate-baseline tier, send roughly 2–3 highly qualified applications per week using only evidence you can defend today. Technical learning/building remains the majority of the workload. The Applications page widens role families and raises the target only when SQL/PostgreSQL, HTTP/FastAPI, tested backend work, Docker/CI/public release and AWS evidence actually become true. Week 6 / 31 August is a systematic-search checkpoint, not a permission date.</div></div>
         <div class="block h2">Explicitly skipped or postponed</div>
-        <div class="block bullet"><div class="b-text"><strong>Active structured courses and exact Boot.dev modules are sticky on Today.</strong> Boot.dev now uses exact published chapter/lesson tasks: the current module appears no earlier than its planned target date and then stays visible every day until checked; the next module waits for its own target date. Udemy, Talk Python and GitHub Skills multi-day course/exercise blocks remain sticky as before. For the DSA + PostgreSQL parallel lane, Today keeps both active surfaces visible; for true multi-day blocks it still computes a <em>progress-aware daily target</em>: DSA keeps a protected primary floor, PostgreSQL keeps a protected secondary floor, and neither lane can consume the other. Finish faster and later work remains upcoming until its target date; fall behind and the unfinished work carries forward visibly as Delayed without rewriting its original target date. The displayed block hours remain total estimates, not a daily quota.</div></div>
-        <div class="block bullet"><div class="b-text"><strong>Course-first rule: the planner sequences learning; real courses teach it.</strong> Remaining Boot.dev courses now use one dated task per official chapter. Today shows the exact named chapter due that day; Boot.dev chapter completion, not logged minutes, is the progress signal.  Boot.dev Learn SQL is now complete and remains the SQL-language foundation. Comparing the current Boot.dev syllabus against Stephen Grider’s SQL/PostgreSQL course shows heavy overlap in Grider Sections 3–5 and 9–11, so they remain skipped by default. The useful remainder is tracked as six conceptual developer blocks rather than one planner task per Udemy section: bridge/local environment; application schema/integrity; relational modelling; performance/query tools; transactions/migrations; and application integration/security/testing. Recursive CTEs and materialized views remain optional unless a real project need appears; Section 37 is not planner work. DSA starts in parallel. After DSA 1 Chapter 4 — Sorting Algorithms, HTTP can begin while the remaining DSA chapters and PostgreSQL continue independently. POSTGRES-SCHEMA still applies the PostgreSQL type/constraint/design material after Section 15; later Grider sections reinforce the same backend rather than blocking it.</div></div>
+                <div class="block bullet"><div class="b-text"><strong>Course-first rule: the planner sequences learning; real courses teach it.</strong> Remaining Boot.dev courses now use one dated task per official chapter. Today offers the exact named chapter when it is the useful next step; Boot.dev chapter completion, not logged minutes, is the progress signal.  Boot.dev Learn SQL is now complete and remains the SQL-language foundation. Comparing the current Boot.dev syllabus against Stephen Grider’s SQL/PostgreSQL course shows heavy overlap in Grider Sections 3–5 and 9–11, so they remain skipped by default. The useful remainder is tracked as six conceptual developer blocks rather than one planner task per Udemy section: bridge/local environment; application schema/integrity; relational modelling; performance/query tools; transactions/migrations; and application integration/security/testing. Recursive CTEs and materialized views remain optional unless a real project need appears; Section 37 is not planner work. DSA starts in parallel. After DSA 1 Chapter 4 — Sorting Algorithms, HTTP can begin while the remaining DSA chapters and PostgreSQL continue independently. POSTGRES-SCHEMA still applies the PostgreSQL type/constraint/design material after Section 15; later Grider sections reinforce the same backend rather than blocking it.</div></div>
         <div class="block callout info"><div class="callout-icon">↔</div><div class="callout-body"><strong>Source-track note.</strong> The planner keeps the .md research destination and required skill stack. Three timing choices are explicit employment-driven overrides rather than claims that the reports prescribed them: HTTP/FastAPI starts after the real DSA 1 Chapter 4 gate, before all DSA chapters are finished; selective truthful UAE applications start from the current graduate baseline rather than waiting for the full backend release; routine Canada preparation stays deferred to the October portal/deadline window. The public project still marks the point where backend applications become substantially stronger and broader. DSA, Docker/CI/AWS, the six-program admissions basket and the later overlay remain retained.</div></div>
         <div class="block bullet"><div class="b-text">Do not start Functional Programming, AI Agent, Static Site Generator, Memory Management, JavaScript, TypeScript, Go, RAG or another backend language before the job-ready release unless a real assessment or employer requirement changes the plan.</div></div>
         <div class="block bullet"><div class="b-text">Project One remains a bounded career-pipeline API. No payments, multi-tenancy, billing, microservices, Kubernetes, multiple providers or large frontend are required for the umbrella goal.</div></div>
@@ -2023,15 +2143,15 @@ select.input {
    STATE
    ===================================================================== */
 const KEY = 'hamza-master-execution-v2';
-const SCHEMA_VERSION = 94;
-const CATALOGUE_VERSION = '2026.09.10-v27.15-final-curated-labuladong-core';
+const SCHEMA_VERSION = 99;
+const CATALOGUE_VERSION = '2026.09.24-v27.21-tick-boxes';
 const PLAN_WEEK_COUNT = 62;
 
 const DEFAULT_SETTINGS = {
   "planStart": "2026-08-01",
   "planEnd": "2027-09-30",
   "foundationDeadline": "2026-09-27",
-  "productDeadline": "2026-10-11",
+  "productDeadline": "2026-11-15",
   "assessmentDeadline": "2026-09-30",
   "marketDeadline": "2026-09-30",
   "admissionsDeadline": "2026-12-12",
@@ -2046,7 +2166,7 @@ const DEFAULT_SETTINGS = {
   "capacityBufferPercent": 20,
   "dailyCapacityMinutes": 240,
   "cascadeDependents": false,
-  "cloudDeadline": "2026-11-15",
+  "cloudDeadline": "2026-12-27",
   "overlayDeadline": "2027-05-31"
 };
 const DATE_SETTING_KEYS = ["planEnd","foundationDeadline","productDeadline","assessmentDeadline","cloudDeadline","marketDeadline","admissionsDeadline","overlayDeadline","routeDecisionDeadline"];
@@ -9324,11 +9444,7 @@ const SEED_TASKS = [
       "PROJECT-DOCKER",
       "PROJECT-CI",
       "NEXTUP-QUERY-PLAN",
-      "NEXTUP-SYNC-CONCURRENCY",
-      "NEXTUP-CALENDAR-RELEASES",
-      "NEXTUP-STATUS-RULES",
-      "NEXTUP-TMDB-ENRICHMENT",
-      "NEXTUP-META-DETAILS"
+      "NEXTUP-SYNC-CONCURRENCY"
     ],
     "workBlock": "build",
     "gateIds": [],
@@ -9383,9 +9499,9 @@ const SEED_TASKS = [
   },
   {
     "id": "PROJECT-JOB-RELEASE",
-    "title": "NextUp v1.0 Job-Ready Release · Core + useful fidelity + Docker/CI, independently defendable",
-    "description": "Tag/pin the independently rebuilt career-ready version after clean-clone proof. v1.0 is deliberately useful—not stripped: persistent sync, release chronology, Watching/PTW/Completed rules, TMDB visual enrichment and a rich meta resource are present. Advanced TVDB/anime grouping/artwork/two-profile parity continues without delaying applications.",
-    "definitionOfDone": "Public repo + live v1.0 + clean clone + PostgreSQL-backed tests + Docker + CI + release/status/TMDB/meta fidelity are all real, and you can defend the architecture without the legacy source or AI driving.",
+    "title": "NextUp v1.0 Job-Ready Release · Core vertical slice + tests + Docker/CI, independently defendable",
+    "description": "Tag/pin the independently rebuilt career-ready version after clean-clone proof. v1.0 proves the full Simkl → PostgreSQL → FastAPI → Nuvio pipeline with atomic/replay-safe sync, PostgreSQL-backed tests, Docker, CI and clean-clone reproducibility. Since v27.17 the fidelity features (release chronology, status rules, TMDB enrichment, rich meta) move to v1.1 with the parity work so they no longer delay applications.",
+    "definitionOfDone": "Public repo + live v1.0 + clean clone + PostgreSQL-backed tests + Docker + CI are all real, and you can defend the architecture without the legacy source or AI driving.",
     "source": "Deep Research Reports 8–10; current Boot.dev catalogue supplied 9 Aug 2026; planner_task_design_analysis.md",
     "workMode": "docs-and-build",
     "failureRoute": "If blocked, reduce the problem to the smallest failing step, fix that step, then continue. Do not create a separate proof task or restart the roadmap.",
@@ -15098,7 +15214,7 @@ const SOURCE_REGISTRY = [
     "title": "Labuladong Algo Notes · Fast-Track Learning Plan",
     "kind": "curated algorithm framework roadmap",
     "freshness": "live English page checked 10 Sep 2026",
-    "purpose": "Required finite companion track inside the DSA/interview lane, not a second DSA course and not a global employability gate. v27.15 assigns the final curated framework/JIT core; each Pattern Lab replaces an existing focused-practice session, missed labs remain unfinished and recur later, large exercise banks are skipped, and no separate notes/proof task is added.",
+    "purpose": "Required finite companion track inside the DSA/interview lane, not a second DSA course and not a global employability gate. v27.16 keeps the final curated framework/JIT core and anchors its rollout to 12 Sep 2026 so already-completed DSA1 chapters do not create retroactive Pattern-Lab sessions; each Pattern Lab replaces an existing focused-practice session, missed labs remain unfinished and recur later, large exercise banks are skipped, and no separate notes/proof task is added.",
     "url": "https://labuladong.online/en/algo/intro/quick-learning-plan/"
   },
   {
@@ -15990,7 +16106,8 @@ SEED_TASKS.push({
   estMinutes: 120,
   priority: "future",
   status: "locked",
-  deps: ["NEXTUP-HOSTED-ALPHA"],
+  deps: ["NEXTUP-ALPHA-LIVE"],
+  sourceRefs: ["SRC-EXEC", "SRC-CATALOGUE", "SRC-DESIGN"],
   description: "Explore whether Simkl watch history can support a data analytics and recommendation layer after NextUp core, AWS evidence and hosted alpha milestones are stable.",
   source: "Future DM/ML exploration gate. Research only until unlocked.",
   goalIds: ["G3", "G4", "G12"],
@@ -16058,8 +16175,9 @@ const NEETCODE_150_URL = 'https://neetcode.io/practice/practice/neetcode150';
 
 const LABULADONG_QUICK_URL = 'https://labuladong.online/en/algo/intro/quick-learning-plan/';
 const LABULADONG_HOW_URL = 'https://labuladong.online/en/algo/intro/how-to-learn-algorithms/';
+const LABULADONG_ROLLOUT_START = '2026-09-12'; // Added after DSA1 was already completed; never backfill Pattern Labs into historical Coding Gym days.
 
-// v27.15 Pattern Bridge: final finite required Labuladong companion set, workload-neutral, and driven by a sparse prerequisite graph.
+// v27.16 Pattern Bridge: final finite required Labuladong companion set, workload-neutral, sparse-gated, and rollout-anchored to 12 Sep 2026.
 // A pattern session REPLACES the normal LeetCode/Codewars focus block on at most
 // one day/week while DSA2 is active, then at most two days/week after DSA2.
 // No separate exercise bank, notes journal, proof form, or new daily checkbox.
@@ -16228,7 +16346,10 @@ function labPatternDoneBefore(key,dateISO){
   return !!doneAt && doneAt < dateISO;
 }
 function labPatternEligible(def,dateISO){
-  if(dateISO<'2026-09-09') return false;
+  // Labuladong was introduced after the user had already completed DSA1. Historical
+  // DSA1 completions satisfy knowledge prerequisites, but they must NEVER create
+  // retroactive Pattern-Lab sessions on dates that were already ticked off.
+  if(dateISO<LABULADONG_ROLLOUT_START) return false;
   if(def.gate && !stableTaskDoneBefore(def.gate,dateISO)) return false;
   return (def.requires||[]).every(k=>labPatternDoneBefore(k,dateISO));
 }
@@ -16241,8 +16362,16 @@ function nextLabuladongPattern(dateISO){
   return eligible[0]||null;
 }
 function labPatternSlot(dateISO){
+  if(dateISO<LABULADONG_ROLLOUT_START) return false;
   const d=new Date(dateISO+'T12:00:00'); const dow=d.getDay();
   const postDsa2=stableTaskDoneBefore('DSA2-CH08',dateISO);
+
+  // Migration/bootstrap slot: Labuladong entered the planner on Sat 12 Sep 2026,
+  // after DSA1 and several Coding Gym days were already completed. Start the new
+  // required companion layer HERE rather than pretending an older completed focus
+  // block contained reading that did not exist at the time.
+  if(dateISO===LABULADONG_ROLLOUT_START) return true;
+
   if(dow===3) return true; // Wednesday: max one pattern session while DSA2 is active.
   if(postDsa2 && dow===6){
     // Saturday is a second slot only when this week's first pattern session was actually completed.
@@ -16263,9 +16392,9 @@ function labuladongPatternSession(dateISO){
     secondaryLabel:'Open LeetCode',
     links:links.map(([label,url])=>({label,url})),
     patternKey:def.key, isPatternSession:true,
-    settings:[['Mode','Learn → Apply'],['Requirement','Required finite DSA/interview core · not a project/job gate'],['Pattern',def.title],['Workload','Replaces today’s normal LeetCode/Codewars focus block'],['Reading cap','~20–30 min; stop at timebox'],['Exercise bank','Skip'],['Notes','None required'],['Total',`${def.minutes||45} min`]],
-    prompt:`READ: ${def.read}\n\nAPPLY: ${def.apply}`,
-    method:'This is not a second DSA course. The finite curated Pattern-Lab core is required inside the DSA/interview lane, but it never blocks Project One, applications, FastAPI, AWS, admissions, or general employability work. Read only the selected framework and trace one worked example from the article. Then close the article and immediately use the idea once from memory. Do not open the site exercise bank, do not take notes for completeness, and do not let unfinished reading spill into another task. The purpose is acquisition → reconstruction → later independent retrieval, not article completion.',
+    settings:[['Mode','Learn → Apply'],['Requirement','Required finite DSA/interview core · not a project/job gate'],['Rollout','Introduced 12 Sep 2026 · no retroactive DSA1 backfill'],['Pattern',def.title],['Workload','Replaces today’s normal LeetCode/Codewars focus block'],['Reading cap','~20–30 min; stop at timebox'],['Exercise bank','Skip'],['Exit gate','Reconstruct the skeleton from blank before APPLY; blank → reopen only the failed section'],['Notes','None required'],['Total',`${def.minutes||45} min`]],
+    prompt:`READ: ${def.read}\n\nEXIT GATE (before APPLY): Close the article. From a blank editor, reconstruct this pattern's core skeleton/template from memory and state its trigger — when you'd reach for it — in your own words. If it comes out cold, you are ready to APPLY. If you blank, do NOT re-read the whole article: reopen only the one section you failed, re-trace its worked example by hand, and test again. Do not open the LeetCode problem until the skeleton is in your head, not on a tab. This gate is what keeps the APPLY rep genuinely independent instead of article-assisted.\n\nAPPLY: ${def.apply}`,
+    method:'This is not a second DSA course. Labuladong was added on 12 Sep 2026 after earlier DSA1 chapters and Coding Gym focus blocks were already completed, so those historical checkmarks only satisfy concept prerequisites; they do NOT count as Pattern-Lab completion. The finite curated Pattern-Lab core now flows forward from the rollout date inside the DSA/interview lane and never blocks Project One, applications, FastAPI, AWS, admissions, or general employability work. Read only the selected framework and trace one worked example from the article. Then close the article and immediately use the idea once from memory. Do not open the site exercise bank, do not take notes for completeness, and do not let unfinished reading spill into another task. The purpose is acquisition → reconstruction → later independent retrieval, not article completion.',
     doneWhen:'The bounded focus block is complete when you can state the pattern’s trigger/shape in your own words and perform the small application/reconstruction step with the article closed. Finishing every paragraph or site exercise is NOT required. If this lab is not completed, it remains part of the finite core and will surface again in a later eligible Pattern-Lab slot.'
   };
 }
@@ -16888,6 +17017,1295 @@ function getRitualsForWeek(W,dateISO=todayISO()){
   return [];
 }
 
+/* =====================================================================
+   v27.17/18 · CHOICE ENGINE
+   The planner works out how much main work is sensible today and which
+   options are worth it; you choose. The Coding Gym is NOT part of the engine:
+   it runs exactly as in v27.16, and only its scheduled minutes are counted
+   toward the combined daily ceiling. Planner dates are forecasts, not debt. Only real
+   external dates (admissions, interviews, redo due dates) create urgency.
+   Declared before state initialisation so constants exist during load.
+   ===================================================================== */
+const CE_DEFAULT_WEEKLY_TARGET = 780;      // main-work minutes/week (13h); the Coding Gym sits on top at its own cadence
+const CE_TARGET_MIN = 600, CE_TARGET_MAX = 1020, CE_TARGET_STEP = 60;
+const CE_ACTIVE_DAYS = 6;                  // per Mon–Sun week; the rest day is whichever day you don't work
+const CE_DAY_FLOOR = 45;                   // minimum useful day
+const CE_CATCHUP_CAP = 30;                 // max minutes above the normal daily share
+const CE_DAILY_CEILING = 240;              // hard limit across main work + Coding Gym together
+const CE_BUILD_SHARE = 0.85;               // share of the week expected on the Build lane
+const CE_GYM_SESSION_KINDS = ['redo','focus','tg','rep']; // v27.17 practice sessions: gym work, never main work
+const CE_AVOID_DAYS = 3;                   // offered this many days without being taken → ask once
+const CE_EXTERNAL_DEADLINES = { 'ADM-SUBMISSION-READINESS': 'admissionsDeadline' };
+const CE_EXTRA_DEPS = { 'JOB-CH02': ['JOB-SEARCH-PREREQ-CHECK'] }; // JOB-CH01 was ticked early; keep the course behind its real gate
+const CE_MILESTONES = [
+  { id:'PROJECT-JOB-RELEASE',   label:'NextUp v1.0 job-ready release',            short:'v1.0' },
+  { id:'AWS-CLOUD-RELEASE',     label:'NextUp on AWS, operated and recoverable',  short:'AWS' },
+  { id:'NEXTUP-PARITY-RELEASE', label:'NextUp v1.1 full personal parity',          short:'v1.1' },
+];
+const CE_PARK_GROUPS = [
+  { key:'interview', label:'hybridAUTH defence 3–7 + interview prep', returnsText:'Comes back when an application reaches screen or interview.', returns:'interview',
+    ids:['HYBRIDAUTH-DEFENSE-L3','HYBRIDAUTH-DEFENSE-L4','DISSERTATION-UNLOCK-BACKEND','PROJECT-DEFENCE','DISSERTATION-UNLOCK-SHIPPED','INTERVIEW-DEBUG-CONSOLIDATION'] },
+  { key:'dsa2', label:'Boot.dev DSA 2 · Ch 5–8', returnsText:'First to return after v1.0 ships.', returns:'after-v1',
+    ids:['DSA2-CH05','DSA2-CH06','DSA2-CH07','DSA2-CH08'] },
+  { key:'git2', label:'Boot.dev Git 2 · Ch 6–11', returnsText:'Returns after DSA 2 is finished.', returns:'after-v1',
+    ids:['GIT2-CH06','GIT2-CH07','GIT2-CH08','GIT2-CH09','GIT2-CH10','GIT2-CH11'] },
+  { key:'oss', label:'Open-source contribution ladder', returnsText:'Returns after Git 2 is finished.', returns:'after-v1', prefix:'OSS-' },
+  { key:'grider-b6', label:'Grider PostgreSQL Block 6', returnsText:'Returns after the open-source ladder.', returns:'after-v1',
+    ids:['POSTGRES-GRIDER-B6-APP'] },
+  { key:'nextup-v11', label:'NextUp v1.1 · fidelity + parity features', returnsText:'Returns after the AWS release.', returns:'after-cloud',
+    ids:['NEXTUP-CALENDAR-RELEASES','NEXTUP-STATUS-RULES','NEXTUP-TMDB-ENRICHMENT','NEXTUP-META-DETAILS',
+         'NEXTUP-ID-FALLBACK-MDBLIST','NEXTUP-TVDB-CLIENT','NEXTUP-ANIME-GROUPING','NEXTUP-ARTWORK','NEXTUP-PROFILE-ISOLATION',
+         'NEXTUP-PARITY-ACCEPTANCE','NEXTUP-PARITY-RELEASE'] },
+  { key:'hosted-alpha', label:'NextUp Hosted Alpha + Intelligence exploration', returnsText:'Only if you bring it back.', returns:'manual', prefix:'NEXTUP-ALPHA-', ids:['NEXTUP-INTELLIGENCE-EXPLORATION'] },
+];
+const CE_AFTER_V1_ORDER = ['dsa2','git2','oss','grider-b6'];
+const CE_LANES = [
+  { key:'build',    name:'Build',             color:'purple' },
+  { key:'career',   name:'Career / External', color:'green'  },
+  { key:'skills',   name:'Skills',            color:'blue'   },
+];
+let _ceOptionIndex = {};
+
+function ceEnsure(s) {
+  s.choiceEngine = s.choiceEngine && typeof s.choiceEngine === 'object' ? s.choiceEngine : {};
+  const ce = s.choiceEngine;
+  ce.sessions = Array.isArray(ce.sessions) ? ce.sessions : [];
+  ce.dayOverrides = ce.dayOverrides || {};
+  ce.offers = ce.offers || {};
+  ce.userParked = ce.userParked || {};
+  ce.snoozed = ce.snoozed || {};
+  ce.stoppedDays = ce.stoppedDays || {};
+  ce.repairs = ce.repairs || {};
+  ce.targetHistory = Array.isArray(ce.targetHistory) ? ce.targetHistory : [];
+  if (!Number.isFinite(Number(ce.weeklyTarget)) || !ce.weeklyTarget) ce.weeklyTarget = CE_DEFAULT_WEEKLY_TARGET;
+  if (!ce.installedAt) ce.installedAt = todayISO();
+  if (ce.activeSession === undefined) ce.activeSession = null;
+  return ce;
+}
+function ceRound5(n) { return Math.max(0, Math.round((Number(n) || 0) / 5) * 5); }
+function ceFmtMin(m) {
+  m = Math.round(Number(m) || 0);
+  if (m < 60) return `${m} min`;
+  if (m >= 600) return `${Math.round(m / 60)}h`;
+  const h = Math.floor(m / 60), r = m % 60;
+  return r ? `${h}h ${r}m` : `${h}h`;
+}
+function ceTaskMap() { return new Map((state.tasks || []).map(t => [taskStableId(t), t])); }
+function ceDepsOf(t) { return [...(t?.deps || []), ...(CE_EXTRA_DEPS[taskStableId(t)] || [])]; }
+function ceDone(id, map = null) { const t = map ? map.get(id) : taskByStableId(id); return ceSettled(t); }
+
+/* ---------- parking ---------- */
+function ceGroupMatches(g, id) { return !!((g.ids && g.ids.includes(id)) || (g.prefix && String(id).startsWith(g.prefix))); }
+function ceGroupOf(id) { return CE_PARK_GROUPS.find(g => ceGroupMatches(g, id)) || null; }
+function ceGroupTaskIds(g) { return (state.tasks || []).map(taskStableId).filter(id => ceGroupMatches(g, id)); }
+function ceInterviewActive() { return (state.applications || []).some(a => ['screen','interview'].includes(a.status)); }
+function ceActiveReturnGroup() {
+  if (!ceDone('PROJECT-JOB-RELEASE')) return null;
+  for (const key of CE_AFTER_V1_ORDER) {
+    const g = CE_PARK_GROUPS.find(x => x.key === key);
+    if (ceGroupTaskIds(g).some(id => taskIsOpen(taskByStableId(id)))) return key;
+  }
+  return null;
+}
+function ceGroupParked(g) {
+  if (g.returns === 'interview') return !ceInterviewActive();
+  if (g.returns === 'after-v1') return ceActiveReturnGroup() !== g.key;
+  if (g.returns === 'after-cloud') return !ceDone('AWS-CLOUD-RELEASE');
+  return true;
+}
+function taskIsParked(t) {
+  if (!t) return false;
+  const id = taskStableId(t);
+  const ce = ceEnsure(state);
+  if (Object.prototype.hasOwnProperty.call(ce.userParked, id)) return !!ce.userParked[id];
+  const g = ceGroupOf(id);
+  return g ? ceGroupParked(g) : false;
+}
+
+/* ---------- milestone path ---------- */
+function ceCurrentMilestone(map = ceTaskMap()) {
+  return CE_MILESTONES.find(m => map.has(m.id) && map.get(m.id).status !== 'done') || null;
+}
+function ceAncestors(rootId, map) {
+  const seen = new Set(); const stack = [rootId];
+  while (stack.length) {
+    const id = stack.pop();
+    if (seen.has(id)) continue;
+    seen.add(id);
+    const t = map.get(id);
+    if (t) for (const d of ceDepsOf(t)) stack.push(d);
+  }
+  return seen;
+}
+function ceMilestonePathIds(map = ceTaskMap()) {
+  const m = ceCurrentMilestone(map);
+  return m ? ceAncestors(m.id, map) : new Set();
+}
+function ceOnMilestonePath(t) { return !!t && ceMilestonePathIds().has(taskStableId(t)); }
+function ceTaskRemaining(t) {
+  const est = Number(t?.estMinutes || 0);
+  const done = Math.max(Number(t?.courseProgressMinutes || 0), Number(t?.actualMinutes || 0));
+  return Math.max(15, ceRound5(est - done) || 15);
+}
+function ceEligible(t, today = todayISO(), map = null) {
+  if (!t || ['done','cut'].includes(t.status) || t.manualBlocked) return false;
+  if (taskIsParked(t)) return false;
+  if (!ceDepsOf(t).every(id => ceDone(id, map))) return false;
+  if (!triggerSatisfied(t.trigger)) return false;
+  const snooze = ceEnsure(state).snoozed[taskStableId(t)];
+  if (snooze && snooze > today) return false;
+  return true;
+}
+function ceLaneFor(t, pathIds) {
+  if (t.laneOverride) return t.laneOverride;
+  if (pathIds.has(taskStableId(t))) return 'build';
+  if (['career','admissions','decision'].includes(t.category)) return 'career';
+  if (['foundation','assessment'].includes(t.category) || (t.courseModuleTask && t.category !== 'cloud')) return 'skills';
+  return null;
+}
+
+/* ---------- external deadlines ---------- */
+function taskExternalDeadline(t) {
+  const key = CE_EXTERNAL_DEADLINES[taskStableId(t)];
+  return key ? deadline(key) : (t?.externalDeadline || null);
+}
+
+/* ---------- minutes worked ---------- */
+function ceSessionsOn(date) { return ceEnsure(state).sessions.filter(s => s.date === date); }
+function ceWorkedOn(date, lane = null, pathIds = null) {
+  const sessions = ceSessionsOn(date).filter(s => !CE_GYM_SESSION_KINDS.includes(s.kind) && (!lane || s.lane === lane));
+  let total = sessions.reduce((n, s) => n + Number(s.minutes || 0), 0);
+  // A ticked task counts its estimate on the day it was ticked, minus any minutes already logged
+  // for it by old timer sessions (v27.17–v27.20), so nothing is counted twice or lost.
+  const logged = {};
+  for (const s of ceEnsure(state).sessions) if (s.kind === 'task' && s.refId) logged[s.refId] = (logged[s.refId] || 0) + Number(s.minutes || 0);
+  const paths = pathIds || ceMilestonePathIds();
+  for (const t of state.tasks) {
+    if (t.status !== 'done' || t.completedAt !== date) continue;
+    const id = taskStableId(t);
+    if (lane && (ceLaneFor(t, paths) || 'skills') !== lane) continue;
+    total += Math.max(0, Number(t.estMinutes || 0) - Number(logged[id] || 0));
+  }
+  return total;
+}
+function ceWorkedBetween(startISO, endExclusiveISO, lane = null) {
+  const paths = ceMilestonePathIds();
+  let d = startISO, total = 0, guard = 0;
+  while (d < endExclusiveISO && guard++ < 400) { total += ceWorkedOn(d, lane, paths); d = addDays(d, 1); }
+  return total;
+}
+function ceGymToday(today = todayISO()) {
+  // Read-only: the Coding Gym's own v27.16 schedule and completion state.
+  const dow = new Date(today + 'T12:00:00').getDay();
+  const parts = [];
+  if (dow === 0) {
+    for (const m of sundayCodingGymCatchup(today)) parts.push({ kind:m.kind, minutes:Number(m.session?.minutes || 0), done:false, catchup:true });
+  } else {
+    const week = getCurrentWeek(today) || 1;
+    const tg = getTrainingGroundsSession(week, today);
+    const focus = getFocusPracticeSession(week, today);
+    if (tg) parts.push({ kind:'tg', minutes:Number(tg.minutes || 30), done:codingGymPartIsDone('tg', today) });
+    if (focus) parts.push({ kind:'focus', minutes:Number(focus.minutes || 45), done:codingGymPartIsDone('focus', today) });
+  }
+  const scheduled = parts.reduce((n, p) => n + p.minutes, 0);
+  const doneMinutes = parts.filter(p => p.done).reduce((n, p) => n + p.minutes, 0);
+  return { parts, scheduled, doneMinutes, sunday:dow === 0 };
+}
+function ceGymWeek(today = todayISO()) {
+  const monday = calendarWeekMonday(today);
+  let tg = 0, focus = 0;
+  for (let d = monday; d <= today; d = addDays(d, 1)) { if (codingGymPartIsDone('tg', d)) tg++; if (codingGymPartIsDone('focus', d)) focus++; }
+  return { tg, focus };
+}
+function ceAppTarget(today = todayISO()) { return Number(weeklyAppTarget(getCurrentWeek(today) || 1)) || 0; }
+function ceAppsThisWeek(today = todayISO()) {
+  const monday = calendarWeekMonday(today);
+  return (state.applications || []).filter(a => (a.dateApplied || '') >= monday && (a.dateApplied || '') <= today).length;
+}
+
+/* ---------- weekly target adapts slowly from logged weeks ---------- */
+function ceMaybeAdaptTarget(today = todayISO()) {
+  const ce = ceEnsure(state);
+  const monday = calendarWeekMonday(today);
+  if (ce.lastAdaptMonday === monday) return;
+  ce.lastAdaptMonday = monday;
+  const weeks = [];
+  for (let i = 1; i <= 3; i++) {
+    const m = addDays(monday, -7 * i);
+    if (m < ce.installedAt) return;               // need three full logged weeks
+    const end = addDays(m, 7);
+    weeks.push(ceWorkedBetween(m, end));
+  }
+  weeks.sort((a, b) => a - b);
+  const median = weeks[1];
+  const cur = Number(ce.weeklyTarget) || CE_DEFAULT_WEEKLY_TARGET;
+  const next = Math.min(CE_TARGET_MAX, Math.max(CE_TARGET_MIN, cur + Math.max(-CE_TARGET_STEP, Math.min(CE_TARGET_STEP, median - cur))));
+  if (next !== cur) { ce.targetHistory.push({ monday, from:cur, to:next, median }); ce.weeklyTarget = next; }
+}
+
+/* ---------- external pressure (the only thing allowed to raise the day) ---------- */
+function ceExternalPressure(today = todayISO()) {
+  const out = [];
+  const adm = taskByStableId('ADM-SUBMISSION-READINESS');
+  const admDate = deadline('admissionsDeadline');
+  if (adm && taskIsOpen(adm) && admDate && dayDiff(today, admDate) <= 14 && dayDiff(today, admDate) >= 0) out.push(`Admissions deadline ${fmtDate(admDate)}`);
+  for (const a of state.applications || []) {
+    if (!['reply','screen','interview','offer'].includes(a.status) || !a.deadline) continue;
+    const d = dayDiff(today, a.deadline);
+    if (d >= 0 && d <= 3) out.push(`${a.company} (${a.status}) due ${fmtDate(a.deadline)}`);
+  }
+  return out;
+}
+
+/* ---------- today's budget ---------- */
+function ceBudget(today = todayISO()) {
+  const ce = ceEnsure(state);
+  ceMaybeAdaptTarget(today);
+  const target = Number(ce.weeklyTarget) || CE_DEFAULT_WEEKLY_TARGET;
+  const monday = calendarWeekMonday(today);
+  const dayIndex = Math.max(0, dayDiff(monday, today));
+  let restTaken = false;
+  for (let d = monday; d < today; d = addDays(d, 1)) {
+    if (ce.dayOverrides[d]?.type === 'unavailable' || ceWorkedOn(d) === 0) { restTaken = true; break; }
+  }
+  const workedBefore = ceWorkedBetween(monday, today);
+  const workedToday = ceWorkedOn(today);
+  const daysLeft = 7 - dayIndex;
+  let activeDaysLeft = 0;
+  for (let d = today; d < addDays(monday, 7); d = addDays(d, 1)) if (!ceIsSunday(d)) activeDaysLeft++;
+  activeDaysLeft = Math.max(1, activeDaysLeft);
+  const remaining = Math.max(0, target - workedBefore);
+  const share = Math.round(target / CE_ACTIVE_DAYS);
+  const pressure = ceExternalPressure(today);
+  const gym = ceGymToday(today);
+  const roomBesideGym = Math.max(0, CE_DAILY_CEILING - gym.scheduled);
+  // v27.20: no catch-up. A missed day's minutes are gone and the forecast moves instead;
+  // only a real outside deadline can make a day bigger than the normal share.
+  const raw = pressure.length ? Math.max(share, remaining / activeDaysLeft) : share;
+  const cap = Math.min(pressure.length ? CE_DAILY_CEILING : share, roomBesideGym);
+  const zeroStreak = ceZeroStreak(today);
+  const light = zeroStreak >= CE_LIGHT_AFTER_ZERO_DAYS;
+  // Sunday is the rest day unless you already rested earlier in the week.
+  const sundayRest = ceIsSunday(today) && !restTaken && !pressure.length;
+  let budget = 0;
+  if (remaining > 0 && cap > 0 && !sundayRest) {
+    budget = Math.min(cap, Math.max(CE_DAY_FLOOR, raw));
+    budget = Math.min(budget, remaining);
+    if (light) budget = Math.min(budget, CE_RESTART_SLICE);
+    budget = ceRound5(budget);
+  }
+  const override = ce.dayOverrides[today] || null;
+  let finalBudget = budget;
+  if (override?.type === 'unavailable') finalBudget = 0;
+  else if (override?.type === 'limit') finalBudget = Math.min(budget, Number(override.minutes) || 0);
+  const left = Math.max(0, finalBudget - workedToday);
+  const ceilingLeft = Math.max(0, CE_DAILY_CEILING - workedToday - Math.max(gym.scheduled, gym.doneMinutes));
+  return { target, monday, dayIndex, restTaken, workedBefore, workedToday, daysLeft, activeDaysLeft, remaining, share, cap, roomBesideGym, raw, budget, finalBudget, left, ceilingLeft, override, pressure, gym, light, zeroStreak, sundayRest };
+}
+
+/* ---------- projection ---------- */
+function ceProjection(today = todayISO()) { return ceForecast(today); }
+function ceBuildBehind(b, today = todayISO()) {
+  if (b.dayIndex < 2) return false;
+  if (ceEnsure(state).installedAt > b.monday) return false; // no verdict in the week the engine was installed
+  const expected = CE_BUILD_SHARE * b.target * Math.min(1, b.dayIndex / CE_ACTIVE_DAYS);
+  const soFar = ceWorkedBetween(b.monday, today, 'build');
+  return soFar < 0.6 * expected;
+}
+
+/* ---------- lane options ---------- */
+function ceLastSessionDate(refId) {
+  const s = ceEnsure(state).sessions.filter(x => x.refId === refId).map(x => x.date).sort();
+  return s[s.length - 1] || '';
+}
+function ceTaskOption(t, lane, reason, extra = {}) {
+  const id = taskStableId(t);
+  return { lane, kind:'task', refId:id, title:t.title, minutes:ceTaskRemaining(t), reason,
+    divisible:t.taskType !== 'assessment', started:t.status === 'in-progress' || !!ceLastSessionDate(id), course:!!t.courseModuleTask, ...extra };
+}
+function ceBuildOptions(today, map, pathIds) {
+  const milestone = ceCurrentMilestone(map);
+  const open = [...pathIds].map(id => map.get(id)).filter(t => t && taskIsOpen(t) && !taskIsParked(t));
+  const openIds = new Set(open.map(taskStableId));
+  const rev = new Map();
+  for (const t of open) for (const d of ceDepsOf(t)) { if (!rev.has(d)) rev.set(d, []); rev.get(d).push(taskStableId(t)); }
+  const impact = (id) => {
+    const seen = new Set([id]); const stack = [id]; let total = 0;
+    while (stack.length) { const x = stack.pop(); if (openIds.has(x)) total += ceTaskRemaining(map.get(x)); for (const y of rev.get(x) || []) if (!seen.has(y)) { seen.add(y); stack.push(y); } }
+    return total;
+  };
+  const elig = open.filter(t => ceEligible(t, today, map)).map(t => ({ t, impact:impact(taskStableId(t)), target:ceTarget(taskStableId(t)) || '9999-12-31' }));
+  // v27.19: the plan's designed order (earliest target) first; ties go to what unlocks more, then to what you started.
+  elig.sort((a, b) => a.target.localeCompare(b.target) || b.impact - a.impact || Number(b.t.status === 'in-progress') - Number(a.t.status === 'in-progress') || (a.t.seedIndex || 0) - (b.t.seedIndex || 0));
+  const total = open.reduce((n, t) => n + ceTaskRemaining(t), 0);
+  return elig.map(({ t, impact }) => {
+    const bits = [`Next in the plan's order. Unlocks ${ceFmtMin(impact)} of the ${ceFmtMin(total)} left before ${milestone ? milestone.short : 'the finish line'}.`];
+    if (t.status === 'in-progress') bits.push('You already started this.');
+    if (t.courseModuleTask) bits.push('Course module: a partial session is fine.');
+    return ceTaskOption(t, 'build', bits.join(' '));
+  });
+}
+function ceCareerReason(t) {
+  const id = taskStableId(t);
+  if (id.startsWith('HYBRIDAUTH') || id.startsWith('DISSERTATION') || id === 'PROJECT-DEFENCE') return 'hybridAUTH is on your live CV; this keeps it defensible.';
+  if (id.startsWith('CV-UNLOCK')) return 'The proof for this now exists. Update the CV so applications show it.';
+  if (id.startsWith('FUNNEL')) return 'Checks which application stage is failing. Only useful with real results.';
+  if (id.startsWith('ADM-')) return `Canada applications. Real deadline: ${fmtDate(deadline('admissionsDeadline'))} (UBC MEng).`;
+  if (id.startsWith('JOB-')) return 'Boot.dev Job Search, applied to the search you already have running.';
+  if (id === 'INTERVIEW-DEBUG-CONSOLIDATION') return 'An interview is logged. Rehearse Python, SQL, HTTP and the project.';
+  return clipExecutionText(t.why || t.description || '', 120);
+}
+function ceCareerOptions(today, map, pathIds) {
+  const out = [];
+  for (const a of state.applications || []) {
+    if (!['reply','screen','interview','offer'].includes(a.status) || !String(a.nextAction || '').trim()) continue;
+    out.push({ rank:0, lane:'career', kind:'app', refId:a.id, title:`${a.company} · ${a.nextAction}`, minutes:30, divisible:true,
+      reason:a.deadline ? `Live opportunity. Date: ${fmtDate(a.deadline)}.` : 'Live opportunity. This comes before anything else in Career.' });
+  }
+  const admDate = deadline('admissionsDeadline');
+  const admNear = admDate && dayDiff(today, admDate) <= 60;
+  for (const t of state.tasks) {
+    if (ceLaneFor(t, pathIds) !== 'career' || !ceEligible(t, today, map) || !taskWithinActiveWindow(t, today)) continue;
+    const id = taskStableId(t);
+    const ext = taskExternalDeadline(t);
+    let rank = 5;
+    if (ext && dayDiff(today, ext) <= 14) rank = 1;
+    else if (ceGroupOf(id)?.key === 'interview') rank = 2;
+    else if (id.startsWith('CV-UNLOCK')) rank = 3;
+    else if (t.category === 'admissions') rank = admNear ? 4 : 7;
+    out.push({ ...ceTaskOption(t, 'career', ceCareerReason(t)), rank, tkey:ceTarget(id) || '9999-12-31', seedIndex:t.seedIndex || 0 });
+  }
+  const sent = ceAppsThisWeek(today);
+  const appTarget = ceAppTarget(today);
+  if (appTarget && sent < appTarget) out.push({ rank:6, lane:'career', kind:'apply', refId:null, title:'Send one tailored application', minutes:30, divisible:true,
+    reason:`${sent} of ${appTarget} sent this week (target from the Applications page). Cold portal applications get no follow-up.` });
+  out.sort((a, b) => a.rank - b.rank || String(a.tkey || '9999').localeCompare(String(b.tkey || '9999')) || (a.seedIndex || 0) - (b.seedIndex || 0));
+  return out;
+}
+function ceSkillsOptions(today, map, pathIds) {
+  // Only courses that have returned from parking. Coding Gym and redos are not here: they live in the Gym.
+  return state.tasks.filter(t => ceLaneFor(t, pathIds) === 'skills' && ceEligible(t, today, map) && taskWithinActiveWindow(t, today))
+    .sort((a, b) => (a.week || 0) - (b.week || 0) || (a.seedIndex || 0) - (b.seedIndex || 0))
+    .map(t => ceTaskOption(t, 'skills', 'Back from parking. One skills course at a time.'));
+}
+function ceFitsTime(o, left) { return o.divisible || o.minutes <= left + 15; }
+function ceLaneOptions(today = todayISO()) {
+  const map = ceTaskMap();
+  const pathIds = ceMilestonePathIds(map);
+  const b = ceBudget(today);
+  const left = Math.max(b.left, 20);
+  const lanes = {
+    build: ceBuildOptions(today, map, pathIds),
+    career: ceCareerOptions(today, map, pathIds),
+    skills: ceSkillsOptions(today, map, pathIds),
+  };
+  for (const k of Object.keys(lanes)) lanes[k] = lanes[k].filter(o => ceFitsTime(o, left)).slice(0, 3);
+  return { lanes, budget:b, pathIds };
+}
+
+/* ---------- avoidance: offered 3 separate days without being taken → ask once ---------- */
+function ceRecordOffers(lanes, today) {
+  const ce = ceEnsure(state);
+  let changed = false;
+  for (const k of Object.keys(lanes)) {
+    const o = lanes[k][0];
+    if (!o || o.kind !== 'task') continue;
+    const rec = ce.offers[o.refId] || (ce.offers[o.refId] = { days:[] });
+    if (!rec.days.includes(today)) { rec.days.push(today); rec.days = rec.days.slice(-14); changed = true; }
+  }
+  if (changed) save();
+}
+function ceNeedsDecision(o) {
+  if (!o || o.kind !== 'task') return false;
+  const rec = ceEnsure(state).offers[o.refId];
+  return !!rec && rec.days.length >= CE_AVOID_DAYS;
+}
+
+/* ---------- sessions ---------- */
+function ceStartSession(key, capMinutes = null) {
+  const ce = ceEnsure(state);
+  if (ce.activeSession) { alert('Finish or stop the current session first.'); return; }
+  const o = _ceOptionIndex[key];
+  if (!o) return;
+  const today = todayISO();
+  const b = ceBudget(today);
+  if (b.ceilingLeft < 15) { alert(`Daily ceiling reached: ${CE_DAILY_CEILING} min across main work and Coding Gym. Stop here.`); return; }
+  const extra = b.left < 15;
+  const room = extra ? b.ceilingLeft : Math.min(b.left, b.ceilingLeft);
+  let cap = capMinutes ? Math.min(capMinutes, b.ceilingLeft) : (extra || o.minutes > room ? room : null);
+  ce.activeSession = { lane:o.lane, kind:o.kind, refId:o.refId || null, title:o.title, startedAt:Date.now(), date:today, cap, extra };
+  if (o.kind === 'task') {
+    const t = taskByStableId(o.refId);
+    if (t) { if (t.status === 'ready' || t.status === 'blocked') t.status = 'in-progress'; if (!t.startedAt) t.startedAt = today; }
+    delete ce.offers[o.refId];
+  }
+  delete ce.stoppedDays[today];
+  save(); rerender();
+}
+function ceElapsedMinutes(s) { return Math.max(1, Math.round((Date.now() - Number(s.startedAt || Date.now())) / 60000)); }
+function ceFinishSession(outcome) {
+  const ce = ceEnsure(state);
+  const s = ce.activeSession;
+  if (!s) return;
+  const elapsed = ceElapsedMinutes(s);
+  const suggested = Math.min(elapsed, 240);
+  const longNote = elapsed > 240 ? `<div style="margin-top:6px;color:var(--c-orange-fg);font-size:13px">The timer ran ${ceFmtMin(elapsed)}. Adjust this if you stopped earlier.</div>` : '';
+  const isTask = s.kind === 'task';
+  openModal(outcome === 'complete' ? 'Log session · finished' : 'Log session · stopped', `
+    <div style="font-size:13px;color:var(--ink-mute);margin-bottom:10px">${escapeHTML(s.title)}</div>
+    <label class="sect-h" for="ce-min">Minutes worked</label>
+    <input class="input" type="number" min="0" max="600" id="ce-min" value="${suggested}" />
+    ${longNote}
+    <label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px;color:var(--ink-strong)">
+      <input type="checkbox" id="ce-noai" style="width:16px;height:16px;accent-color:var(--accent)" />
+      Hands-on coding or debugging, no AI
+    </label>
+    <div style="margin-top:6px;font-size:12px;color:var(--ink-mute)">Kept with the session as a record of independent work. It doesn't unlock or count anything.</div>
+    ${outcome === 'complete' && isTask ? '<div style="margin-top:10px;font-size:13px;color:var(--ink-mute)">This marks the task done. Check its Done-when first.</div>' : ''}
+  `, () => {
+    const minutes = Math.max(0, Math.min(600, parseInt(document.getElementById('ce-min')?.value, 10) || 0));
+    const handsOn = !!document.getElementById('ce-noai')?.checked;
+    ceLogSession(s, outcome, minutes, handsOn);
+    return true;
+  });
+  const ok = document.getElementById('m-ok');
+  if (ok) ok.textContent = 'Log session';
+}
+function ceLogSession(s, outcome, minutes, handsOn) {
+  const ce = ceEnsure(state);
+  const today = todayISO();
+  ce.sessions.push({ id:'s' + Date.now(), date:s.date || today, lane:s.lane, kind:s.kind, refId:s.refId, title:s.title,
+    minutes, handsOnNoAI:handsOn, outcome, extra:!!s.extra, startedAt:s.startedAt ? new Date(s.startedAt).toISOString() : null, loggedAt:new Date().toISOString() });
+  ce.activeSession = null;
+  let openAppForm = false;
+  if (s.kind === 'task') {
+    const t = taskByStableId(s.refId);
+    if (t) {
+      t.actualMinutes = Number(t.actualMinutes || 0) + minutes;
+      if (t.courseModuleTask) t.courseProgressMinutes = Math.min(Number(t.estMinutes || 0), Number(t.courseProgressMinutes || 0) + minutes);
+      if (outcome === 'complete') {
+        t.status = 'done'; t.completedAt = today;
+        ce.variance = ce.variance || {};
+        ce.variance[s.refId] = { est:Number(t.estMinutes || 0), actual:Number(t.actualMinutes || 0), target:ceTarget(s.refId), completedAt:today };
+        if (t.parallelLane || t.courseModuleTask) t.courseProgressMinutes = Number(t.estMinutes || 0);
+      } else if (t.status !== 'done') t.status = 'in-progress';
+    }
+  } else if (s.kind === 'apply' && outcome === 'complete') {
+    openAppForm = true;
+  }
+  bumpStreak();
+  save(); rerender();
+  if (openAppForm) setTimeout(() => newApp({ nextAction:'', deadline:'' }), 60);
+}
+function ceSetOverride(type) {
+  const ce = ceEnsure(state);
+  const today = todayISO();
+  if (type === 'clear') delete ce.dayOverrides[today];
+  else if (type === 'unavailable') ce.dayOverrides[today] = { type:'unavailable' };
+  else if (type === 'limit') {
+    const v = parseInt(prompt('How many minutes do you have today?', '60') || '', 10);
+    if (!Number.isFinite(v) || v < 0) return;
+    ce.dayOverrides[today] = { type:'limit', minutes:v };
+  }
+  save(); rerender();
+}
+function ceDecide(key, decision) {
+  const o = _ceOptionIndex[key];
+  if (!o || o.kind !== 'task') return;
+  const ce = ceEnsure(state);
+  const today = todayISO();
+  ce.lateAsked = ce.lateAsked || {};
+  if (decision === 'today') { ce.lateAsked[o.refId] = today; save(); rerender(); return; }
+  if (decision === 'blocked') { ceBlock(o.refId); return; }
+  if (decision === 'park') { ce.lateAsked[o.refId] = today; ce.userParked[o.refId] = true; }
+  save(); rerender();
+}
+function ceBringBack(groupKey) {
+  const g = CE_PARK_GROUPS.find(x => x.key === groupKey);
+  const ce = ceEnsure(state);
+  if (g) for (const id of ceGroupTaskIds(g)) ce.userParked[id] = false;
+  else ce.userParked[groupKey] = false; // single user-parked task id
+  save(); rerender();
+}
+/* v27.21: no timer. Ticking a task marks it done and credits its estimate. */
+function ceTickDone(key) {
+  const o = _ceOptionIndex[key];
+  if (!o) return;
+  if (o.kind === 'apply') { newApp({ nextAction:'', deadline:'' }); return; }
+  if (o.kind === 'app') { openAppEdit(o.refId); return; }
+  const t = taskByStableId(o.refId);
+  if (!t || t.status === 'done') return;
+  const ce = ceEnsure(state);
+  const today = todayISO();
+  ce.ticked = ce.ticked || {};
+  ce.ticked[o.refId] = { date:today, prevStatus:t.status, prevCourse:Number(t.courseProgressMinutes || 0) };
+  t.status = 'done';
+  t.completedAt = today;
+  if (t.courseModuleTask || t.parallelLane) t.courseProgressMinutes = Number(t.estMinutes || 0);
+  bumpStreak();
+  save(); rerender();
+}
+function ceUndoDone(id) {
+  const ce = ceEnsure(state);
+  const rec = ce.ticked?.[id];
+  const t = taskByStableId(id);
+  if (!rec || !t) return;
+  t.status = rec.prevStatus && rec.prevStatus !== 'done' ? rec.prevStatus : 'ready';
+  t.completedAt = null;
+  if (t.courseModuleTask || t.parallelLane) t.courseProgressMinutes = Number(rec.prevCourse || 0);
+  delete ce.ticked[id];
+  if (ce.finishedLate) delete ce.finishedLate[id];
+  save(); rerender();
+}
+function ceTickedTodayHTML(today = todayISO()) {
+  const ce = ceEnsure(state);
+  const rows = Object.entries(ce.ticked || {}).filter(([, r]) => r.date === today)
+    .map(([id]) => ({ id, t:taskByStableId(id) })).filter(x => x.t && x.t.status === 'done');
+  if (!rows.length) return '';
+  return `<div class="ce-ticked">Ticked today: ${rows.map(x => `<span>${escapeHTML(clipExecutionText(x.t.title, 60))} <button class="ce-link" data-action="ce-undo" data-id="${escapeHTML(x.id)}">undo</button></span>`).join(' · ')}</div>`;
+}
+function ceSetStartTime() {
+  const ce = ceEnsure(state);
+  const cur = ceFmtClock(ceUsualStartMinutes());
+  const v = String(prompt('Your usual start time (HH:MM, 24-hour). The restart card and reminder use it.', cur) || '').trim();
+  const m = v.match(/^(\d{1,2}):(\d{2})$/);
+  if (!m || Number(m[1]) > 23 || Number(m[2]) > 59) return;
+  ce.startMinutes = Number(m[1]) * 60 + Number(m[2]);
+  save(); rerender();
+}
+function ceHandleAction(a, el) {
+  switch (a) {
+    case 'ce-start': ceStartSession(el.dataset.key); return true;
+    case 'ce-complete': ceFinishSession('complete'); return true;
+    case 'ce-stop-session': ceFinishSession('stopped'); return true;
+    case 'ce-alts': el.closest('.ce-lane')?.classList.toggle('show-alts'); return true;
+    case 'ce-override': ceSetOverride(el.dataset.type); return true;
+    case 'ce-stop-day': ceEnsure(state).stoppedDays[todayISO()] = true; save(); rerender(); return true;
+    case 'ce-extra': { const ce = ceEnsure(state); ce.extraDays = ce.extraDays || {}; ce.extraDays[todayISO()] = true; save(); rerender(); return true; }
+    case 'ce-resume-day': delete ceEnsure(state).stoppedDays[todayISO()]; save(); rerender(); return true;
+    case 'ce-decide': ceDecide(el.dataset.key, el.dataset.decision); return true;
+    case 'ce-bring-back': ceBringBack(el.dataset.group); return true;
+    case 'ce-replan': ceReplanAnswer(el.dataset.choice); return true;
+    case 'ce-restart': { const o = _ceOptionIndex['restart:0']; if (o?.kind === 'task') openTaskDrawer(o.refId); else if (o) showPage('apps'); return true; }
+    case 'ce-tick': ceTickDone(el.dataset.key); return true;
+    case 'ce-undo': ceUndoDone(el.dataset.id); return true;
+    case 'ce-start-time': ceSetStartTime(); return true;
+    case 'ce-unblock': ceUnblock(el.dataset.id); return true;
+    case 'ce-notify': { if (typeof Notification !== 'undefined') Notification.requestPermission().then(() => rerender()); return true; }
+    case 'ce-open': { const o = _ceOptionIndex[el.dataset.key]; if (o?.kind === 'task') openTaskDrawer(o.refId);
+      else if (o?.kind === 'app' || o?.kind === 'apply') showPage('apps');
+      return true; }
+  }
+  return false;
+}
+
+/* ---------- rendering ---------- */
+function ceOptionHTML(o, key, left, isPrimary, locked = false) {
+  _ceOptionIndex[key] = o;
+  const busy = !!ceEnsure(state).activeSession || locked;
+  const slice = `~${ceFmtMin(o.minutes)}`;
+  const tk = o.kind === 'task' ? taskByStableId(o.refId) : null;
+  const lateInfo = tk ? ceLateInfo(tk) : null;
+  const skipped = tk && isPrimary && lateInfo ? ceLateSkipDays(tk) : 0;
+  const decide = skipped >= CE_LATE_SKIP_DAYS ? `
+    <div class="ce-avoid">Late, and you've worked on other things for ${skipped} days while it waited. What's in the way?
+      <div class="ce-actions" style="margin-top:8px">
+        <button class="ce-btn primary" data-action="ce-decide" data-decision="today" data-key="${key}">Do it today</button>
+        <button class="ce-btn" data-action="ce-decide" data-decision="park" data-key="${key}">Park it</button>
+        <button class="ce-btn" data-action="ce-decide" data-decision="blocked" data-key="${key}">Blocked by something</button>
+      </div></div>` : '';
+  const target = tk && !lateInfo ? ceTarget(o.refId) : null;
+  const badges = tk ? ceTaskBadges(tk) : [];
+  return `
+    <div class="ce-opt${isPrimary ? ' primary' : ''}">
+      <button class="ce-opt-title" data-action="ce-open" data-key="${key}">${escapeHTML(o.title)}</button>
+      <div class="ce-opt-meta">${target ? `Target ${escapeHTML(fmtDate(target))} · ` : ''}${escapeHTML(slice)}${o.started ? ' · in progress' : ''}</div>
+      ${badges.length ? `<div class="ce-badges">${badges.map(x => `<span class="tag ${x.tone}">${escapeHTML(x.text)}</span>`).join('')}</div>` : ''}
+      <div class="ce-reason">${escapeHTML(o.reason || '')}</div>
+      ${decide}
+      <div class="ce-actions"><button class="ce-tickbox" data-action="ce-tick" data-key="${key}" aria-label="${o.kind === 'apply' ? 'Log an application' : o.kind === 'app' ? 'Update this application' : 'Mark done'}"><span class="ce-box" aria-hidden="true"></span>${o.kind === 'apply' ? 'Sent one' : o.kind === 'app' ? 'Update' : 'Done'}</button></div>
+    </div>`;
+}
+function ceLaneHTML(lane, options, left, behind, locked = false) {
+  const [first, ...alts] = options;
+  const body = first ? ceOptionHTML(first, `${lane.key}:0`, left, true, locked)
+    : `<div class="ce-empty">${lane.key === 'build' ? 'Nothing on the finish-line path is unblocked right now.' : 'Nothing useful here today.'}</div>`;
+  const altHTML = alts.length ? `
+    <button class="ce-alts-toggle" data-action="ce-alts">Show ${alts.length} alternative${alts.length === 1 ? '' : 's'}</button>
+    <div class="ce-alts">${alts.map((o, i) => ceOptionHTML(o, `${lane.key}:${i + 1}`, left, false, locked)).join('')}</div>` : '';
+  return `
+    <section class="ce-lane" data-lane="${lane.key}">
+      <div class="ce-lane-head"><span class="ce-lane-name">${lane.name}</span>${behind ? '<span class="tag orange">Behind this week</span>' : ''}</div>
+      ${body}
+      ${altHTML}
+    </section>`;
+}
+function ceSessionBarHTML() {
+  const s = ceEnsure(state).activeSession;
+  if (!s) return '';
+  const lane = CE_LANES.find(l => l.key === s.lane) || CE_LANES[0];
+  const elapsed = ceElapsedMinutes(s);
+  const cap = s.cap ? (elapsed >= s.cap ? ' · slice done, stop when ready' : ` of ${s.cap} min slice`) : '';
+  const doneLabel = s.kind === 'task' ? 'Task complete' : 'Finished';
+  return `
+    <div class="ce-session" data-lane="${lane.key}">
+      <div class="ce-session-main">
+        <div class="ce-session-k">${lane.name} · session running since ${new Date(s.startedAt).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' })}</div>
+        <div class="ce-session-title">${escapeHTML(s.title)}</div>
+      </div>
+      <div class="ce-session-time">${ceFmtMin(elapsed)}${cap}</div>
+      <div class="ce-actions">
+        <button class="ce-btn primary" data-action="ce-complete">${doneLabel}</button>
+        <button class="ce-btn" data-action="ce-stop-session">Stop session</button>
+      </div>
+    </div>`;
+}
+function ceParkedHTML() {
+  const ce = ceEnsure(state);
+  const rows = [];
+  for (const g of CE_PARK_GROUPS) {
+    const open = ceGroupTaskIds(g).map(taskByStableId).filter(t => t && taskIsOpen(t) && taskIsParked(t));
+    if (!open.length) continue;
+    const mins = open.reduce((n, t) => n + ceTaskRemaining(t), 0);
+    rows.push(`<div class="ce-park-row"><div><strong>${escapeHTML(g.label)}</strong> · ${open.length} task${open.length === 1 ? '' : 's'} · ~${ceFmtMin(mins)}<div class="ce-park-when">${escapeHTML(g.returnsText)}</div></div>
+      <button class="ce-btn" data-action="ce-bring-back" data-group="${g.key}">Bring back</button></div>`);
+  }
+  for (const [id, parked] of Object.entries(ce.userParked)) {
+    if (!parked || ceGroupOf(id)) continue;
+    const t = taskByStableId(id);
+    if (!t || !taskIsOpen(t)) continue;
+    rows.push(`<div class="ce-park-row"><div><strong>${escapeHTML(t.title)}</strong><div class="ce-park-when">You parked this.</div></div>
+      <button class="ce-btn" data-action="ce-bring-back" data-group="${escapeHTML(id)}">Bring back</button></div>`);
+  }
+  if (!rows.length) return '';
+  return `
+    <div class="block toggle ce-parked">
+      <div class="toggle-head"><button class="toggle-chev" type="button" aria-label="Expand or collapse section"></button>
+        <div class="toggle-title">Parked for later · not shown in today's choices</div></div>
+      <div class="toggle-children">${rows.join('')}</div>
+    </div>`;
+}
+function renderChoiceEngine() {
+  const today = todayISO();
+  const ce = ceEnsure(state);
+  ce.extraDays = ce.extraDays || {};
+  _ceOptionIndex = {};
+  ceEnsureBaseline();
+  ceReplanTrack(today);
+  const { lanes, budget:b } = ceLaneOptions(today);
+  const stopped = !!ce.stoppedDays[today];
+  const behind = false; // v27.19: plan slip in the header replaces the midweek nudge
+  const mainDone = b.left < 15;
+  const ceilingHit = b.ceilingLeft < 15;
+  const extra = mainDone && !!ce.extraDays[today] && !ceilingHit;
+  const restart = ceRestartState(today, b);
+  _ceRestartVisible = !!restart;
+  const restartOpt = restart ? (lanes.build[0] || lanes.career[0] || null) : null;
+
+  let headline, sub;
+  if (b.override?.type === 'unavailable') { headline = 'Rest day'; sub = 'Main work is off today. Nothing carries over.'; }
+  else if (b.finalBudget === 0 && b.remaining === 0) { headline = 'Week done'; sub = `This week's ${ceFmtMin(b.target)} of main work is reached.`; }
+  else if (b.sundayRest) { headline = 'Rest day'; sub = 'Sunday is your rest day this week. The Coding Gym catch-up is below if you want it.'; }
+  else if (b.finalBudget === 0) { headline = '0 min'; sub = 'The Coding Gym fills today\'s ceiling.'; }
+  else if (b.light && !mainDone) { headline = `${b.finalBudget} min`; sub = 'light day · the Coding Gym plus this counts as a full day'; }
+  else if (mainDone) { headline = 'Main work done'; sub = `${ceFmtMin(b.workedToday)} ticked today.`; }
+  else { headline = `${b.finalBudget} min`; sub = b.workedToday ? `main work · ${ceFmtMin(b.workedToday)} ticked, ${ceFmtMin(b.left)} left` : 'main work suggested for today'; }
+  const g = b.gym;
+  const gymText = g.scheduled
+    ? `Coding Gym${g.sunday ? ' catch-up' : ''} +${g.scheduled} min${g.doneMinutes ? ` (${g.doneMinutes} done)` : ''}`
+    : 'No Coding Gym scheduled today';
+  const totalText = `Total planned today: ${b.finalBudget + g.scheduled} min · daily ceiling ${CE_DAILY_CEILING} min`;
+  const fc = ceForecast(today);
+  const parkedOnPath = fc && !fc.date && fc.weekly >= 60 ? [...ceMilestonePathIds()].map(taskByStableId).some(t => t && taskIsOpen(t) && taskIsParked(t)) : false;
+  const planText = `${cePlanLine(today)}${fc?.date ? ` · Forecast ${fmtDate(fc.date)}` : (parkedOnPath ? ` · ${fc.milestone.short} can't finish while work on its path is parked` : '')}${fc?.goal ? ` · Goal ${fmtDate(fc.goal)}` : ''}`;
+
+  const explain = `
+    <details class="ce-explain"><summary>How today's number is worked out</summary>
+      <div class="ce-explain-grid">
+        <span>Weekly main-work target</span><span>${b.target} min (${ceFmtMin(b.target)})${ce.targetHistory.length ? ', adjusted from your logged weeks' : ''}</span>
+        <span>Main work this week before today</span><span>${b.workedBefore} min</span>
+        <span>Still to do this week</span><span>${b.remaining} min</span>
+        <span>Normal daily share</span><span>${b.share} min (the weekly target over 6 days). Missed days are not added to later days${b.pressure.length ? `; raised because of ${escapeHTML(b.pressure.join(', '))}` : ''}</span>
+        ${b.light ? `<span>Light day</span><span>${b.zeroStreak} active days in a row without starting, so today asks for ${CE_RESTART_SLICE} min</span>` : ''}
+        <span>Coding Gym today</span><span>${g.scheduled} min scheduled, leaving ${b.roomBesideGym} min under the ${CE_DAILY_CEILING}-min ceiling</span>
+        <span>Result</span><span>${b.remaining > 0 ? (b.sundayRest ? 'Sunday rest' : `${Math.round(b.raw)}, limited to ${b.cap}${b.light ? ` and ${CE_RESTART_SLICE} (light day)` : ''} → ${b.budget} min`) : 'weekly target reached'}${b.override?.type === 'limit' ? `, limited to ${b.override.minutes} min today` : ''}</span>
+      </div>
+      <div class="ce-explain-note">Falling behind moves the projected finish date, never tomorrow's minutes. A day with nothing started opens the next day with a ${CE_RESTART_SLICE}-minute restart instead of a bigger number. The Coding Gym runs on its own schedule; only its minutes are counted here.</div>
+    </details>`;
+  const overrideLinks = b.override
+    ? `<button data-action="ce-override" data-type="clear">Clear today's change</button>`
+    : `<button data-action="ce-override" data-type="unavailable">Unavailable today</button><button data-action="ce-override" data-type="limit">I only have…</button>`;
+  const notifyLink = typeof Notification !== 'undefined' && Notification.permission === 'default'
+    ? `<button data-action="ce-notify" title="A browser notification if nothing has started by your usual start time (only while the planner is open)">Turn on reminders</button>` : '';
+
+  let lanesHTML = '';
+  if (b.override?.type !== 'unavailable') {
+    const shown = CE_LANES.filter(l => l.key !== 'skills' || (lanes.skills || []).length);
+    const note = ceilingHit
+      ? `<div class="ce-extra-note">Daily ceiling reached: ${CE_DAILY_CEILING} min across main work and Coding Gym. Stop here; tick anything you've already finished.</div>`
+      : mainDone ? `<div class="ce-stopped">Today's main work is done. Anything more is optional.</div>` : '';
+    lanesHTML = `${note}
+    <div class="ce-lanes" style="grid-template-columns:repeat(${shown.length},minmax(0,1fr))">${shown.map(l => ceLaneHTML(l, lanes[l.key] || [], b.left, false, false)).join('')}</div>
+    ${ceTickedTodayHTML(today)}`;
+  } else {
+    lanesHTML = ceTickedTodayHTML(today);
+  }
+
+  return `
+    <div class="ce-head">
+      <div class="ce-budget"><div class="ce-budget-num">${headline}</div><div class="ce-budget-sub">${escapeHTML(sub)}</div></div>
+      <div class="ce-links">${overrideLinks}<button data-action="ce-start-time" title="Used by the restart card and the reminder">Start time ${ceFmtClock(ceUsualStartMinutes())}</button>${notifyLink}</div>
+    </div>
+    <div class="ce-total"><span>${escapeHTML(gymText)}</span><span>${escapeHTML(totalText)}</span></div>
+    <div class="ce-plan-line">${escapeHTML(planText)}</div>
+    ${ceReplanHTML(today)}
+    ${restart ? ceRestartHTML(restart, restartOpt) : ''}
+    ${explain}
+    ${lanesHTML}`;
+}
+function renderChoiceEngineStats() {
+  const today = todayISO();
+  const p = ceProjection(today);
+  const b = ceBudget(today);
+  const gw = ceGymWeek(today);
+  const lbl = document.getElementById('s-aws-lbl');
+  if (lbl) lbl.textContent = p ? `Projected ${p.milestone.short}` : 'Current finish line';
+  $('#s-aws').innerHTML = p ? (p.date ? `${escapeHTML(fmtDate(p.date))}<span class="unit"> · ${p.basis}</span>` : `—<span class="unit"> · no Build time logged in 14 days</span>`) : '✓<span class="unit"> all milestones</span>';
+  $('#s-deploy').innerHTML = `${ceFmtMin(b.workedBefore + b.workedToday)}<span class="unit"> of ${ceFmtMin(b.target)}</span>`;
+  $('#s-dubai').innerHTML = `TG ${gw.tg} · Focus ${gw.focus}<span class="unit"> this week</span>`;
+  const target = ceAppTarget(today);
+  $('#s-apps').innerHTML = `${state.applications.length}<span class="unit"> total · ${ceAppsThisWeek(today)}${target ? ` of ${target}` : ''} this week</span>`;
+}
+
+
+/* =====================================================================
+   v27.19 · TARGET DATES, BASELINE, PLAN SLIP, RE-PLAN
+   Order comes from the planner's designed dates (dependency-corrected);
+   timing comes from your real capacity. The first schedule is frozen as the
+   baseline. Lateness is shown as plan slip (header) plus two task badges.
+   Lateness never changes the daily minutes.
+   ===================================================================== */
+const CE_APP_SLOT_MINUTES = 30;
+const CE_SKILLS_WEEKLY = 180;
+const CE_NEGLECT_DAYS = 2;
+const CE_REPLAN_MARGIN = 3, CE_REPLAN_DAYS = 3, CE_REPLAN_RENAG = 7;
+const CE_GOAL_KEY = { 'PROJECT-JOB-RELEASE':'productDeadline', 'AWS-CLOUD-RELEASE':'cloudDeadline' };
+let _ceSimMemo = { key:null, value:null };
+
+function ceRawRemaining(t) {
+  const est = Number(t?.estMinutes || 0);
+  const done = Math.max(Number(t?.courseProgressMinutes || 0), Number(t?.actualMinutes || 0));
+  return Math.max(0, est - done);
+}
+function ceClosed(t) { return !!t && (t.status === 'done' || t.status === 'cut'); }
+function ceScopeSignature() {
+  const map = ceTaskMap();
+  const m = ceCurrentMilestone(map);
+  const parked = state.tasks.filter(t => taskIsOpen(t) && taskIsParked(t)).map(taskStableId).sort().join(',');
+  const cut = state.tasks.filter(t => t.status === 'cut').map(taskStableId).sort().join(',');
+  return [m ? m.id : 'none', ceAppTarget(), parked, cut].join('|');
+}
+function ceGoalDate(milestoneId) { const key = CE_GOAL_KEY[milestoneId]; return key ? deadline(key) : null; }
+
+/* One serial schedule: Build + Career share the main-work minutes left after application
+   slots (and the Skills allowance when a returned course is active). Order = designed planner
+   dates, corrected so prerequisites always come first; ties go to what unlocks more. */
+function ceSimulate(startDate, weekly) {
+  const map = ceTaskMap();
+  const pathIds = ceMilestonePathIds(map);
+  const milestone = ceCurrentMilestone(map);
+  const appTarget = ceAppTarget(startDate);
+  let items = [];
+  for (const t of state.tasks) {
+    if (!taskIsOpen(t) || taskIsParked(t) || !triggerSatisfied(t.trigger)) continue;
+    const lane = ceLaneFor(t, pathIds);
+    if (!lane) continue;
+    items.push({ t, id:taskStableId(t), lane, rem:Math.max(5, ceRawRemaining(t)) });
+  }
+  // Drop anything that can never start (depends on parked or missing work).
+  let changed = true;
+  while (changed) {
+    changed = false;
+    const ids = new Set(items.map(i => i.id));
+    const keep = items.filter(i => ceDepsOf(i.t).every(d => ids.has(d) || ceSettled(map.get(d))));
+    if (keep.length !== items.length) { items = keep; changed = true; }
+  }
+  const byId = new Map(items.map(i => [i.id, i]));
+  // Unlock impact (remaining minutes of everything that depends on it) for tie-breaks.
+  const rev = new Map();
+  for (const i of items) for (const d of ceDepsOf(i.t)) if (byId.has(d)) { if (!rev.has(d)) rev.set(d, []); rev.get(d).push(i.id); }
+  for (const i of items) {
+    const seen = new Set([i.id]); const stack = [i.id]; let total = 0;
+    while (stack.length) { const x = stack.pop(); total += byId.get(x).rem; for (const y of rev.get(x) || []) if (!seen.has(y)) { seen.add(y); stack.push(y); } }
+    i.impact = total;
+  }
+  // Order key: the designed date; work feeding a real outside deadline is pulled ahead of it.
+  for (const i of items) i.key = i.t.dueDate || i.t.availableFrom || '9999-12-31';
+  for (const i of items) {
+    const ext = taskExternalDeadline(i.t);
+    if (!ext) continue;
+    const clamp = addDays(ext, -21);
+    const stack = [i.id]; const seen = new Set();
+    while (stack.length) { const x = stack.pop(); if (seen.has(x)) continue; seen.add(x); const it = byId.get(x); if (!it) continue; if (clamp < it.key) it.key = clamp; for (const d of ceDepsOf(it.t)) stack.push(d); }
+  }
+  for (const i of items) {
+    i.earliest = pathIds.has(i.id) ? null : (i.t.availableFrom ? addDays(i.t.availableFrom, -14) : null);
+    // Work tied to real outside timing (admissions windows, referee lead time) keeps its designed date.
+    i.anchor = (i.t.category === 'admissions' || i.key < (i.t.dueDate || '9999-12-31')) ? i.key : null;
+  }
+  const skillsItems = items.filter(i => i.lane === 'skills');
+  const mainItems = items.filter(i => i.lane !== 'skills');
+  const shared = Math.max(60, weekly - appTarget * CE_APP_SLOT_MINUTES - (skillsItems.length ? CE_SKILLS_WEEKLY : 0));
+  const dailyMain = shared / CE_ACTIVE_DAYS;
+  const dailySkills = skillsItems.length ? CE_SKILLS_WEEKLY / CE_ACTIVE_DAYS : 0;
+  const finish = new Map();
+  const entries = {};
+  const curve = [];
+  const cmp = (a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0) || (b.impact - a.impact) || ((a.t.week || 0) - (b.t.week || 0)) || ((a.t.seedIndex || 0) - (b.t.seedIndex || 0));
+  const runQueue = (queue, daily, day, state_) => {
+    let cap = daily;
+    state_.used = 0;
+    while (cap > 0.001) {
+      if (!state_.current) {
+        const cands = queue.filter(i => !finish.has(i.id) && i !== state_.current && !state_.startedIds.has(i.id)
+          && ceDepsOf(i.t).every(d => !byId.has(d) || (finish.has(d) && finish.get(d) <= day))
+          && (!i.earliest || i.earliest <= day));
+        if (!cands.length) break;
+        cands.sort((a, b) => {
+          const aa = a.anchor && a.anchor <= day, ba = b.anchor && b.anchor <= day;
+          if (aa !== ba) return aa ? -1 : 1;
+          return cmp(a, b);
+        });
+        state_.current = cands[0]; state_.current.left = state_.current.rem; state_.startedIds.add(state_.current.id);
+        entries[state_.current.id] = { start:day, lane:state_.current.lane, rem:state_.current.rem };
+      }
+      const use = Math.min(cap, state_.current.left);
+      state_.current.left -= use; cap -= use; state_.used += use;
+      if (state_.current.lane === 'build') state_.buildToday += use;
+      if (state_.current.left <= 0.001) { finish.set(state_.current.id, day); entries[state_.current.id].target = day; state_.current = null; }
+    }
+  };
+  const mainState = { current:null, startedIds:new Set(), buildToday:0 };
+  const skillState = { current:null, startedIds:new Set(), buildToday:0 };
+  let day = startDate, cum = 0, guard = 0;
+  while ((finish.size < items.length) && guard++ < 900) {
+    const dow = new Date(day + 'T12:00:00').getDay();
+    mainState.buildToday = 0;
+    if (dow !== 0) {
+      let spare = 0;
+      if (dailySkills) { runQueue(skillsItems, dailySkills, day, skillState); spare = Math.max(0, dailySkills - skillState.used); }
+      runQueue(mainItems, dailyMain + spare, day, mainState);
+    }
+    cum += mainState.buildToday;
+    curve.push([day, Math.round(cum)]);
+    const pending = items.filter(i => !finish.has(i.id));
+    if (!pending.length) break;
+    // Stop when nothing further can ever start (e.g. waits on something outside the schedule).
+    if (!mainState.current && !skillState.current && guard > 30) {
+      const future = pending.some(i => i.earliest && i.earliest > day);
+      const startable = pending.some(i => ceDepsOf(i.t).every(d => !byId.has(d) || finish.has(d)));
+      if (!future && !startable) break;
+    }
+    day = addDays(day, 1);
+  }
+  return { startDate, weekly, appTarget, milestoneId:milestone ? milestone.id : null, entries, curve,
+    milestoneTarget:milestone ? (entries[milestone.id]?.target || null) : null };
+}
+
+function ceForecast(today = todayISO()) {
+  const ce = ceEnsure(state);
+  let weekly = Number(ce.weeklyTarget) || CE_DEFAULT_WEEKLY_TARGET, basis = 'estimate-based';
+  if (dayDiff(ce.installedAt, today) >= 14) {
+    weekly = ceWorkedBetween(addDays(today, -14), today) / 2;
+    basis = 'activity-based';
+  }
+  const map = ceTaskMap();
+  const m = ceCurrentMilestone(map);
+  if (!m) return null;
+  if (weekly < 60) return { milestone:m, date:null, basis, weekly };
+  const key = [today, Math.round(weekly), ceScopeSignature(), state.tasks.filter(ceClosed).length,
+    state.tasks.reduce((n, t) => n + Number(t.actualMinutes || 0) + Number(t.courseProgressMinutes || 0), 0)].join('#');
+  if (_ceSimMemo.key !== key) _ceSimMemo = { key, value:ceSimulate(today, weekly) };
+  return { milestone:m, date:_ceSimMemo.value.milestoneTarget, basis, weekly, goal:ceGoalDate(m.id) };
+}
+
+/* ---------- baseline ---------- */
+function cePlanSlip(ce = ceEnsure(state), today = todayISO()) {
+  const bl = ce.baseline;
+  if (!bl || !bl.curve?.length) return { days:0, expectedDate:today, earned:0 };
+  let earned = 0;
+  for (const [id, e] of Object.entries(bl.entries)) {
+    if (e.lane !== 'build') continue;
+    const t = taskByStableId(id);
+    const now = !t || ceClosed(t) ? 0 : Math.min(e.rem, ceRawRemaining(t));
+    earned += Math.max(0, e.rem - now);
+  }
+  // Start-of-day cumulative planned Build minutes; find the latest day you have reached.
+  let k = 0;
+  for (let i = 0; i < bl.curve.length; i++) {
+    const startCum = i === 0 ? 0 : bl.curve[i - 1][1];
+    if (startCum <= earned + 0.5) k = i; else break;
+  }
+  // Don't call flat days (Sundays, the tail after Build ends) "ahead" unless today's planned work is done.
+  const total = bl.curve[bl.curve.length - 1][1];
+  const lastWork = Math.max(0, bl.curve.findIndex(([, c]) => c >= total));
+  const todayIdx = dayDiff(bl.startDate || bl.curve[0][0], today);
+  if (k > lastWork) k = lastWork;
+  // "Ahead" only once you've done more than the plan expected by the end of today.
+  if (k > todayIdx && todayIdx >= 0 && todayIdx < bl.curve.length && earned <= bl.curve[todayIdx][1] + 0.5) k = todayIdx;
+  const expectedDate = bl.curve[Math.min(k, bl.curve.length - 1)][0];
+  const days = ceActiveDaysBetween(expectedDate, today);
+  return { days, expectedDate, earned };
+}
+function ceCreateBaseline(reason, startDate = todayISO()) {
+  const ce = ceEnsure(state);
+  const weekly = Number(ce.weeklyTarget) || CE_DEFAULT_WEEKLY_TARGET;
+  const sim = ceSimulate(startDate, weekly);
+  ce.baseline = { createdAt:todayISO(), startDate, reason, weekly, appTarget:sim.appTarget, signature:ceScopeSignature(),
+    milestone:sim.milestoneId, milestoneTarget:sim.milestoneTarget, entries:sim.entries, curve:sim.curve };
+  ce.baselineHistory = Array.isArray(ce.baselineHistory) ? ce.baselineHistory : [];
+  ce.baselineHistory.push({ createdAt:todayISO(), startDate, reason, milestone:sim.milestoneId, milestoneTarget:sim.milestoneTarget });
+  ce.baselineHistory = ce.baselineHistory.slice(-30);
+  _ceSimMemo = { key:null, value:null };
+  save();
+  return ce.baseline;
+}
+function ceEnsureBaseline() {
+  const ce = ceEnsure(state);
+  const today = todayISO();
+  ceRecordLateFinishes();
+  if (!ce.baseline) return ceCreateBaseline('first baseline', today);
+  const sig = ceScopeSignature();
+  if (ce.baseline.signature === sig) return ce.baseline;
+  const map = ceTaskMap();
+  const m = ceCurrentMilestone(map);
+  if ((m ? m.id : null) !== ce.baseline.milestone) return ceCreateBaseline('milestone reached', today);
+  // A deliberate scope/capacity change: re-plan the affected schedule but keep the slip you already had.
+  const slip = Math.max(0, cePlanSlip(ce, today).days);
+  return ceCreateBaseline('scope or capacity changed', addDays(today, -slip));
+}
+function ceTarget(id) { return ceEnsure(state).baseline?.entries?.[id]?.target || null; }
+function ceTaskBadges(t) {
+  if (!t || !taskIsOpen(t)) return [];
+  const out = [];
+  const late = ceLateInfo(t);
+  if (late) out.push({ tone:'orange', text:`Due ${fmtDate(late.target)} · ${late.days} day${late.days === 1 ? '' : 's'} late` });
+  const blocked = ceEnsure(state).blocked?.[taskStableId(t)];
+  if (blocked) out.push({ tone:'gray', text:`Blocked: ${blocked.note}` });
+  else {
+    const w = ceWaitingOn(t);
+    if (w) out.push({ tone:'gray', text:`Waiting on ${clipExecutionText(w.task.title, 48)}${w.why === 'late' ? '' : ` (${w.why})`}` });
+  }
+  const over = Number(t.actualMinutes || 0) - Number(t.estMinutes || 0);
+  if (Number(t.actualMinutes || 0) > 0 && over > 0) out.push({ tone:'orange', text:`Over estimate by ${ceFmtMin(over)}` });
+  return out;
+}
+function cePlanLine(today = todayISO()) {
+  const ce = ceEnsure(state);
+  const s = cePlanSlip(ce, today);
+  const set = ce.baseline?.createdAt ? ` · baseline set ${fmtDate(ce.baseline.createdAt)}` : '';
+  if (s.days >= 1) return `Plan: ${s.days} day${s.days === 1 ? '' : 's'} behind · you're where it expected you on ${fmtDate(s.expectedDate)}${set}`;
+  if (s.days <= -1) return `Plan: ${-s.days} day${s.days === -1 ? '' : 's'} ahead${set}`;
+  return `Plan: on schedule${set}`;
+}
+
+/* ---------- re-plan question ---------- */
+function ceReplanTrack(today = todayISO()) {
+  const ce = ceEnsure(state);
+  const r = ce.replan = ce.replan || { streak:0, lastDay:null, asked:null };
+  if (r.lastDay === today) return r;
+  if (ce.dayOverrides[today]?.type === 'unavailable') return r;
+  const f = ceForecast(today);
+  const past = !!(f?.date && f.goal && dayDiff(f.goal, f.date) >= CE_REPLAN_MARGIN);
+  r.streak = past ? (r.streak || 0) + 1 : 0;
+  r.lastDay = today;
+  save();
+  return r;
+}
+function ceReplanDue(today = todayISO()) {
+  const r = ceEnsure(state).replan;
+  if (!r || r.streak < CE_REPLAN_DAYS) return null;
+  const f = ceForecast(today);
+  if (!f?.date || !f.goal) return null;
+  if (r.asked?.answer === 'keep' && dayDiff(r.asked.forecast, f.date) < CE_REPLAN_RENAG) return null;
+  return f;
+}
+function ceReplanHTML(today = todayISO()) {
+  const f = ceReplanDue(today);
+  if (!f) return '';
+  const late = dayDiff(f.goal, f.date);
+  return `
+    <div class="ce-replan">
+      <div><strong>${escapeHTML(f.milestone.label)}: forecast ${escapeHTML(fmtDate(f.date))}, ${late} days past your goal of ${escapeHTML(fmtDate(f.goal))}.</strong>
+      It has been past by ${CE_REPLAN_MARGIN}+ days for ${CE_REPLAN_DAYS} active days in a row. Choose one; the first three reset the target dates from today.</div>
+      <div class="ce-actions" style="margin-top:10px">
+        <button class="ce-btn" data-action="ce-replan" data-choice="time">Add time</button>
+        <button class="ce-btn" data-action="ce-replan" data-choice="cut">Cut scope</button>
+        <button class="ce-btn" data-action="ce-replan" data-choice="goal">Move the goal</button>
+        <button class="ce-btn" data-action="ce-replan" data-choice="keep">Keep going</button>
+      </div>
+    </div>`;
+}
+function ceReplanAnswer(choice) {
+  const ce = ceEnsure(state);
+  const today = todayISO();
+  const f = ceForecast(today);
+  const r = ce.replan = ce.replan || { streak:0, lastDay:null, asked:null };
+  const reset = (label) => { r.streak = 0; r.asked = { day:today, answer:choice, forecast:f?.date || null }; ceCreateBaseline(label, today); rerender(); };
+  if (choice === 'keep') { r.asked = { day:today, answer:'keep', forecast:f?.date || null }; save(); rerender(); return; }
+  if (choice === 'time') {
+    const cur = Math.round((Number(ce.weeklyTarget) || CE_DEFAULT_WEEKLY_TARGET) / 60);
+    const v = Number(prompt(`New weekly main-work target in hours (${CE_TARGET_MIN / 60}–${CE_TARGET_MAX / 60}). The Coding Gym is separate.`, String(cur + 1)));
+    if (!Number.isFinite(v) || v <= 0) return;
+    const mins = Math.max(CE_TARGET_MIN, Math.min(CE_TARGET_MAX, Math.round(v * 60)));
+    ce.targetHistory.push({ monday:calendarWeekMonday(today), from:ce.weeklyTarget, to:mins, manual:true });
+    ce.weeklyTarget = mins;
+    reset('re-plan: added time');
+    return;
+  }
+  if (choice === 'goal') {
+    const key = CE_GOAL_KEY[f?.milestone?.id];
+    if (!key) return;
+    const v = String(prompt('New goal date (YYYY-MM-DD). The current forecast is shown as a suggestion.', f?.date || '') || '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return;
+    state.settings[key] = v;
+    reset('re-plan: moved the goal');
+    return;
+  }
+  if (choice === 'cut') {
+    const map = ceTaskMap();
+    const m = ceCurrentMilestone(map);
+    const open = ceCuttableIds(map).map(id => map.get(id)).filter(Boolean)
+      .sort((a, b) => (ceTarget(taskStableId(a)) || '9999').localeCompare(ceTarget(taskStableId(b)) || '9999'));
+    if (!open.length) { alert('Nothing on this milestone can be cut without breaking work that depends on it. Add time or move the goal instead.'); return; }
+    openModal('Cut scope', `
+      <div style="font-size:13px;color:var(--ink-mute);margin-bottom:8px">Only work that nothing technical depends on is listed (its only dependents are the release checks). Anything here that makes the release job-ready, such as CI or the public deploy, weakens v1.0 if cut.</div>
+      <div style="max-height:320px;overflow:auto;border:1px solid var(--line);border-radius:var(--r-md);padding:6px 10px">
+        ${open.map(t => `<label style="display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:13px"><input type="checkbox" class="ce-cut" value="${escapeHTML(t.id)}" style="margin-top:3px;accent-color:var(--accent)"><span>${escapeHTML(t.title)} <span style="color:var(--ink-mute)">· ~${ceFmtMin(ceTaskRemaining(t))}</span></span></label>`).join('')}
+      </div>`, () => {
+      const ids = [...document.querySelectorAll('.ce-cut:checked')].map(x => x.value);
+      if (!ids.length) return true;
+      ce.cutSettles = ce.cutSettles || {};
+      for (const id of ids) { const t = state.tasks.find(x => x.id === id); if (t) { t.status = 'cut'; t.cutReason = `Cut at re-plan ${today}`; ce.cutSettles[taskStableId(t)] = today; } }
+      reset('re-plan: cut scope');
+      return true;
+    });
+    const ok = document.getElementById('m-ok'); if (ok) ok.textContent = 'Cut and re-plan';
+  }
+}
+
+
+/* =====================================================================
+   v27.20 · LATE TASKS + RESTART AFTER ZERO DAYS
+   Two different problems, two responses:
+   - Zero day (nothing started): a starting problem. Next time you open the
+     planner it leads with a 25-minute restart; the day never grows to make up
+     for it; three zero days in a row make a light day.
+   - Late task (you could have done it, its target passed): it keeps leading its
+     lane as "Due … · N days late". If you work on other things for two days
+     while it waits, it asks once: 25-minute slice, park it, or blocked.
+   Tasks stuck behind a late one are "Waiting on …", never late themselves.
+   ===================================================================== */
+const CE_RESTART_SLICE = 25;
+const CE_LATE_SKIP_DAYS = 2;
+const CE_LIGHT_AFTER_ZERO_DAYS = 3;
+const CE_DEFAULT_START_MIN = 10 * 60;
+let _ceRestartVisible = false;
+
+function ceIsSunday(d) { return new Date(d + 'T12:00:00').getDay() === 0; }
+function ceIsActiveDay(d) { return !ceIsSunday(d) && ceEnsure(state).dayOverrides[d]?.type !== 'unavailable'; }
+/* Active (non-Sunday) days in (a, b]; negative when b is before a. */
+function ceActiveDaysBetween(a, b) {
+  if (!a || !b || a === b) return 0;
+  const sign = b > a ? 1 : -1;
+  const lo = sign > 0 ? a : b, hi = sign > 0 ? b : a;
+  let n = 0, d = addDays(lo, 1), guard = 0;
+  while (d <= hi && guard++ < 1000) { if (!ceIsSunday(d)) n++; d = addDays(d, 1); }
+  return sign * n;
+}
+function ceAddActiveDays(d, n) { let x = d, guard = 0; while (n > 0 && guard++ < 1000) { x = addDays(x, 1); if (!ceIsSunday(x)) n--; } return x; }
+function ceSettled(t) { return !!t && (t.status === 'done' || (t.status === 'cut' && !!ceEnsure(state).cutSettles?.[taskStableId(t)])); }
+
+/* ---------- zero days ---------- */
+function ceGymTouched(d) { return codingGymPartIsDone('tg', d) || codingGymPartIsDone('focus', d); }
+function ceIsZeroDay(d) { return ceWorkedOn(d) === 0 && !ceGymTouched(d); }
+function ceZeroStreak(today = todayISO()) {
+  let n = 0, d = addDays(today, -1), guard = 0;
+  while (guard++ < 30) {
+    if (!ceIsActiveDay(d)) { d = addDays(d, -1); continue; }
+    if (ceIsZeroDay(d)) { n++; d = addDays(d, -1); } else break;
+  }
+  return n;
+}
+function ceUsualStartMinutes() {
+  // v27.21: set once ("Start time" on Today); no sessions to learn from any more.
+  const m = Number(ceEnsure(state).startMinutes);
+  return Number.isFinite(m) && m >= 0 ? m : CE_DEFAULT_START_MIN;
+}
+function ceFmtClock(m) { return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`; }
+function ceRestartState(today = todayISO(), b = null) {
+  const ce = ceEnsure(state);
+  if (!ceIsActiveDay(today)) return null;
+  b = b || ceBudget(today);
+  if (b.workedToday > 0 || b.finalBudget === 0) return null;
+  const zero = ceZeroStreak(today);
+  const start = ceUsualStartMinutes(today);
+  const now = nowLocal();
+  const pastStart = now.getHours() * 60 + now.getMinutes() >= start;
+  if (!zero && !pastStart) return null;
+  return { zero, light:zero >= CE_LIGHT_AFTER_ZERO_DAYS, pastStart, start };
+}
+function ceRestartHTML(r, opt) {
+  if (!r || !opt) return '';
+  _ceOptionIndex['restart:0'] = opt;
+  const why = r.light
+    ? `No work logged on the last ${r.zero} active days, so today is a light day: the Coding Gym plus these ${CE_RESTART_SLICE} minutes count as a full day.`
+    : r.zero
+      ? `Nothing was started ${r.zero === 1 ? 'on your last active day' : `on the last ${r.zero} active days`}. Today doesn't get bigger to make up for it; just start.`
+      : `It's past your usual start (${ceFmtClock(r.start)}) and ${ceGymTouched(todayISO()) ? 'no main work' : 'nothing'} has started yet.`;
+  return `
+    <div class="ce-restart" data-lane="${opt.lane}">
+      <div class="ce-restart-main">
+        <div class="ce-restart-k">Restart</div>
+        <div class="ce-restart-title">Do ${CE_RESTART_SLICE} minutes of ${escapeHTML(opt.title)} today</div>
+        <div class="ce-restart-why">${escapeHTML(why)}</div>
+      </div>
+      <button class="ce-btn primary" data-action="ce-restart">Open task</button>
+    </div>`;
+}
+function ceNotifyIfIdle(today = todayISO()) {
+  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+  const r = ceRestartState(today);
+  if (!r || !r.pastStart) return;
+  const ce = ceEnsure(state);
+  ce.notified = ce.notified || {};
+  if (ce.notified[today]) return;
+  const opt = ceLaneOptions(today).lanes.build[0] || ceLaneOptions(today).lanes.career[0];
+  if (!opt) return;
+  ce.notified[today] = true;
+  save();
+  try { new Notification('Nothing started yet', { body:`Start ${CE_RESTART_SLICE} minutes of ${opt.title}` }); } catch {}
+}
+
+/* ---------- late tasks ---------- */
+function ceEligibleSince(t) {
+  let since = '';
+  for (const d of ceDepsOf(t)) { const p = taskByStableId(d); if (p?.completedAt && p.completedAt > since) since = p.completedAt; }
+  return since;
+}
+/* Late = you could have done it and its target has passed. The clock starts once it was both due
+   and doable; a task unlocked late first gets the active days its own work needs. Blocked days don't count. */
+function ceLateInfo(t, today = todayISO()) {
+  if (!t || !taskIsOpen(t) || t.manualBlocked || taskIsParked(t)) return null;
+  const id = taskStableId(t);
+  const target = ceTarget(id);
+  if (!target || target >= today || !ceEligible(t, today)) return null;
+  const since = ceEligibleSince(t);
+  let from = target;
+  if (since && since > target) {
+    const share = Math.max(30, Math.round((Number(ceEnsure(state).weeklyTarget) || CE_DEFAULT_WEEKLY_TARGET) / CE_ACTIVE_DAYS));
+    from = ceAddActiveDays(since, Math.max(0, Math.ceil(ceTaskRemaining(t) / share) - 1));
+  }
+  const blocked = Number(ceEnsure(state).blockedDays?.[id] || 0);
+  const days = Math.max(0, ceActiveDaysBetween(from, today) - blocked);
+  return days > 0 ? { days, target, from } : null;
+}
+function ceLateDays(t, today = todayISO()) { return ceLateInfo(t, today)?.days || 0; }
+/* Days you worked on other things while this late task waited (zero days don't count). */
+function ceLateSkipDays(t, today = todayISO()) {
+  const info = ceLateInfo(t, today);
+  if (!info) return 0;
+  const id = taskStableId(t);
+  const ce = ceEnsure(state);
+  const start = [info.from, ce.lateAsked?.[id] || ''].sort().pop();
+  let n = 0, d = addDays(start, 1), guard = 0;
+  while (d < today && guard++ < 200) {
+    if (ceIsActiveDay(d) && ceWorkedOn(d) > 0 && !ce.sessions.some(s => s.refId === id && s.date === d)) n++;
+    d = addDays(d, 1);
+  }
+  return n;
+}
+function ceWaitingOn(t) {
+  if (!t || !taskIsOpen(t)) return null;
+  for (const d of ceDepsOf(t)) {
+    const p = taskByStableId(d);
+    if (!p) continue;
+    if (p.status === 'cut' && !ceSettled(p)) return { task:p, why:'cut' };
+    if (taskIsOpen(p) && (ceLateDays(p) > 0 || p.manualBlocked || taskIsParked(p))) return { task:p, why:p.manualBlocked ? 'blocked' : taskIsParked(p) ? 'parked' : 'late' };
+  }
+  return null;
+}
+function ceRecordLateFinishes() {
+  const ce = ceEnsure(state);
+  const bl = ce.baseline;
+  if (!bl?.entries) return;
+  ce.finishedLate = ce.finishedLate || {};
+  for (const [id, e] of Object.entries(bl.entries)) {
+    if (!e.target || ce.finishedLate[id] !== undefined) continue;
+    const t = taskByStableId(id);
+    if (!t || t.status !== 'done' || !t.completedAt) continue;
+    ce.finishedLate[id] = Math.max(0, ceActiveDaysBetween(e.target, t.completedAt));
+  }
+}
+function ceBlock(id) {
+  const t = taskByStableId(id);
+  if (!t) return;
+  const note = String(prompt('Blocked by what? (a few words)', '') || '').trim();
+  if (!note) return;
+  const ce = ceEnsure(state);
+  ce.blocked = ce.blocked || {};
+  ce.blocked[id] = { since:todayISO(), note };
+  ce.lateAsked = ce.lateAsked || {};
+  ce.lateAsked[id] = todayISO();
+  t.manualBlocked = true;
+  t.blockedReason = note;
+  save(); rerender();
+}
+function ceUnblock(id) {
+  const t = taskByStableId(id);
+  const ce = ceEnsure(state);
+  const rec = ce.blocked?.[id];
+  if (rec) {
+    ce.blockedDays = ce.blockedDays || {};
+    ce.blockedDays[id] = Number(ce.blockedDays[id] || 0) + Math.max(0, ceActiveDaysBetween(rec.since, todayISO()));
+    delete ce.blocked[id];
+  }
+  if (t) { t.manualBlocked = false; delete t.blockedReason; }
+  save(); rerender();
+}
+function ceBlockedHTML() {
+  const ce = ceEnsure(state);
+  const rows = Object.entries(ce.blocked || {}).map(([id, rec]) => {
+    const t = taskByStableId(id);
+    if (!t || !taskIsOpen(t)) return '';
+    return `<div class="ce-park-row"><div><strong>${escapeHTML(t.title)}</strong><div class="ce-park-when">Blocked since ${escapeHTML(fmtDate(rec.since))}: ${escapeHTML(rec.note)}. The late clock is paused.</div></div>
+      <button class="ce-btn" data-action="ce-unblock" data-id="${escapeHTML(id)}">Unblock</button></div>`;
+  }).filter(Boolean);
+  if (!rows.length) return '';
+  return `
+    <div class="block toggle ce-parked expanded">
+      <div class="toggle-head"><button class="toggle-chev" type="button" aria-label="Expand or collapse section"></button>
+        <div class="toggle-title">Blocked · waiting on something outside the plan</div></div>
+      <div class="toggle-children">${rows.join('')}</div>
+    </div>`;
+}
+/* Cut only counts as settled for work that nothing technical depends on: tasks whose only
+   dependents are the release checks (the milestone itself and collector gates with 4+ inputs). */
+function ceCuttableIds(map = ceTaskMap()) {
+  const m = ceCurrentMilestone(map);
+  if (!m) return [];
+  const path = ceAncestors(m.id, map);
+  const open = [...path].map(id => map.get(id)).filter(t => t && taskIsOpen(t));
+  const pathDeps = id => ceDepsOf(map.get(id)).filter(d => path.has(d));
+  const collectors = new Set([m.id, ...open.filter(t => pathDeps(taskStableId(t)).length >= 4).map(taskStableId)]);
+  return open.filter(t => {
+    const id = taskStableId(t);
+    if (collectors.has(id)) return false;
+    const dependents = open.filter(x => ceDepsOf(x).includes(id)).map(taskStableId);
+    return dependents.length > 0 && dependents.every(d => collectors.has(d));
+  }).map(taskStableId);
+}
+
 /* state shape + persistence migration */
 function seedMilestoneAnchor(seed) {
   if (!seed?.anchor || !MILESTONE_ANCHORS[seed.anchor]) return null;
@@ -17128,6 +18546,7 @@ function activeBranchDefinitions(branches){
   return defs;
 }
 function migrateState(s) {
+  const priorCatalogue = s.catalogueVersion || '';
   const base = defaultState();
   const existing = Array.isArray(s.tasks) ? s.tasks : [];
   const existingByStable = new Map();
@@ -17157,6 +18576,12 @@ function migrateState(s) {
   for (const [date,val] of Object.entries(s.codingGymRecovery || {})) if (val) { s.codingGymTGRecovery[date]=s.codingGymTGRecovery[date]||val; s.codingGymFocusRecovery[date]=s.codingGymFocusRecovery[date]||val; }
   s.tgPracticeHistory = s.tgPracticeHistory || {};
   s.labuladongPatterns = s.labuladongPatterns || {};
+  // v27.16 rollout migration: Pattern Labs did not exist in the user's historical
+  // DSA1/Coding-Gym work. Drop any experimental pre-rollout stamps so old focus
+  // completion cannot masquerade as Labuladong reading.
+  for (const [key,doneAt] of Object.entries(s.labuladongPatterns)) {
+    if (!doneAt || doneAt < LABULADONG_ROLLOUT_START) delete s.labuladongPatterns[key];
+  }
   s.leetcodeRedos = Array.isArray(s.leetcodeRedos) ? s.leetcodeRedos : [];
   s.practiceRituals = s.practiceRituals || {};
   s.engineeringRepMeta = s.engineeringRepMeta || {};
@@ -17196,6 +18621,37 @@ function migrateState(s) {
     learnRead:[],failureCases:[],unlocks:[],sourceRefs:[],sourceFreshness:'stable',definitionFingerprint:'',definitionChanged:false,stickyUntilDone:false,...t
   }));
   alignGeneratedTaskDates(s.tasks, s.settings);
+  ceMigrationRepairs(s, priorCatalogue);
+  return s;
+}
+function ceMigrationRepairs(s, priorCatalogue) {
+  const ce = ceEnsure(s);
+  const byId = id => s.tasks.find(t => taskStableId(t) === id);
+  // v27.16 lost two completions (done 2026-09-11 in the Sep 12 backup). Restore once, only
+  // on a v27.16 lineage whose prerequisites prove the work had been reached.
+  if (!ce.repairs['v27.17-restore-sep11'] && /v27\.16/.test(priorCatalogue)) {
+    const prereqsDone = ['NEXTUP-CLEAN-ROOM','HTTP-CH09','HTTP-CH08'].every(id => byId(id)?.status === 'done');
+    if (prereqsDone) for (const id of ['NEXTUP-SIMKL-HTTP','NEXTUP-SYNC-DESIGN']) {
+      const t = byId(id);
+      if (t && t.status !== 'done') { t.status = 'done'; t.completedAt = '2026-09-11'; }
+    }
+    ce.repairs['v27.17-restore-sep11'] = todayISO();
+  }
+  // Cold portal applications no longer get an automatic follow-up.
+  if (!ce.repairs['v27.17-cold-followups']) {
+    for (const a of s.applications || []) {
+      if (a.status === 'sent' && /^follow up in 7 days$/i.test(String(a.nextAction || '').trim())) { a.nextAction = ''; a.deadline = ''; }
+    }
+    ce.repairs['v27.17-cold-followups'] = todayISO();
+  }
+  // v27.18: the Coding Gym sits outside the engine, so main work drops to 780 min/week (≈20h total with the gym).
+  if (!ce.repairs['v27.18-main-target-780']) {
+    if (!ce.targetHistory.length && Number(ce.weeklyTarget) === 900) ce.weeklyTarget = CE_DEFAULT_WEEKLY_TARGET;
+    ce.repairs['v27.18-main-target-780'] = todayISO();
+  }
+  // v27.21: the session timer is gone; drop any session left running (already-logged sessions stay counted).
+  if (!ce.repairs['v27.21-no-timer']) { ce.activeSession = null; ce.repairs['v27.21-no-timer'] = todayISO(); }
+  // Tasks that were in progress stay in progress; nothing else about user state changes here.
   return s;
 }
 
@@ -17239,12 +18695,22 @@ function enforceDependencyConsistency() {
 let state = loadState();
 syncTaskReadiness();
 let viewedDate = null; // Today-tab date navigation; null = actual today
+let _ceLastToday = null; // v27.17: if you were looking at "today" when the date changes, follow it
 function loadState() {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return defaultState(DEFAULT_SETTINGS.planStart, true);
     const s = JSON.parse(raw);
     if (!s.tasks) return defaultState(DEFAULT_SETTINGS.planStart, true);
+    if (s.catalogueVersion && s.catalogueVersion !== CATALOGUE_VERSION) {
+      // Keep an untouched copy of the pre-upgrade state so an upgrade can never silently lose work.
+      try {
+        const snapKey = KEY + ':pre-' + CATALOGUE_VERSION;
+        // keep only the newest pre-upgrade copy so snapshots can never fill the storage quota
+        for (let i = localStorage.length - 1; i >= 0; i--) { const k = localStorage.key(i); if (k && k.startsWith(KEY + ':pre-') && k !== snapKey) localStorage.removeItem(k); }
+        if (!localStorage.getItem(snapKey)) localStorage.setItem(snapKey, raw);
+      } catch {}
+    }
     return migrateState(s);
   } catch {
     return defaultState(DEFAULT_SETTINGS.planStart, true);
@@ -17531,20 +18997,17 @@ function taskEffectiveDelayTargetDate(t) {
   return dependencyReady && dependencyReady > canonical ? dependencyReady : canonical;
 }
 function taskDelayDays(t, asOfDate = todayISO()) {
-  const target = taskEffectiveDelayTargetDate(t);
-  if (!target) return 0;
-  const end = (t?.status === 'done' && t?.completedAt) ? t.completedAt : asOfDate;
-  return Math.max(0, dayDiff(target, end));
+  // v27.17: planner-generated dates are forecasts, not debt. Only a real external
+  // deadline (admissions, interview, take-home) can make a task late.
+  const ext = t ? taskExternalDeadline(t) : null;
+  if (!ext || !taskIsOpen(t)) return 0;
+  if (!taskDependenciesSatisfied(t) || t.manualBlocked) return 0;
+  return Math.max(0, dayDiff(ext, asOfDate));
 }
 function taskDelayLabel(t, asOfDate = todayISO()) {
   const days = taskDelayDays(t, asOfDate);
   if (!days) return '';
-  const canonical = taskDelayTargetDate(t);
-  const effective = taskEffectiveDelayTargetDate(t) || canonical;
-  const readiness = canonical && effective && effective !== canonical ? ` · prerequisite ready ${fmtDate(effective)}` : '';
-  return t?.status === 'done'
-    ? `completed ${days}d late · planned ${fmtDate(canonical)}${readiness}`
-    : `Delayed · +${days}d · planned ${fmtDate(canonical)}${readiness}`;
+  return `Past real deadline · ${fmtDate(taskExternalDeadline(t))}`;
 }
 function taskEffectiveDeadlineDateTime(t) {
   if (!t?.dueDate) return null;
@@ -17620,6 +19083,8 @@ function severityBand(score) {
   return { label: 'none', color: 'gray', icon: '✓' };
 }
 function taskDueLabel(t) {
+  const ceT = t && taskIsOpen(t) && typeof ceTarget === 'function' && state?.choiceEngine?.baseline ? ceTarget(taskStableId(t)) : null;
+  if (ceT) return `target ${fmtDate(ceT)}`;
   if (!t?.dueDate) return '';
   if (taskIsStickyUntilDone(t) && t.courseModuleTask) return `target ${fmtDate(t.dueDate)} · carries forward if unfinished`;
   if (taskIsStickyUntilDone(t)) return `starts ${fmtDate(t.dueDate)} · planned through ${fmtDate(stickyTaskPlannedEndDate(t) || t.dueDate)}`;
@@ -17988,8 +19453,18 @@ function getOutcomeChecks(outcome) {
   if (outcome.dynamic === 'route-selected') {
     rows.push({ id:'dynamic-route', label:'Exactly one July–September route is active', passed:!!state.branches?.route, task:null });
   }
+  // v27.19: parked work is shown as parked, not as missing.
+  for (const r of rows) {
+    if (r.task && taskIsOpen(r.task) && taskIsParked(r.task)) {
+      const g = ceGroupOf(taskStableId(r.task));
+      r.parked = true;
+      r.label = `${r.label} · parked${g ? ` (${g.returnsText.replace(/\.$/, '').toLowerCase()})` : ''}`;
+    }
+  }
   return rows;
 }
+const CE_EXTERNAL_OUTCOMES = new Set(['admissions']);
+const CE_OUTCOME_MILESTONE = { product:'PROJECT-JOB-RELEASE', cloud:'AWS-CLOUD-RELEASE' };
 function getHealth(catId) {
   const outcome = getOutcomes().find(o => o.id === catId);
   if (!outcome) return null;
@@ -17999,9 +19474,22 @@ function getHealth(catId) {
   const actualPct = actual / target;
   const daysLeft = dayDiff(todayISO(), outcome.deadline);
   const passed = actual === target;
-  let status = passed ? 'passed' : (daysLeft < 0 ? 'failed' : (daysLeft <= 14 ? 'at-risk' : 'open'));
+  // v27.19: only a real outside deadline can be failed. Milestones compare the forecast with the goal;
+  // other planner goals just show progress, and a passed goal date turns grey, not red.
+  const external = CE_EXTERNAL_OUTCOMES.has(catId);
+  const msId = CE_OUTCOME_MILESTONE[catId];
+  const fc = msId && ceCurrentMilestone()?.id === msId ? ceForecast() : null;
+  let status;
+  if (passed) status = 'passed';
+  else if (external) status = daysLeft < 0 ? 'failed' : (daysLeft <= 14 ? 'at-risk' : 'open');
+  else status = fc?.date && fc.date > outcome.deadline ? 'at-risk' : 'open';
+  const pastGoal = !passed && !external && daysLeft < 0;
+  const forecastDate = fc?.date || null;
   return {
     catId,
+    pastGoal,
+    forecastDate,
+    external,
     actual,
     target,
     actualPct,
@@ -18019,10 +19507,14 @@ function getAdjustment(catId) {
   const h = getHealth(catId);
   if (!h) return null;
   if (h.passed) return { tone:'success', text:'Gate passed from completed work. Keep the result working; do not create a closure task.' };
-  const remaining = h.rows.filter(r => !r.passed).map(r => r.label);
-  if (h.status === 'failed') return { tone:'danger', text:`Deadline passed with ${remaining.length} criterion/criteria open. Cut optional scope and repair the first real blocker.` };
-  if (h.status === 'at-risk') return { tone:'warn', text:`${remaining.length} criterion/criteria remain within 14 days of the deadline. Protect the smallest dependency-closing action.` };
-  return { tone:'info', text:`${remaining.length} criterion/criteria remain. Future task count does not affect this gate.` };
+  const remaining = h.rows.filter(r => !r.passed);
+  const parked = remaining.filter(r => r.parked).length;
+  const parkedText = parked ? ` ${parked} of them ${parked === 1 ? 'is' : 'are'} parked on purpose.` : '';
+  if (h.status === 'failed') return { tone:'danger', text:`Real deadline passed with ${remaining.length} item(s) open.${parkedText}` };
+  if (h.status === 'at-risk' && h.external) return { tone:'warn', text:`${remaining.length} item(s) remain within 14 days of a real deadline.${parkedText}` };
+  if (h.status === 'at-risk') return { tone:'warn', text:`Forecast ${fmtDate(h.forecastDate)} is past the goal. Today's re-plan question handles this once the miss is real and lasting.${parkedText}` };
+  if (h.pastGoal) return { tone:'info', text:`The goal date has passed. It's a planner goal, not a deadline; ${remaining.length} item(s) remain.${parkedText}` };
+  return { tone:'info', text:`${remaining.length} item(s) remain.${parkedText}` };
 }
 
 /* =====================================================================
@@ -18063,9 +19555,11 @@ function triggerWaitingText(trigger) {
   return 'Waiting for activation trigger.';
 }
 function taskDependenciesSatisfied(t) {
-  return (t.deps || []).every(id => taskByStableId(id)?.status === 'done');
+  // v27.20: a cut task only settles a dependency when it was cut as leaf scope at a re-plan.
+  return (t.deps || []).every(id => { const p = taskByStableId(id); return !!p && (p.status === 'done' || (p.status === 'cut' && !!state?.choiceEngine?.cutSettles?.[taskStableId(p)])); });
 }
 function taskWithinActiveWindow(t, at = todayISO()) {
+  if (ceOnMilestonePath(t)) return true; // v27.17: dates on the finish-line path are forecasts
   const start = t.availableFrom || t.dueDate || (planWeekInfo(t.week, settings())?.start || planStart());
   return !start || start <= addDays(at, 14);
 }
@@ -18536,17 +20030,24 @@ function startRollingTask(id){
   t.status='in-progress'; t.startedAt=t.startedAt || nowLocal().toISOString(); save(); rerender();
 }
 function renderRolling(){
-  const start=todayISO(), end=addDays(start,13); $('#rolling-window').textContent=`${fmtDate(start)} → ${fmtDate(end)}`;
-  const open=state.tasks.filter(taskIsOpen); const eligible=open.filter(t=>taskWithinActiveWindow(t));
-  const scheduled=eligible.filter(t=>t.dueDate && t.dueDate>=start && t.dueDate<=end && t.status!=='blocked');
-  const ready=eligible.filter(t=>!t.dueDate && ['ready','in-progress'].includes(t.status));
-  const blocked=eligible.filter(t=>t.status==='blocked'); const inProgress=state.tasks.filter(t=>t.status==='in-progress');
-  $('#rolling-wip').innerHTML=`<span class="tag ${inProgress.length>2?'red':inProgress.length===2?'orange':'green'}">${inProgress.length}/2 in progress</span>`;
-  const planned=[...scheduled,...ready].reduce((n,t)=>n+Number(t.estMinutes||0),0);
-  const card=(t,kind)=>`<div class="rolling-card ${kind}"><div class="rolling-title" data-action="open-task" data-id="${t.id}" style="cursor:pointer">${escapeHTML(t.title)}</div><div class="rolling-copy">${escapeHTML(t.deliverable || t.description || '')}</div><div class="task-goal-strip">${tagFor(t.category)}<span class="tag gray">${Number(t.estMinutes||0)} min</span></div>${kind==='scheduled'?`<div class="rolling-copy"><strong>Placed:</strong> ${fmtDate(t.dueDate)} ${taskDueTime(t)}</div><div class="rolling-actions"><button class="btn" data-action="start-rolling" data-id="${t.id}">Start / focus</button><button class="btn" data-action="unplace-rolling" data-id="${t.id}">Return to ready</button></div>`:kind==='ready'?`<div class="rolling-actions"><input type="date" class="input" id="rolling-date-${t.id}" value="${rollingSuggestedDate(t)}" min="${start}" max="${end}"/><button class="btn primary" data-action="place-rolling" data-id="${t.id}">Confirm placement</button><button class="btn" data-action="start-rolling" data-id="${t.id}">Start now</button></div>`:`<div class="rolling-copy" style="color:var(--ink-mute)">${!taskDependenciesSatisfied(t)?'Waiting for: '+getPrerequisites(t).filter(p=>p.status!=='done').map(p=>p.title).join(' · '):!triggerSatisfied(t.trigger)?triggerWaitingText(t.trigger):'Manually blocked.'}</div>`}</div>`;
-  $('#rolling-body').innerHTML=`<div class="rolling-summary"><div class="mini-stat"><div class="v">${scheduled.length}</div><div class="l">scheduled</div></div><div class="mini-stat"><div class="v">${ready.length}</div><div class="l">ready</div></div><div class="mini-stat"><div class="v">${blocked.length}</div><div class="l">waiting</div></div><div class="mini-stat"><div class="v">${(planned/60).toFixed(1)}h</div><div class="l">visible estimate</div></div></div><div class="block callout info"><div class="callout-icon">→</div><div class="callout-body">Place only work you genuinely intend to attempt in the next two weeks. Unplaced work is not failure and no catch-up tasks will be generated.</div></div><div class="block h2">Scheduled</div><div class="rolling-grid">${scheduled.map(t=>card(t,'scheduled')).join('') || '<div class="empty">No tasks placed yet.</div>'}</div><div class="block h2">Ready when you choose</div><div class="rolling-grid">${ready.map(t=>card(t,'ready')).join('') || '<div class="empty">No unscheduled ready tasks.</div>'}</div><div class="block h2">Waiting on a dependency or future window</div><div class="rolling-grid">${blocked.map(t=>card(t,'blocked')).join('') || '<div class="empty">Nothing is waiting inside this window.</div>'}</div>`;
+  // v27.19: read-only view of the frozen baseline targets for the next 14 days.
+  const today=todayISO(), end=addDays(today,13);
+  ceEnsureBaseline();
+  $('#rolling-window').textContent=`${fmtDate(today)} → ${fmtDate(end)}`;
+  $('#rolling-wip').innerHTML=`<span class="tag gray">Read-only</span> <span style="color:var(--ink-mute);font-size:13px">${escapeHTML(cePlanLine(today))}</span>`;
+  const { lanes } = ceLaneOptions(today);
+  const slip=Math.max(0, cePlanSlip().days);
+  const optCard=(o)=>`<div class="rolling-card ready"><div class="rolling-title" ${o.kind==='task'?`data-action="open-task" data-id="${escapeHTML(o.refId)}" style="cursor:pointer"`:''}>${escapeHTML(o.title)}</div><div class="rolling-copy">${escapeHTML(o.reason||'')}</div><div class="task-goal-strip"><span class="tag gray">~${ceFmtMin(o.minutes)}</span>${o.kind==='task'&&ceTarget(o.refId)?`<span class="tag blue">target ${escapeHTML(fmtDate(ceTarget(o.refId)))}</span>`:''}</div></div>`;
+  const laneBlock=CE_LANES.filter(l=>(lanes[l.key]||[]).length).map(l=>`<div class="block h3" style="margin-top:14px">${l.name} · unlocked now</div><div class="rolling-grid">${lanes[l.key].map(optCard).join('')}</div>`).join('');
+  const rows=state.tasks.filter(t=>taskIsOpen(t)&&!taskIsParked(t)).map(t=>({t,target:ceTarget(taskStableId(t))})).filter(x=>x.target&&x.target<=end).sort((a,b)=>a.target.localeCompare(b.target));
+  const list=rows.length?rows.map(({t,target})=>{ const badges=ceTaskBadges(t,slip); return `<div class="rolling-card scheduled"><div class="rolling-title" data-action="open-task" data-id="${t.id}" style="cursor:pointer">${escapeHTML(t.title)}</div><div class="task-goal-strip">${tagFor(t.category)}<span class="tag gray">~${ceFmtMin(ceTaskRemaining(t))}</span><span class="tag ${target<today?'gray':'blue'}">target ${escapeHTML(fmtDate(target))}</span>${badges.map(x=>`<span class="tag ${x.tone}">${escapeHTML(x.text)}</span>`).join('')}</div></div>`; }).join('')
+    :'<div class="block text" style="color:var(--ink-mute)">No targets fall inside the next 14 days.</div>';
+  $('#rolling-body').innerHTML=`
+    <div class="block text" style="color:var(--ink-mute)">Target dates come from the plan's designed order at your real capacity and stay fixed until a deliberate change, a milestone, or a re-plan. Today decides each day.</div>
+    ${laneBlock}
+    <div class="block h3" style="margin-top:18px">Targets · next 14 days</div>
+    <div class="rolling-grid">${list}</div>`;
 }
-
 function renderPage(id) {
   if (id === 'today') renderToday();
   else if (id === 'rolling') renderRolling();
@@ -18740,7 +20241,8 @@ function renderTodayApplicationAction(viewing) {
 function renderToday() {
   const today = todayISO();
   const week = getCurrentWeek();
-  if (!viewedDate) viewedDate = today;
+  if (!viewedDate || (_ceLastToday && viewedDate === _ceLastToday && _ceLastToday !== today)) viewedDate = today;
+  _ceLastToday = today;
   const viewing = viewedDate;
   const viewingWeekRaw = getCurrentWeek(viewing);
   const viewingWeek = viewingWeekRaw || week || 1;
@@ -18753,13 +20255,7 @@ function renderToday() {
   $('#t-streak').textContent = `${state.metrics.streak} days`;
   $('#todayCode').textContent = nowLocalLabel();
 
-  const dFoundation = dayDiff(today, deadline('foundationDeadline'));
-  const dProduct = dayDiff(today, deadline('productDeadline'));
-  const dDecision = dayDiff(today, deadline('routeDecisionDeadline'));
-  $('#s-aws').innerHTML = `${dFoundation < 0 ? '✓' : dFoundation}<span class="unit">d</span>`;
-  $('#s-deploy').innerHTML = `${dProduct < 0 ? '✓' : dProduct}<span class="unit">d</span>`;
-  $('#s-dubai').innerHTML = `${dDecision < 0 ? '✓' : dDecision}<span class="unit">d</span>`;
-  $('#s-apps').innerHTML = `${state.applications.length}<span class="unit"> total</span>`;
+  renderChoiceEngineStats();
 
   const isToday = viewing === today;
   $('#t-datenav').innerHTML = `
@@ -18771,13 +20267,22 @@ function renderToday() {
       <span style="color:var(--ink-fade,#888);font-size:13px">${isToday ? 'viewing today' : 'viewing ' + fmtDateLong(viewing)} · <strong style="color:var(--ink)">Week ${viewingWeek}</strong> · ${escapeHTML(viewingInfo.theme || '')}</span>
     </div>`;
 
-  $('#t-mission').innerHTML = renderTodayMission(viewing);
-  $('#t-app-action').innerHTML = renderTodayApplicationAction(viewing);
+  // Coding Gym: unchanged v27.16 rendering on every day view.
   const trainingGroundsSession = getTrainingGroundsSession(viewingWeek, viewing);
   const focusedPracticeSession = getFocusPracticeSession(viewingWeek, viewing);
   const viewingDow = new Date(viewing+'T12:00:00').getDay();
   $('#t-coding-gym').innerHTML = viewingDow===0 ? renderSundayCodingGymCatchup(viewing) : (trainingGroundsSession ? renderCodingGymCard(trainingGroundsSession, viewing) : '');
   $('#t-coding-fluency').innerHTML = viewingDow===0 ? '' : (focusedPracticeSession ? renderCodingFluencyRow(focusedPracticeSession, viewing) : '');
+  if (isToday) {
+    // v27.17/18: main work is a decision screen (Build / Career / Skills). The Coding Gym
+    // below it is untouched. No overdue backlog, no fixed checklist.
+    $('#t-mission').innerHTML = renderChoiceEngine();
+    $('#t-today').innerHTML = ceBlockedHTML() + ceParkedHTML();
+    for (const sel of ['#t-app-action','#t-overdue','#t-week']) { const el = $(sel); if (el) el.innerHTML = ''; }
+    return;
+  }
+  $('#t-mission').innerHTML = renderTodayMission(viewing);
+  $('#t-app-action').innerHTML = renderTodayApplicationAction(viewing);
 
   if (!isToday) {
     $('#t-overdue').innerHTML = '';
@@ -18888,6 +20393,9 @@ function renderMission() {
   $('#m-current').textContent = `${phase.name} · ${info?.code || ''}`;
   $('#mission-window').textContent = `${planStart()} → ${planEnd()}`;
   const budget = getTimeBudgetForWeek(week);
+  ceEnsureBaseline();
+  const ceBudgetNow = ceBudget();
+  const ceGymNow = ceGymWeek();
   const ready = state.tasks.filter(t => ['ready','in-progress'].includes(t.status)).length;
   const blocked = state.tasks.filter(t => t.status === 'blocked').length;
   const responses = state.applications.filter(a => ['reply','screen','interview','offer'].includes(a.status)).length;
@@ -18900,9 +20408,8 @@ function renderMission() {
       <div class="bar-meta"><span><strong>${blocked}</strong> future/waiting tasks</span><span>${activeBranches.length ? escapeHTML(activeBranches.join(' · ')) : 'no optional path active'}</span></div>
     </div>
     <div class="outcome" style="margin-bottom:14px">
-      <div class="outcome-h"><div><div class="outcome-name">⏱ This week’s work</div><div class="outcome-deadline">an estimate, not a score or permission system</div></div><span class="tag gray lg">${(budget.plannedMinutes/60).toFixed(1)} h estimated</span></div>
-      <div class="bar-meta"><span><strong>${budget.taskCount}</strong> required task(s)</span><span><strong>${(budget.actualMinutes/60).toFixed(1)} h</strong> logged only when useful</span></div>
-      <div class="block callout info" style="margin-top:10px"><div class="callout-icon">→</div><div class="callout-body">If the week is unrealistic, move or cut a task. You do not need to earn permission to work more, close the week, or repair a score.</div></div>
+      <div class="outcome-h"><div><div class="outcome-name">⏱ This week’s main work</div><div class="outcome-deadline">sized by Today; the Coding Gym runs on its own schedule</div></div><span class="tag gray lg">${escapeHTML(ceFmtMin(ceBudgetNow.workedBefore + ceBudgetNow.workedToday))} of ${escapeHTML(ceFmtMin(ceBudgetNow.target))}</span></div>
+      <div class="bar-meta"><span>${escapeHTML(cePlanLine())}</span><span>Coding Gym this week: TG ${ceGymNow.tg} · Focus ${ceGymNow.focus}</span></div>
     </div>
     <div class="outcome" style="margin-bottom:14px">
       <div class="outcome-h"><div><div class="outcome-name">📤 Employer signal</div><div class="outcome-deadline">responses matter more than application theatre</div></div><span class="tag ${responses ? 'green' : 'gray'} lg">${responses} response(s)</span></div>
@@ -18912,17 +20419,21 @@ function renderMission() {
   const gatesHTML = getOutcomes().map(o => {
     const h = getHealth(o.id);
     const tone = h.status === 'passed' ? 'green' : (h.status === 'at-risk' ? 'orange' : (h.status === 'failed' ? 'red' : 'gray'));
+    const statusText = h.status === 'passed' ? 'passed' : h.status === 'failed' ? 'missed' : h.status === 'at-risk' ? 'at risk' : (h.pastGoal ? 'goal date passed' : (h.forecastDate ? 'on track' : 'open'));
+    const dateLine = h.external ? `deadline ${fmtDate(o.deadline)}` : `goal ${fmtDate(o.deadline)}${h.forecastDate ? ` · forecast ${fmtDate(h.forecastDate)}` : ''}${h.pastGoal ? ' · a planner goal, not a deadline' : ''}`;
     const checks = (o.criteria || []).map(id => taskByStableId(id)).filter(Boolean);
-    const remaining = checks.filter(t => t.status !== 'done');
-    const next = remaining.slice().sort(executionTaskSort)[0] || null;
+    const remaining = checks.filter(t => !['done','cut'].includes(t.status));
+    const unparked = remaining.filter(t => !taskIsParked(t));
+    const next = (unparked.length ? unparked : remaining).slice().sort(executionTaskSort)[0] || null;
+    const nextParked = next && taskIsParked(next) ? ceGroupOf(taskStableId(next)) : null;
     return `
       <div class="outcome">
         <div class="outcome-h">
-          <div><div class="outcome-name">${escapeHTML(o.name)}</div><div class="outcome-deadline">target ${fmtDate(o.deadline)}</div></div>
-          <span class="tag ${tone} lg">${escapeHTML(h.status)}</span>
+          <div><div class="outcome-name">${escapeHTML(o.name)}</div><div class="outcome-deadline">${escapeHTML(dateLine)}</div></div>
+          <span class="tag ${tone} lg">${escapeHTML(statusText)}</span>
         </div>
         <div class="bar-meta"><span><strong>${h.actual}</strong> of ${h.target} real checks complete</span><span>${remaining.length ? remaining.length + ' remaining' : 'gate satisfied'}</span></div>
-        <div class="outcome-next"><strong>${next ? 'Next evidence' : 'State'}</strong><br>${next ? `<button class="roadmap-task-link" data-action="open-task" data-id="${next.id}">${escapeHTML(next.title)}</button>` : 'All linked checks are complete.'}</div>
+        <div class="outcome-next"><strong>${next ? (nextParked ? 'Parked' : 'Next evidence') : 'State'}</strong><br>${next ? `<button class="roadmap-task-link" data-action="open-task" data-id="${next.id}">${escapeHTML(next.title)}</button>${nextParked ? ` <span class="tag gray">${escapeHTML(nextParked.returnsText)}</span>` : ''}` : 'All linked checks are complete.'}</div>
         <div class="outcome-hint">${escapeHTML(o.hint || '')}</div>
       </div>`;
   }).join('');
@@ -19169,10 +20680,14 @@ function renderTasksDB() {
 }
 
 function renderTasksTable(list) {
+  ceEnsureBaseline();
+  const slipNow = Math.max(0, cePlanSlip().days);
   list = list.slice().sort((a, b) => {
     const aOver = taskIsOverdue(a);
     const bOver = taskIsOverdue(b);
     if (aOver !== bOver) return aOver ? -1 : 1;
+    const at = taskIsOpen(a) ? ceTarget(taskStableId(a)) : null, bt = taskIsOpen(b) ? ceTarget(taskStableId(b)) : null;
+    if (at || bt) return (at || '9999').localeCompare(bt || '9999');
     if (a.dueDate && b.dueDate) return taskDueDateTime(a) - taskDueDateTime(b);
     if (a.dueDate) return -1;
     if (b.dueDate) return 1;
@@ -19188,7 +20703,7 @@ function renderTasksTable(list) {
             <th><span class="col-icon">●</span>Status</th>
             <th><span class="col-icon">⊕</span>Area</th>
             <th><span class="col-icon">⌗</span>Week</th>
-            <th><span class="col-icon">📅</span>Due</th>
+            <th><span class="col-icon">📅</span>Target</th>
             <th><span class="col-icon">◷</span>Estimate</th>
           </tr>
         </thead>
@@ -19201,10 +20716,10 @@ function renderTasksTable(list) {
                   <div class="cell-title-text" data-action="open-task" data-id="${t.id}">${escapeHTML(t.title)}</div>
                 </div>
               </td>
-              <td><span class="tag ${STATUS_META[t.status].color}">${STATUS_META[t.status].name}</span></td>
+              <td><span class="tag ${STATUS_META[t.status].color}">${STATUS_META[t.status].name}</span>${taskIsOpen(t) && taskIsParked(t) ? ' <span class="tag gray">Parked</span>' : ''}${ceTaskBadges(t, slipNow).map(x => ` <span class="tag ${x.tone}">${escapeHTML(x.text)}</span>`).join('')}</td>
               <td>${tagFor(t.category)}</td>
               <td>${t.week ? `<span class="tag">${escapeHTML(WEEK_INFO[t.week]?.code || 'W' + t.week)}</span>` : '—'}</td>
-              <td style="font-size:13px;color:${taskIsOverdue(t) ? 'var(--c-orange-fg)' : 'var(--ink-mute)'}">${t.dueDate ? taskDueLabel(t) : '—'}</td>
+              <td style="font-size:13px;color:${taskIsOverdue(t) ? 'var(--c-red-fg)' : 'var(--ink-mute)'}">${t.status === 'done' ? `done ${t.completedAt ? fmtDate(t.completedAt) : ''}${Number(state.choiceEngine?.finishedLate?.[taskStableId(t)] || 0) > 0 ? ` · ${state.choiceEngine.finishedLate[taskStableId(t)]} day${state.choiceEngine.finishedLate[taskStableId(t)] === 1 ? '' : 's'} late` : ''}` : t.status === 'cut' ? 'cut' : (taskIsParked(t) ? 'parked' : (ceTarget(taskStableId(t)) ? fmtDate(ceTarget(taskStableId(t))) : (t.dueDate ? taskDueLabel(t) : '—')))}</td>
               <td style="font-size:13px;color:var(--ink-mute)">${Number(t.estMinutes || 0) ? Number(t.estMinutes) + ' min' : '—'}</td>
             </tr>
           `).join('')}
@@ -20248,10 +21763,10 @@ function newApp(prefill = {}) {
     <input class="input" id="m-company" placeholder="Company" value="${escapeHTML(prefill.company || '')}" />
     <label class="sect-h" style="margin-top:10px">Role</label>
     <input class="input" id="m-role" placeholder="Role title" value="${escapeHTML(prefill.role || '')}" />
-    <label class="sect-h" style="margin-top:10px">Next action</label>
-    <input class="input" id="m-next" placeholder="Follow up, prepare screen, or wait" value="${escapeHTML(prefill.nextAction || 'Follow up in 7 days')}" />
-    <label class="sect-h" style="margin-top:10px">Follow-up date</label>
-    <input class="input" type="date" id="m-deadline" value="${escapeHTML(prefill.deadline || addDays(todayISO(), 7))}" />
+    <label class="sect-h" style="margin-top:10px">Next action (leave blank for a cold application)</label>
+    <input class="input" id="m-next" placeholder="Only if something real exists: recruiter contact, screen, take-home" value="${escapeHTML(prefill.nextAction || '')}" />
+    <label class="sect-h" style="margin-top:10px">Real date, if any (interview, take-home, recruiter timeline)</label>
+    <input class="input" type="date" id="m-deadline" value="${escapeHTML(prefill.deadline || '')}" />
     <label class="sect-h" style="margin-top:10px">Link or source</label>
     <input class="input" id="m-source" placeholder="Official careers page or job link" value="${escapeHTML(prefill.source || '')}" />
   `, () => {
@@ -20344,8 +21859,8 @@ function logTargetApplication(id) {
     role: t.role,
     source: t.source || 'Careers page',
     priority: t.priority || 'Medium',
-    deadline: t.deadline || addDays(todayISO(), 7),
-    nextAction: 'Follow up in 7 days',
+    deadline: '',
+    nextAction: '',
   });
 }
 
@@ -20471,6 +21986,8 @@ function openModal(title, bodyHTML, onOk, onCancel = null) {
   $('#m-form').innerHTML = bodyHTML;
   const cancel = document.getElementById('m-cancel');
   if (cancel) cancel.textContent = 'Cancel';
+  const okBtn = document.getElementById('m-ok');
+  if (okBtn) okBtn.textContent = 'OK';
   modalOnOk = onOk;
   modalOnCancel = onCancel;
   $('#modalBg').classList.add('open');
@@ -20552,6 +22069,7 @@ document.addEventListener('click', (e) => {
   if (action) {
     const a = action.dataset.action;
     const id = action.dataset.id;
+    if (a && a.startsWith('ce-') && ceHandleAction(a, action)) return;
     switch (a) {
       case 'toggle': toggleTask(id); break;
       case 'coding-gym-toggle': toggleCodingGym(action.dataset.date || todayISO()); break;
@@ -21136,9 +22654,28 @@ function showFirstLaunchSetup() {
 /* =====================================================================
    BOOT
    ===================================================================== */
+function ceTick() {
+  // Light per-minute update of Today while you work: keeps open panels open.
+  const today = todayISO();
+  if (_ceLastToday !== today || (viewedDate && viewedDate !== today)) return false;
+  ceNotifyIfIdle(today);
+  if (!_ceRestartVisible && ceRestartState(today)) return false; // start time just passed: full render shows the restart card
+  const s = ceEnsure(state).activeSession;
+  const el = document.querySelector('.ce-session-time');
+  if (s && el) {
+    const m = ceElapsedMinutes(s);
+    el.textContent = `${ceFmtMin(m)}${s.cap ? (m >= s.cap ? ' · slice done, stop when ready' : ` of ${s.cap} min slice`) : ''}`;
+  }
+  const d = document.getElementById('t-date');
+  if (d) d.textContent = `${fmtDateLong(today)} · ${nowLocal().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`;
+  const code = document.getElementById('todayCode');
+  if (code) code.textContent = nowLocalLabel();
+  return true;
+}
 function safeClockTick() {
   const active = document.activeElement;
   if (active && (active.matches('textarea,input,select') || active.getAttribute('contenteditable') === 'true')) return;
+  if (state.ui.currentPage === 'today' && ceTick()) return;
   if (['today','mission','tasks','review'].includes(state.ui.currentPage)) renderPage(state.ui.currentPage);
 }
 setInterval(safeClockTick, 60000);
