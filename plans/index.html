@@ -1594,6 +1594,12 @@ select.input {
 .ce-tickbox:hover .ce-box { border-color: var(--accent); }
 .ce-tickbox:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .ce-box { width: 15px; height: 15px; border: 1.5px solid var(--ink-mute); border-radius: 3px; flex: none; }
+.ce-done-item .ce-opt-title { color: var(--ink-mute); text-decoration: line-through; text-decoration-color: var(--line-strong); font-weight: 500; }
+.ce-done-item .ce-opt-meta { color: var(--c-green-fg); }
+.ce-done-item { padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.ce-done-item + .ce-opt:not(.ce-done-item) { padding-top: 10px; border-top: 0; }
+.ce-box.checked { background: var(--accent); border-color: var(--accent); color: #fff; font-size: 11px; line-height: 12px; text-align: center; font-weight: 700; }
+.ce-tickbox.is-done { color: var(--ink-mute); }
 .ce-ticked { margin: 2px 0 12px; font-size: 13px; color: var(--ink-mute); display: flex; gap: 4px 10px; flex-wrap: wrap; }
 .ce-restart { --lane-fg: var(--c-purple-fg); --lane-bg: var(--c-purple-bg);
   display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
@@ -1759,6 +1765,7 @@ select.input {
         <div id="t-app-action"></div>
         <div id="t-coding-gym"></div>
         <div id="t-coding-fluency"></div>
+        <div id="t-careem-prep"></div>
         <div id="t-overdue"></div>
         <div id="t-today"></div>
         <div id="t-week"></div>
@@ -17547,13 +17554,13 @@ function ceTickDone(key) {
 }
 function ceUndoDone(id) {
   const ce = ceEnsure(state);
-  const rec = ce.ticked?.[id];
+  const rec = ce.ticked?.[id] || { prevStatus:'ready', prevCourse:0 };
   const t = taskByStableId(id);
-  if (!rec || !t) return;
+  if (!t) return;
   t.status = rec.prevStatus && rec.prevStatus !== 'done' ? rec.prevStatus : 'ready';
   t.completedAt = null;
   if (t.courseModuleTask || t.parallelLane) t.courseProgressMinutes = Number(rec.prevCourse || 0);
-  delete ce.ticked[id];
+  if (ce.ticked) delete ce.ticked[id];
   if (ce.finishedLate) delete ce.finishedLate[id];
   save(); rerender();
 }
@@ -17589,6 +17596,7 @@ function ceHandleAction(a, el) {
     case 'ce-restart': { const o = _ceOptionIndex['restart:0']; if (o?.kind === 'task') openTaskDrawer(o.refId); else if (o) showPage('apps'); return true; }
     case 'ce-tick': ceTickDone(el.dataset.key); return true;
     case 'ce-undo': ceUndoDone(el.dataset.id); return true;
+    case 'ce-untick': ceUndoDone(el.dataset.id); return true;
     case 'ce-start-time': ceSetStartTime(); return true;
     case 'ce-unblock': ceUnblock(el.dataset.id); return true;
     case 'ce-notify': { if (typeof Notification !== 'undefined') Notification.requestPermission().then(() => rerender()); return true; }
@@ -17626,16 +17634,37 @@ function ceOptionHTML(o, key, left, isPrimary, locked = false) {
       <div class="ce-actions"><button class="ce-tickbox" data-action="ce-tick" data-key="${key}" aria-label="${o.kind === 'apply' ? 'Log an application' : o.kind === 'app' ? 'Update this application' : 'Mark done'}"><span class="ce-box" aria-hidden="true"></span>${o.kind === 'apply' ? 'Sent one' : o.kind === 'app' ? 'Update' : 'Done'}</button></div>
     </div>`;
 }
-function ceLaneHTML(lane, options, left, behind, locked = false) {
+function ceDoneTodayByLane(today = todayISO()) {
+  const ce = ceEnsure(state);
+  const paths = ceMilestonePathIds();
+  const order = Object.keys(ce.ticked || {});
+  const done = state.tasks.filter(t => t.status === 'done' && t.completedAt === today)
+    .sort((a, b) => { const ia = order.indexOf(taskStableId(a)), ib = order.indexOf(taskStableId(b)); return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib); });
+  const out = { build:[], career:[], skills:[] };
+  for (const t of done) { const lane = ceLaneFor(t, paths); if (out[lane]) out[lane].push(t); }
+  return out;
+}
+function ceDoneItemHTML(t) {
+  const id = taskStableId(t);
+  return `
+    <div class="ce-opt ce-done-item">
+      <button class="ce-opt-title" data-action="open-task" data-id="${escapeHTML(t.id)}">${escapeHTML(t.title)}</button>
+      <div class="ce-opt-meta">Done today · ~${ceFmtMin(Number(t.estMinutes || 0))}</div>
+      <div class="ce-actions"><button class="ce-tickbox is-done" data-action="ce-untick" data-id="${escapeHTML(id)}" aria-label="Undo: mark not done"><span class="ce-box checked" aria-hidden="true">✓</span>Done</button></div>
+    </div>`;
+}
+function ceLaneHTML(lane, options, left, behind, locked = false, doneItems = []) {
   const [first, ...alts] = options;
+  const doneHTML = doneItems.map(ceDoneItemHTML).join('');
   const body = first ? ceOptionHTML(first, `${lane.key}:0`, left, true, locked)
-    : `<div class="ce-empty">${lane.key === 'build' ? 'Nothing on the finish-line path is unblocked right now.' : 'Nothing useful here today.'}</div>`;
+    : `<div class="ce-empty">${doneItems.length ? 'Nothing else here today.' : (lane.key === 'build' ? 'Nothing on the finish-line path is unblocked right now.' : 'Nothing useful here today.')}</div>`;
   const altHTML = alts.length ? `
     <button class="ce-alts-toggle" data-action="ce-alts">Show ${alts.length} alternative${alts.length === 1 ? '' : 's'}</button>
     <div class="ce-alts">${alts.map((o, i) => ceOptionHTML(o, `${lane.key}:${i + 1}`, left, false, locked)).join('')}</div>` : '';
   return `
     <section class="ce-lane" data-lane="${lane.key}">
       <div class="ce-lane-head"><span class="ce-lane-name">${lane.name}</span>${behind ? '<span class="tag orange">Behind this week</span>' : ''}</div>
+      ${doneHTML}
       ${body}
       ${altHTML}
     </section>`;
@@ -17740,13 +17769,13 @@ function renderChoiceEngine() {
 
   let lanesHTML = '';
   if (b.override?.type !== 'unavailable') {
-    const shown = CE_LANES.filter(l => l.key !== 'skills' || (lanes.skills || []).length);
+    const doneToday = ceDoneTodayByLane(today);
+    const shown = CE_LANES.filter(l => l.key !== 'skills' || (lanes.skills || []).length || doneToday.skills.length);
     const note = ceilingHit
       ? `<div class="ce-extra-note">Daily ceiling reached: ${CE_DAILY_CEILING} min across main work and Coding Gym. Stop here; tick anything you've already finished.</div>`
       : mainDone ? `<div class="ce-stopped">Today's main work is done. Anything more is optional.</div>` : '';
     lanesHTML = `${note}
-    <div class="ce-lanes" style="grid-template-columns:repeat(${shown.length},minmax(0,1fr))">${shown.map(l => ceLaneHTML(l, lanes[l.key] || [], b.left, false, false)).join('')}</div>
-    ${ceTickedTodayHTML(today)}`;
+    <div class="ce-lanes" style="grid-template-columns:repeat(${shown.length},minmax(0,1fr))">${shown.map(l => ceLaneHTML(l, lanes[l.key] || [], b.left, false, false, doneToday[l.key] || [])).join('')}</div>`;
   } else {
     lanesHTML = ceTickedTodayHTML(today);
   }
@@ -18306,6 +18335,134 @@ function ceCuttableIds(map = ceTaskMap()) {
   }).map(taskStableId);
 }
 
+/* ---------- Careem prep, 5–14 Oct 2026: extra rows under the Coding Gym (nothing else changes) ---------- */
+const CAREEM_PREP = [
+  { id:'cp-1', date:'2026-10-05', minutes:120, title:'Careem prep · CV, referral messages, cold Trie redo',
+    steps:['Careem version of the CV: Karachi, Pakistan with the +92 number first; Projects above Experience; languages line “Python, SQL; academic experience with Java and C”; hybridAUTH in your baseline wording (no WebAuthn, STRIDE or test-suite claims).',
+      'LinkedIn: find Careem engineers in Karachi and Heriot-Watt alumni at Careem; send 2–3 short messages about the NextGen programme.',
+      'Cold redo of 208. Implement Trie: timed, blank editor, no notes.'],
+    done:'CV ready, messages sent, Trie rebuilt from blank.' },
+  { id:'cp-2', date:'2026-10-06', minutes:120, title:'Careem prep · Arrays and hash maps (2–3 timed mediums)',
+    steps:['2–3 LeetCode mediums on arrays and hash maps, under a timer, blank editor.', 'Socratic help only: gaps pointed out, no fixes handed over.'],
+    done:'Each problem solved or reviewed, with a one-line note on the pattern.' },
+  { id:'cp-3', date:'2026-10-07', minutes:120, title:'Careem prep · Two pointers and sliding window (2–3 timed mediums)',
+    steps:['2–3 LeetCode mediums on two pointers and sliding window, under a timer.', 'Socratic help only.'],
+    done:'Each problem solved or reviewed, with a one-line note on the pattern.' },
+  { id:'cp-4', date:'2026-10-08', minutes:120, title:'Careem prep · Sorting, binary search and stacks (2–3 timed mediums)',
+    steps:['2–3 LeetCode mediums on sorting, binary search and stacks, under a timer.', 'Socratic help only.'],
+    done:'Each problem solved or reviewed, with a one-line note on the pattern.' },
+  { id:'cp-5', date:'2026-10-09', minutes:120, title:'Careem prep · Trees and graphs: BFS and DFS (2–3 timed mediums)',
+    steps:['2–3 LeetCode mediums on tree and graph BFS/DFS, under a timer.', 'Socratic help only.'],
+    done:'Each problem solved or reviewed, with a one-line note on the pattern.' },
+  { id:'cp-mock', date:'2026-10-10', minutes:120, title:'Careem readiness check · 3 problems in 90 minutes on HackerRank',
+    steps:['One easy, one easy-medium, one medium, 90 minutes, in HackerRank’s own editor.', 'Pass = 2 of 3 fully solved.', 'Note which patterns failed (30 min review).'],
+    done:'Passed: apply Mon 12 Oct. Not passed: two days on the failed patterns, then apply by Wed 14 Oct.' },
+  { id:'cp-apply', date:'2026-10-12', latest:'2026-10-14', minutes:30, title:'Apply to Careem · Software Engineer I – Backend (NextGen)',
+    steps:['job-boards.greenhouse.io/careem/jobs/7107610002 with the Careem CV; LinkedIn URL ready.',
+      'Location Karachi; country Pakistan. University: Heriot-Watt University Dubai (“Other” if not listed).',
+      'Current employer and title: “N/A, recent graduate”. Current salary 0. Expected: PKR 150,000–170,000 gross a month.',
+      '“How did you learn about the role”: only what’s true. Cover letter optional, 3–4 lines at most.'],
+    done:'Application submitted. Ticking this opens the application log.' },
+  { id:'cp-test', after:'cp-apply', minutes:120, title:'Careem online coding test',
+    steps:['Until the invite arrives: one timed medium a day.', 'Take it late in its window, in Python unless told otherwise.'],
+    done:'Test submitted.' },
+];
+const LC = slug => `https://leetcode.com/problems/${slug}/`;
+const CAREEM_SOCRATIC = (topic, problem) => `I'm practising ${topic} for a timed online coding test. Problem: ${problem}.
+Don't write code and don't tell me the approach.
+Ask me one question at a time, and when I share code, point out bugs or missing cases without fixing them.`;
+const CAREEM_PRACTICE_METHOD = 'One problem at a time, Python, blank editor, a 30–40 minute timer each. If the timer ends unsolved, switch to guided: get the approach explained, close it, then rebuild the solution from blank. Afterwards write one line: the pattern, and what in the problem should have told you to use it.';
+const CAREEM_PRACTICE_DONE = 'Each problem solved, or explained and then rebuilt from blank, with its one-line pattern note.';
+function careemPracticeParts(topic, problems) {
+  return problems.map(([n, name, slug], i) => ({
+    label:`Problem ${i + 1}${i === problems.length - 1 ? ' · if time' : ''}`, title:`${n}. ${name}`, platform:'LeetCode', url:LC(slug),
+    settings:[['Problem', `${n}. ${name}`], ['Pattern', topic], ['Timer', '30–40 min'], ['Rules', 'Python · blank editor · no notes · Socratic help only']],
+    prompt:CAREEM_SOCRATIC(topic, `${n}. ${name}`), method:CAREEM_PRACTICE_METHOD, doneWhen:CAREEM_PRACTICE_DONE }));
+}
+const CAREEM_DRAWER = {
+  'cp-1':{ intro:'Three short parts: the CV and the referral messages get the application ready; the Trie redo restarts timed problem-solving with the one that is overdue.', parts:[
+    { label:'Part 1 · 30 min', title:'Careem version of the CV', settings:[['Location', 'Karachi, Pakistan · +92 number first'], ['Order', 'Projects above Experience'], ['Languages line', 'Python, SQL; academic experience with Java and C'], ['hybridAUTH', 'Baseline wording only: no WebAuthn, STRIDE or test-suite claims'], ['Never add', 'Spring Boot, AWS, TDD, design patterns, dissertation numbers']],
+      prompt:'Make the Careem version of my CV from my general baseline: Karachi, Pakistan with the +92 number first; Projects above Experience; languages line "Python, SQL; academic experience with Java and C"; hybridAUTH in the baseline wording. No new claims.',
+      method:'Read every line once asking "could I defend this in an interview?" Anything you hesitate on comes out. Save it as a PDF.', doneWhen:'Careem CV saved as a PDF.' },
+    { label:'Part 2 · 30 min', title:'Referral messages on LinkedIn', settings:[['Who', 'Careem engineers in Karachi · Heriot-Watt alumni at Careem'], ['How many', '2–3'], ['Length', '3–4 lines'], ['Send to', 'Engineers, not recruiters']],
+      prompt:`Hi [name], I'm a recent Heriot-Watt University Dubai CS graduate applying to Careem's Software Engineer I (NextGen) role in Karachi. Would you be open to a quick question about the programme or its online test? Thanks, Hamza`,
+      method:'LinkedIn search "Careem software engineer" filtered to Karachi; then the Heriot-Watt University Dubai alumni page filtered to Careem. Change the first line to something true about that person if you can.', doneWhen:'2–3 messages sent.' },
+    { label:'Part 3 · 45–60 min', title:'Cold redo · 208. Implement Trie (Prefix Tree)', platform:'LeetCode', url:LC('implement-trie-prefix-tree'),
+      settings:[['Problem', '208. Implement Trie (Prefix Tree)'], ['Mode', 'Cold: blank editor, no notes, no looking at the old attempt'], ['Timer', '45 min'], ['Rules', 'Python · Socratic help only']],
+      prompt:CAREEM_SOCRATIC('tries (prefix trees)', '208. Implement Trie (Prefix Tree)'),
+      method:'Write insert, search and startsWith from scratch. If it isn\u2019t accepted when the timer ends, get the structure explained, close it, and rebuild from blank.', doneWhen:'Accepted from a blank editor, or explained and rebuilt from blank. If you needed help, it stays on the redo list.' } ] },
+  'cp-2':{ intro:'Arrays and hash maps are the most common shape in online tests: counting, grouping, and "have I seen this before".', parts:careemPracticeParts('arrays and hash maps', [[49, 'Group Anagrams', 'group-anagrams'], [238, 'Product of Array Except Self', 'product-of-array-except-self'], [347, 'Top K Frequent Elements', 'top-k-frequent-elements'], [128, 'Longest Consecutive Sequence', 'longest-consecutive-sequence']]) },
+  'cp-3':{ intro:'Two pointers and sliding window: for sorted arrays and for "longest or shortest contiguous part that satisfies something".', parts:careemPracticeParts('two pointers and sliding window', [[15, '3Sum', '3sum'], [11, 'Container With Most Water', 'container-with-most-water'], [3, 'Longest Substring Without Repeating Characters', 'longest-substring-without-repeating-characters'], [424, 'Longest Repeating Character Replacement', 'longest-repeating-character-replacement']]) },
+  'cp-4':{ intro:'Sorting, binary search and stacks: ordering things first, halving the search space, and "the next thing that is bigger or matches".', parts:careemPracticeParts('sorting, binary search and stacks', [[56, 'Merge Intervals', 'merge-intervals'], [33, 'Search in Rotated Sorted Array', 'search-in-rotated-sorted-array'], [739, 'Daily Temperatures', 'daily-temperatures'], [150, 'Evaluate Reverse Polish Notation', 'evaluate-reverse-polish-notation']]) },
+  'cp-5':{ intro:'Trees and graphs: breadth-first search for levels and shortest steps, depth-first search for exploring everything connected.', parts:careemPracticeParts('tree and graph BFS/DFS', [[102, 'Binary Tree Level Order Traversal', 'binary-tree-level-order-traversal'], [200, 'Number of Islands', 'number-of-islands'], [207, 'Course Schedule', 'course-schedule'], [199, 'Binary Tree Right Side View', 'binary-tree-right-side-view']]) },
+  'cp-mock':{ intro:'A dress rehearsal for the online test, in HackerRank\u2019s own editor so its input format and screen aren\u2019t new on the day.', parts:[
+    { label:'90 min + 30 min review', title:'Mock online test', platform:'HackerRank', url:'https://www.hackerrank.com/interview/interview-preparation-kit',
+      settings:[['Problems', '3 you haven\u2019t seen: one easy, two medium, from different sections (arrays, hash maps, sorting or search)'], ['Time', '90 minutes, one timer for all three'], ['Editor', 'HackerRank, reading input the way it gives it'], ['Pass', '2 of 3 fully solved'], ['Help', 'None during the 90 minutes']],
+      prompt:'Read all three problems first. Start with the one you are surest of. Get a simple version passing the sample tests before making it faster. Leave 10 minutes at the end to check edge cases.',
+      method:'Pick the three problems before starting the timer, without opening their discussions. After the 90 minutes, spend 30 minutes on whichever failed: what the pattern was and where you got stuck.', doneWhen:'Mock taken and the failed patterns written down. Passed: apply on Mon 12 Oct. Not passed: two days on those patterns, then apply by Wed 14 Oct.' } ] },
+  'cp-apply':{ intro:'The application itself. Every answer is something you can stand behind in an interview.', parts:[
+    { label:'30 min', title:'Careem · Software Engineer I – Backend (NextGen)', platform:'the listing', url:'https://job-boards.greenhouse.io/careem/jobs/7107610002',
+      settings:[['CV', 'The Careem version (PDF)'], ['LinkedIn profile', 'URL ready, it\u2019s required'], ['Location', 'Karachi · country Pakistan'], ['University', 'Heriot-Watt University Dubai (\u201cOther\u201d if not listed)'], ['Current employer / title', 'N/A, recent graduate'], ['Current monthly salary', '0'], ['Expected monthly salary', 'PKR 150,000\u2013170,000 gross'], ['How you heard', 'Only what\u2019s true'], ['Cover letter', 'Optional, 3\u20134 lines at most'], ['Latest date', 'Wed 14 Oct']],
+      prompt:'Location: Karachi\nCountry: Pakistan\nUniversity: Heriot-Watt University Dubai\nCurrent employer: N/A, recent graduate\nCurrent job title: N/A, recent graduate\nCurrent monthly salary: 0\nExpected monthly salary (gross): PKR 150,000\u2013170,000',
+      method:'Fill the form, attach the Careem CV, submit. Then tick this row: it opens the application log so it counts in Applications.', doneWhen:'Application submitted and logged.' } ] },
+  'cp-test':{ intro:'The online test usually arrives within days of applying. Until then, keep one timed medium a day going.', parts:[
+    { label:'60\u201390 min', title:'Careem online coding test', settings:[['Platform', 'Whatever the invite says (usually HackerRank or Codility)'], ['Language', 'Python, unless the test says otherwise'], ['When', 'Late in its window, after a normal night\u2019s sleep'], ['Until then', 'One timed medium a day']],
+      prompt:'Read every problem first. Start with the one you are surest of. Get a simple version passing before optimising. Watch the clock: move on if one problem eats more than its share.',
+      method:'Do it somewhere quiet in one sitting. If there are multiple-choice CS questions, answer those quickly and spend the time on the coding problems.', doneWhen:'Test submitted.' } ] },
+};
+function openCareemDrawer(id, dateISO) {
+  const p = CAREEM_PREP.find(x => x.id === id);
+  const d = CAREEM_DRAWER[id];
+  if (!p || !d) return;
+  const date = dateISO || todayISO();
+  const doneOn = careemPrepDoneOn(id);
+  const late = !doneOn && p.date && p.date < todayISO();
+  const statusTag = doneOn ? `<span class="tag green lg">Done</span>` : late ? `<span class="tag orange lg">From ${escapeHTML(fmtDate(p.date))}</span>` : `<span class="tag blue lg">Ready</span>`;
+  const body = `<div class="block callout info"><div class="callout-icon">🎯</div><div class="callout-body"><strong>Careem prep is an extra block for the application window.</strong> It sits alongside the Coding Gym and doesn\u2019t replace any of it. ${escapeHTML(d.intro)}</div></div>
+    ${d.parts.map(part => practicePartHTML(part.label, part)).join('')}
+    <div class="block callout success" style="margin-top:14px"><div class="callout-icon">✓</div><div class="callout-body"><strong>Tick it when this is true:</strong> ${escapeHTML(p.done)}</div></div>`;
+  $('#drawerBody').innerHTML = `<div class="ph-emoji">🎯</div><h1 class="ph-title">${escapeHTML(p.title)}</h1>
+    <div class="ph-meta"><div class="ph-meta-row"><div class="label">● Status</div><div>${statusTag}</div></div><div class="ph-meta-row"><div class="label">📅 Session</div><div>${escapeHTML(p.date ? fmtDateLong(p.date) : fmtDateLong(date))}</div></div><div class="ph-meta-row"><div class="label">⏱ Total</div><div>${escapeHTML(p.minutes + ' min')}</div></div><div class="ph-meta-row"><div class="label">↻ Cadence</div><div>${escapeHTML(p.latest ? 'Careem window · apply by Wed 14 Oct at the latest' : 'Careem window · one dated block a day, 5–12 Oct · carries over until ticked')}</div></div></div>
+    <div class="page-divider"></div>${body}`;
+  $('#drawer').classList.add('open'); $('#drawerBg').classList.add('open'); $('#drawer').dataset.taskId = ''; $('#drawer').dataset.practiceKind = ''; $('#drawer').dataset.practiceDate = date;
+  const del = document.getElementById('drawerDelete'); if (del) del.style.display = 'none';
+}
+function careemPrepDoneOn(id) { return (state.careemPrep || {})[id] || null; }
+function renderCareemPrep(dateISO) {
+  const today = todayISO();
+  const rows = [];
+  for (const p of CAREEM_PREP) {
+    const doneOn = careemPrepDoneOn(p.id);
+    let show = false, late = false;
+    if (doneOn) show = doneOn === dateISO;
+    else if (p.after) show = !!careemPrepDoneOn(p.after) && dateISO === today && careemPrepDoneOn(p.after) <= today;
+    else if (p.date === dateISO) show = true;
+    else if (dateISO === today && p.date < today) { show = true; late = true; }
+    if (!show) continue;
+    const future = dateISO > today;
+    const tags = [`<span class="tag blue">Careem prep</span>`,
+      `<span class="tag ${doneOn ? 'green' : late ? 'orange' : 'gray'}">${doneOn ? 'Done' : late ? `From ${escapeHTML(fmtDate(p.date))}` : future ? 'Future' : 'Ready'}</span>`,
+      `<span class="tag gray">${p.minutes} min</span>`,
+      p.latest && !doneOn ? `<span class="tag orange">apply by ${escapeHTML(fmtDate(p.latest))} at the latest</span>` : ''].join('');
+    rows.push(`<div class="block todo practice-row ${doneOn ? 'done' : ''}">
+      <div class="checkbox ${doneOn ? 'checked' : ''} ${future ? 'disabled' : ''}" data-action="careem-toggle" data-id="${p.id}" data-date="${escapeHTML(dateISO)}" aria-label="Mark ${escapeHTML(p.title)} done"></div>
+      <div style="flex:1;min-width:0">
+        <div class="todo-text" data-action="careem-open" data-id="${p.id}" data-date="${escapeHTML(dateISO)}" style="cursor:pointer">🎯 ${escapeHTML(p.title)}</div>
+        <div class="todo-row-meta">${tags}</div>
+      </div></div>`);
+  }
+  return rows.join('');
+}
+function toggleCareemPrep(id, dateISO) {
+  const today = todayISO();
+  const d = dateISO && dateISO <= today ? dateISO : null;
+  if (!d) return;
+  state.careemPrep = state.careemPrep || {};
+  const wasDone = !!state.careemPrep[id];
+  if (wasDone) delete state.careemPrep[id]; else state.careemPrep[id] = d;
+  save(); rerender();
+  if (!wasDone && id === 'cp-apply') setTimeout(() => newApp({ company:'Careem', role:'Software Engineer I – Backend (NextGen)', source:'https://job-boards.greenhouse.io/careem/jobs/7107610002' }), 60);
+}
 /* state shape + persistence migration */
 function seedMilestoneAnchor(seed) {
   if (!seed?.anchor || !MILESTONE_ANCHORS[seed.anchor]) return null;
@@ -18648,6 +18805,20 @@ function ceMigrationRepairs(s, priorCatalogue) {
   if (!ce.repairs['v27.18-main-target-780']) {
     if (!ce.targetHistory.length && Number(ce.weeklyTarget) === 900) ce.weeklyTarget = CE_DEFAULT_WEEKLY_TARGET;
     ce.repairs['v27.18-main-target-780'] = todayISO();
+  }
+  // Throw away the discarded v27.22 Careem tasks (they live as rows under the Coding Gym now);
+  // anything already ticked there carries over to those rows. The GE application record stays.
+  if (!ce.repairs['careem-v27.22-cleanup']) {
+    const map = { 'CAREEM-PREP-1':'cp-1', 'CAREEM-PREP-2':'cp-2', 'CAREEM-PREP-3':'cp-3', 'CAREEM-PREP-4':'cp-4', 'CAREEM-PREP-5':'cp-5', 'CAREEM-MOCK':'cp-mock', 'CAREEM-APPLY':'cp-apply', 'CAREEM-TEST':'cp-test' };
+    const legacy = s.tasks.filter(t => t.userAdded && (map[t.id] || t.id === 'GE-FOLLOWUP'));
+    if (legacy.length) {
+      s.careemPrep = s.careemPrep || {};
+      for (const t of legacy) { const cp = map[t.id]; if (cp && t.status === 'done' && !s.careemPrep[cp]) s.careemPrep[cp] = t.completedAt || todayISO(); }
+      const ids = new Set(legacy.map(t => t.id));
+      s.tasks = s.tasks.filter(t => !ids.has(t.id));
+      for (const k of ['blocked','lateAsked','ticked','finishedLate','offers','userParked','blockedDays']) if (ce[k]) for (const id of ids) delete ce[k][id];
+    }
+    ce.repairs['careem-v27.22-cleanup'] = todayISO();
   }
   // v27.21: the session timer is gone; drop any session left running (already-logged sessions stay counted).
   if (!ce.repairs['v27.21-no-timer']) { ce.activeSession = null; ce.repairs['v27.21-no-timer'] = todayISO(); }
@@ -20273,6 +20444,7 @@ function renderToday() {
   const viewingDow = new Date(viewing+'T12:00:00').getDay();
   $('#t-coding-gym').innerHTML = viewingDow===0 ? renderSundayCodingGymCatchup(viewing) : (trainingGroundsSession ? renderCodingGymCard(trainingGroundsSession, viewing) : '');
   $('#t-coding-fluency').innerHTML = viewingDow===0 ? '' : (focusedPracticeSession ? renderCodingFluencyRow(focusedPracticeSession, viewing) : '');
+  { const cp = document.getElementById('t-careem-prep'); if (cp) cp.innerHTML = renderCareemPrep(viewing); }
   if (isToday) {
     // v27.17/18: main work is a decision screen (Build / Career / Skills). The Coding Gym
     // below it is untouched. No overdue backlog, no fixed checklist.
@@ -22070,6 +22242,8 @@ document.addEventListener('click', (e) => {
     const a = action.dataset.action;
     const id = action.dataset.id;
     if (a && a.startsWith('ce-') && ceHandleAction(a, action)) return;
+    if (a === 'careem-toggle') { toggleCareemPrep(action.dataset.id, action.dataset.date); return; }
+    if (a === 'careem-open') { openCareemDrawer(action.dataset.id, action.dataset.date); return; }
     switch (a) {
       case 'toggle': toggleTask(id); break;
       case 'coding-gym-toggle': toggleCodingGym(action.dataset.date || todayISO()); break;
