@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Hamza · Execution Planner v27.22 · Architecture</title>
+<title>Hamza · Execution Planner v27.25 · FastAPI Steps</title>
 <meta name="description" content="Concrete task-first execution planner · rolling 14-day planning · August 2026 to September 2027" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50%25' y='55%25' font-size='80' text-anchor='middle' dominant-first result='middle'%3E🎯%3C/text%3E%3C/svg%3E" />
 <style>
@@ -2151,7 +2151,7 @@ select.input {
    ===================================================================== */
 const KEY = 'hamza-master-execution-v2';
 const SCHEMA_VERSION = 99;
-const CATALOGUE_VERSION = '2026.10.12-v27.22-architecture';
+const CATALOGUE_VERSION = '2026.10.20-v27.27-ai-coding';
 const PLAN_WEEK_COUNT = 62;
 
 const DEFAULT_SETTINGS = {
@@ -7755,8 +7755,8 @@ const SEED_TASKS = [
   {
     "id": "PROJECT-SCOPE",
     "title": "NextUp · Freeze the staged build scope — Core now, useful fidelity before v1.0, full parity before Hosted Alpha + design the end-state architecture",
-    "description": "Use Boot.dev First Personal Project to freeze what is coded now while keeping the real NextUp feature ladder explicit. Core is intentionally small; the planner already contains later milestones for calendar/release logic, statuses, metadata providers, meta detail, anime/TVDB grouping, artwork and profile isolation. Also design, on paper only, the end-state architecture of the finished product (Simkl-only login; unified, TV and anime install links; optional anime dub schedule; user-supplied TVDB/MDBList keys; per-feed poster customisation like the live Poster Studio; saved preferences producing a personal manifest link), so Core is built with the right seams while staying exactly as frozen.",
-    "definitionOfDone": "docs/project-charter.md names the four project layers, freezes Core’s first vertical slice, and links every later product-fidelity requirement to a concrete planner task. No major old behaviour is silently “not v1” forever. docs/architecture.md shows the end-state components and data flow, the end-state data model, provider boundaries, where secrets live and how a personal install link is formed; it shades the Core path and lists the seams Core keeps now (account_id everywhere, media type as configuration, providers behind adapters, no secrets in manifest URLs). End-state pieces without a planner task are open items, not built.",
+    "description": "Use Boot.dev First Personal Project to freeze what is coded now while keeping the real NextUp feature ladder explicit. Core is intentionally small; the planner already contains later milestones for calendar/release logic, statuses, metadata providers, meta detail, anime/TVDB grouping, artwork and profile isolation. Also design, on paper only, the end-state architecture of the finished product (one Simkl account per login; one personal install link per user; a settings page with toggles for anime / TV / both, which lists, poster look, and the anime dub schedule, plus a section for the user's own TVDB/MDBList keys; full enrichment for every user; saving settings changes what the same link shows, with no reinstall), so Core is built with the right seams while staying exactly as frozen.",
+    "definitionOfDone": "docs/project-charter.md names the four project layers, freezes Core’s first vertical slice, and links every later product-fidelity requirement to a concrete planner task. No major old behaviour is silently “not v1” forever. docs/architecture.md shows the end-state components and data flow, the end-state data model, provider boundaries, where secrets live and how a personal install link is formed; it shades the Core path and lists the seams Core keeps now (account_id everywhere, media type and lists as settings, one stable catalog in the manifest, providers behind adapters, no secrets in manifest URLs). End-state pieces without a planner task are open items, not built.",
     "source": "Boot.dev First Personal Project; Deep Research Reports 8–10; implementation_plan.md; planner_task_design_analysis.md.",
     "workMode": "docs-and-build",
     "failureRoute": "If blocked, reduce the problem to the smallest failing step, fix that step, then continue. Do not create a separate proof task or restart the roadmap.",
@@ -7787,10 +7787,10 @@ const SEED_TASKS = [
       "Write the project charter in your own words and ensure the Simkl/Nuvio contracts agree with it.",
       "Treat Boot.dev First Personal Project and NextUp as the same repo—do not create a second Boot.dev project.",
       "Record the decision: NextUp is the flagship and the Boot.dev First Personal Project; the Safepay payments idea is dropped.",
-      "Refresh the behaviour inventory from the current old-app README and notes only, pinned to a dated commit (8dfaa3a, 12 Oct 2026): TV row, English-dub tags, MAL scores, TMDB logos/ratings, Poster Studio, season-label correctness rule. Old-app changes after that commit go to open items.",
-      "Write the product vision in your own words: Simkl-only login; after linking, three install links (unified, TV, anime); anime can opt in to the dub schedule; TVDB/MDBList need the user's own keys; per-feed poster customisation; saving preferences produces the manifest link.",
+      "Refresh the behaviour inventory from the current old-app README and notes only, pinned to a dated commit (8dfaa3a, 12 Oct 2026): anime and TV rows (split across two Simkl accounts only because of the owner's personal setup), English-dub tags with a manual override, MAL scores, TMDB logos/ratings, Poster Studio, season-label correctness rule. Old-app changes after that commit go to open items.",
+      "Write the product vision in your own words: log in with one Simkl account; one personal install link; a settings page with toggles for anime / TV / both (Simkl keeps shows and anime as separate types) and which lists (Watching, Plan to Watch, revived Completed); poster settings like Poster Studio; an anime dub-schedule toggle; a section to add your own TVDB/MDBList keys; full enrichment for everyone; saving settings updates the same link.",
       "Design docs/architecture.md for that end state: components (API, sync, provider adapters, poster renderer, settings/link service), one end-to-end request flow, the end-state tables, where secrets live, and how a personal install link is formed.",
-      "Shade the Core path through the architecture, list the seams Core keeps now, and record a v2 public-product layer (poster customisation UI, dub toggle, user API keys, unified link) as open items without planner tasks yet."
+      "Shade the Core path through the architecture, list the seams Core keeps now, and record a v2 public-product layer (the settings page: content and list toggles, poster settings, dub toggle, user API keys) as open items without planner tasks yet."
     ],
     "plannedDate": "2026-09-08",
     "taskOutcome": "A scope contract that protects learning cadence without sacrificing the product that made the project worth rebuilding. Plus a one-page end-state architecture that Core is built toward without being enlarged.",
@@ -7822,7 +7822,7 @@ const SEED_TASKS = [
       "Which are product-parity work after job-ready evidence?",
       "Why design the end state now but build only Core?",
       "Where do user secrets live, and why never in a manifest URL?",
-      "Which Core seams make the unified, TV and anime links possible later without a rewrite?"
+      "Which Core seams make the one-link settings page possible later without a rewrite, and why must the manifest never change when settings do?"
     ],
     "cvUnlock": "None — scope is planning evidence, not a technology claim.",
     "nonGoals": [
@@ -7851,7 +7851,7 @@ const SEED_TASKS = [
     ],
     "legacyAcceptance": [
       "The final roadmap still has explicit homes for calendars, PTW/Completed revival, TMDB, TVDB, MDBList, artwork, anime and isolated profiles.",
-      "The inventory includes the old app's October 2026 additions (dub tags, MAL scores, Poster Studio, TMDB logos/ratings, season-label fix), each with exactly one destination."
+      "The inventory includes the old app's October 2026 additions (dub tags and override, MAL scores, Poster Studio, TMDB logos/ratings, season-label fix), each with exactly one destination, and records that the two-account split is the owner's personal setup, not a product feature."
     ],
     "postMilestoneCompare": [
       "After scope is frozen, compare only the old README release notes to ensure no user-facing behaviour vanished from the milestone map."
@@ -7859,9 +7859,9 @@ const SEED_TASKS = [
   },
   {
     "id": "FASTAPI-ROUTES",
-    "title": "NextUp · Implement the FastAPI protocol shell — your manifest + one catalog, not a framework-designed API",
-    "description": "Apply the completed FastAPI course to the contract you designed before the framework. Build a small server that exposes the actual Nuvio/Stremio manifest/catalog shape, with temporary empty/sample data only as a bridge to PostgreSQL.",
-    "definitionOfDone": "From a clean environment you can install the project from its declared dependencies, run Ruff successfully, start FastAPI, exercise the main v1 routes, see generated OpenAPI docs, and observe useful validation/errors for invalid requests.",
+    "title": "NextUp · Implement the FastAPI protocol shell — 7 small tested steps + boss (manifest, CORS, one catalog)",
+    "description": "Apply the completed FastAPI course to the contract you designed before the framework. Work in the Boot.dev step method: each step fixes one visible gap, comes with a short lesson (2–4 pages), a given test file, and an exact curl command + expected JSON. Help shrinks step by step: early steps give almost everything, later steps give only the test, the boss step gives nothing. Temporary empty data only — PostgreSQL comes later.",
+    "definitionOfDone": "Every step's test file passes (pytest green), Ruff check + format are clean, each step is its own commit, and the boss step is done: the add-on installs in Nuvio from your local URL and shows the NextUp catalog (empty is correct).",
     "source": "Udemy FastAPI selected core + Boot.dev First Personal Project; FastAPI/Ruff official docs for reference; Deep Research Reports 8–10; uploaded Python/API maps.",
     "workMode": "docs-and-build",
     "failureRoute": "If blocked, reduce the problem to the smallest failing step, fix that step, then continue. Do not create a separate proof task or restart the roadmap.",
@@ -7870,7 +7870,7 @@ const SEED_TASKS = [
     "dateMode": "weekly",
     "cat": "product",
     "week": 7,
-    "estMinutes": 300,
+    "estMinutes": 330,
     "criticality": "high",
     "deps": [
       "PROJECT-SCOPE",
@@ -7894,16 +7894,23 @@ const SEED_TASKS = [
       "SRC-NEXTUP-PLAN21"
     ],
     "subtasks": [
-      "Create a restrained Python project layout with pyproject/Ruff and FastAPI entry point.",
-      "Define typed manifest/catalog response models and routers that match docs/addon-contract.md.",
-      "Add /health separately from the add-on protocol.",
-      "Use temporary empty/sample catalog data only long enough to prove the HTTP surface; do not bury future sync/DB logic in route functions."
+      "Step 0 · Read the map (SCOPE/architecture lesson) and the NextUp cheat sheet once. No code. Keep the cheat sheet open for every step.",
+      "Step 1 · Gap: nothing runs. Given: pyproject.toml (FastAPI, uvicorn, dev = pytest + ruff), run command. You write: main.py with an empty app + GET /health. Check: test_step1 green; curl /health → {\"status\":\"ok\"}; / → 404. Commit.",
+      "Step 2 · Gap: Stremio/Nuvio can't find the add-on. Given: exact expected manifest JSON. You write: GET /manifest.json from constants. Check: test_step2 green; curl matches JSON exactly. Commit.",
+      "Step 3 · Gap: browser-based clients are blocked. Given: the CORSMiddleware line. You write: wire it in (GET only). Check: test_step3 sends an Origin header and sees access-control-allow-origin. Commit.",
+      "Step 4 · Gap: no catalog. Given: SHELF-style constants + route signature. You write: one static catalog route (f-string path from constants) returning {\"metas\":[]}. Check: test_step4 green; curl → {\"metas\":[]}. Commit.",
+      "Step 5 · Gap: unknown type/id must fail predictably. Given: nothing new to write. You prove it: run test_step5 (wrong type, wrong id, wrong extension → plain default 404) and explain in one sentence why the static route gives this for free. Commit the test.",
+      "Step 6 · Gap: null fields leak into JSON. Given: only test_step6 (asserts optional fields are absent, not null). You write: Pydantic models for manifest/catalog/meta preview + response_model_exclude_none=True. Commit.",
+      "Step 7 · Gap: everything in one file. Given: only the rule 'tests must stay green'. You write: routes.py with APIRouter + include_router in main.py. Check: all tests green, ruff check + ruff format --check clean. Commit.",
+      "Boss · Given: nothing. Run the server, install http://127.0.0.1:8000/manifest.json in Nuvio (or Stremio desktop), confirm the add-on installs and the NextUp catalog row appears (empty). Note anything surprising in docs/addon-contract.md. Commit + push."
     ],
     "plannedDate": "2026-09-09",
     "taskOutcome": "An executable FastAPI shell that exactly implements the previously designed Nuvio/Stremio contract.",
     "whyNow": "The course has taught the framework; this task proves you can translate a protocol into typed routes rather than letting tutorials dictate the design.",
     "teach": [
-      "Complete the six selected Udemy FastAPI daily modules first."
+      "Complete the six selected Udemy FastAPI daily modules first.",
+      "Lesson method (Boot.dev style): map + cheat sheet first, then one 2–4 page lesson per step. Each step opens with the visible gap, gives only what is not the skill, names the exact check, warns at the mistake point, and says what is deliberately not working yet.",
+      "One step = one sitting (30–45 min) = one commit. Do not read ahead; tick the subtask when its test is green."
     ],
     "sourceSlices": [
       {
@@ -7928,27 +7935,32 @@ const SEED_TASKS = [
       }
     ],
     "absorb": [
-      "Before NextUp code, make two disposable FastAPI routes from course memory, inspect /docs, deliberately send invalid data, then discard."
+      "Before Step 1, make two disposable FastAPI routes from course memory, inspect /docs, deliberately send invalid data, then discard."
     ],
     "defend": [
-      "What does FastAPI generate automatically?",
-      "What does Pydantic validate?",
-      "Which NextUp rules remain yours?",
+      "What does FastAPI generate automatically, and what does a static route give you for free?",
+      "What does Pydantic validate, and what does response_model_exclude_none change in the output?",
+      "Why does CORS only show up when the request carries an Origin header?",
+      "Which NextUp rules remain yours (stable manifest, one catalog, secrets never in URLs)?",
       "Why is business/sync logic outside routers?"
     ],
     "cvUnlock": "FastAPI becomes a truthful project skill only once this shell is connected to real PostgreSQL-backed behavior.",
     "nonGoals": [
       "No DB persistence in route code yet.",
       "No generic CRUD resources.",
-      "No OAuth/dashboard."
+      "No OAuth/dashboard/settings page yet.",
+      "No real Simkl data — the empty catalog is the correct result for this task."
     ],
     "breakVerify": [
-      "Unknown catalog/type; malformed path/query values; ensure response behavior matches your contract."
+      "Each step's given test file is the check — do not edit the given tests to make them pass.",
+      "Unknown catalog type/id/extension → plain default 404 (Step 5).",
+      "Optional meta fields absent rather than null (Step 6).",
+      "After the router split, every earlier test still passes (Step 7)."
     ],
     "integrationCheck": [
       "Manifest/catalog contract from NEXTUP-ADDON-CONTRACT stays authoritative."
     ],
-    "handoff": "PROJECT-POSTGRES replaces temporary state without changing the public protocol.",
+    "handoff": "PROJECT-POSTGRES replaces the empty catalog with real data without changing the public protocol or breaking any step test.",
     "refresh": [],
     "cleanRoomRule": "CLEAN-ROOM RULE: use the old README/screenshots only for product requirements. Do not inspect the old repo's src/, tests/, scripts/ or .github/workflows/ for this milestone until your own implementation is working and you can defend it.",
     "goalMap": [
@@ -14831,6 +14843,487 @@ const SEED_TASKS = [
       "G6 — support/cloud/backend public evidence.",
       "Stop rule — contribution count is capped; quality and merged relevance beat GitHub activity volume."
     ]
+  },
+  {
+    "id": "AICODING-CH01",
+    "title": "Boot.dev Learn AI Coding · Ch 1 — Agent Harness",
+    "description": "Start only after the NextUp FastAPI shell exists. This course teaches using AI coding agents as a tool; it does not replace hand-written work. Keep writing NextUp code yourself. finish this exact published chapter and its required lessons/challenges. This exact Boot.dev module is sticky from its planned target date: it does not appear on Today early. If unfinished, it carries forward every day and is marked Delayed until completed. Completing it unlocks the next published module. If you finish early, the immediately next module in the SAME course may pull forward when today has spare capacity and that course has no overdue module; its original planned target date is never rewritten.",
+    "definitionOfDone": "Boot.dev marks this chapter complete and every required lesson/challenge in the chapter has been submitted/completed. If the chapter runs long, carry this exact chapter forward; do not skip ahead just because the target date passed.",
+    "source": "Boot.dev course catalogue checked 20 Oct 2026",
+    "workMode": "course-and-practice",
+    "failureRoute": "Stay inside this exact Boot.dev chapter. Use the lesson hints/docs when needed; if unfinished, continue this chapter before starting the next chapter. Do not replace it with a planner-written syllabus. If unfinished, it carries forward on Today and is marked Delayed; do not advance to the next Boot.dev module.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "weekly",
+    "cat": "product",
+    "week": 9,
+    "estMinutes": 60,
+    "criticality": "normal",
+    "deps": [
+      "FASTAPI-ROUTES"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-BOOTDEV"
+    ],
+    "subtasks": [
+      "Open Boot.dev Learn AI Coding · Ch 1 — Agent Harness.",
+      "Complete the chapter in Boot.dev in published order, including its required lessons and exercises.",
+      "Do not mark this planner task done because the time estimate elapsed; mark it done only when the Boot.dev chapter is actually complete."
+    ],
+    "evidence": "Boot.dev chapter completion state.",
+    "stickyUntilDone": true,
+    "pullForwardOnDependency": false,
+    "courseModuleTask": true,
+    "courseFamily": "Boot.dev Learn AI Coding",
+    "courseOrdinal": 1,
+    "courseTotalModules": 13,
+    "plannedDate": "2026-11-09"
+  },
+  {
+    "id": "AICODING-CH02",
+    "title": "Boot.dev Learn AI Coding · Ch 2 — Models and Providers",
+    "description": "finish this exact published chapter and its required lessons/challenges. This exact Boot.dev module is sticky from its planned target date: it does not appear on Today early. If unfinished, it carries forward every day and is marked Delayed until completed. Completing it unlocks the next published module. If you finish early, the immediately next module in the SAME course may pull forward when today has spare capacity and that course has no overdue module; its original planned target date is never rewritten.",
+    "definitionOfDone": "Boot.dev marks this chapter complete and every required lesson/challenge in the chapter has been submitted/completed. If the chapter runs long, carry this exact chapter forward; do not skip ahead just because the target date passed.",
+    "source": "Boot.dev course catalogue checked 20 Oct 2026",
+    "workMode": "course-and-practice",
+    "failureRoute": "Stay inside this exact Boot.dev chapter. Use the lesson hints/docs when needed; if unfinished, continue this chapter before starting the next chapter. Do not replace it with a planner-written syllabus. If unfinished, it carries forward on Today and is marked Delayed; do not advance to the next Boot.dev module.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "weekly",
+    "cat": "product",
+    "week": 9,
+    "estMinutes": 60,
+    "criticality": "normal",
+    "deps": [
+      "AICODING-CH01"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-BOOTDEV"
+    ],
+    "subtasks": [
+      "Open Boot.dev Learn AI Coding · Ch 2 — Models and Providers.",
+      "Complete the chapter in Boot.dev in published order, including its required lessons and exercises.",
+      "Do not mark this planner task done because the time estimate elapsed; mark it done only when the Boot.dev chapter is actually complete."
+    ],
+    "evidence": "Boot.dev chapter completion state.",
+    "stickyUntilDone": true,
+    "pullForwardOnDependency": false,
+    "courseModuleTask": true,
+    "courseFamily": "Boot.dev Learn AI Coding",
+    "courseOrdinal": 2,
+    "courseTotalModules": 13,
+    "plannedDate": "2026-11-11"
+  },
+  {
+    "id": "AICODING-CH03",
+    "title": "Boot.dev Learn AI Coding · Ch 3 — Tools",
+    "description": "finish this exact published chapter and its required lessons/challenges. This exact Boot.dev module is sticky from its planned target date: it does not appear on Today early. If unfinished, it carries forward every day and is marked Delayed until completed. Completing it unlocks the next published module. If you finish early, the immediately next module in the SAME course may pull forward when today has spare capacity and that course has no overdue module; its original planned target date is never rewritten.",
+    "definitionOfDone": "Boot.dev marks this chapter complete and every required lesson/challenge in the chapter has been submitted/completed. If the chapter runs long, carry this exact chapter forward; do not skip ahead just because the target date passed.",
+    "source": "Boot.dev course catalogue checked 20 Oct 2026",
+    "workMode": "course-and-practice",
+    "failureRoute": "Stay inside this exact Boot.dev chapter. Use the lesson hints/docs when needed; if unfinished, continue this chapter before starting the next chapter. Do not replace it with a planner-written syllabus. If unfinished, it carries forward on Today and is marked Delayed; do not advance to the next Boot.dev module.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "weekly",
+    "cat": "product",
+    "week": 9,
+    "estMinutes": 60,
+    "criticality": "normal",
+    "deps": [
+      "AICODING-CH02"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-BOOTDEV"
+    ],
+    "subtasks": [
+      "Open Boot.dev Learn AI Coding · Ch 3 — Tools.",
+      "Complete the chapter in Boot.dev in published order, including its required lessons and exercises.",
+      "Do not mark this planner task done because the time estimate elapsed; mark it done only when the Boot.dev chapter is actually complete."
+    ],
+    "evidence": "Boot.dev chapter completion state.",
+    "stickyUntilDone": true,
+    "pullForwardOnDependency": false,
+    "courseModuleTask": true,
+    "courseFamily": "Boot.dev Learn AI Coding",
+    "courseOrdinal": 3,
+    "courseTotalModules": 13,
+    "plannedDate": "2026-11-13"
+  },
+  {
+    "id": "AICODING-CH04",
+    "title": "Boot.dev Learn AI Coding · Ch 4 — Prompting",
+    "description": "finish this exact published chapter and its required lessons/challenges. This exact Boot.dev module is sticky from its planned target date: it does not appear on Today early. If unfinished, it carries forward every day and is marked Delayed until completed. Completing it unlocks the next published module. If you finish early, the immediately next module in the SAME course may pull forward when today has spare capacity and that course has no overdue module; its original planned target date is never rewritten.",
+    "definitionOfDone": "Boot.dev marks this chapter complete and every required lesson/challenge in the chapter has been submitted/completed. If the chapter runs long, carry this exact chapter forward; do not skip ahead just because the target date passed.",
+    "source": "Boot.dev course catalogue checked 20 Oct 2026",
+    "workMode": "course-and-practice",
+    "failureRoute": "Stay inside this exact Boot.dev chapter. Use the lesson hints/docs when needed; if unfinished, continue this chapter before starting the next chapter. Do not replace it with a planner-written syllabus. If unfinished, it carries forward on Today and is marked Delayed; do not advance to the next Boot.dev module.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "weekly",
+    "cat": "product",
+    "week": 9,
+    "estMinutes": 60,
+    "criticality": "normal",
+    "deps": [
+      "AICODING-CH03"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-BOOTDEV"
+    ],
+    "subtasks": [
+      "Open Boot.dev Learn AI Coding · Ch 4 — Prompting.",
+      "Complete the chapter in Boot.dev in published order, including its required lessons and exercises.",
+      "Do not mark this planner task done because the time estimate elapsed; mark it done only when the Boot.dev chapter is actually complete."
+    ],
+    "evidence": "Boot.dev chapter completion state.",
+    "stickyUntilDone": true,
+    "pullForwardOnDependency": false,
+    "courseModuleTask": true,
+    "courseFamily": "Boot.dev Learn AI Coding",
+    "courseOrdinal": 4,
+    "courseTotalModules": 13,
+    "plannedDate": "2026-11-15"
+  },
+  {
+    "id": "AICODING-CH05",
+    "title": "Boot.dev Learn AI Coding · Ch 5 — Agents",
+    "description": "finish this exact published chapter and its required lessons/challenges. This exact Boot.dev module is sticky from its planned target date: it does not appear on Today early. If unfinished, it carries forward every day and is marked Delayed until completed. Completing it unlocks the next published module. If you finish early, the immediately next module in the SAME course may pull forward when today has spare capacity and that course has no overdue module; its original planned target date is never rewritten.",
+    "definitionOfDone": "Boot.dev marks this chapter complete and every required lesson/challenge in the chapter has been submitted/completed. If the chapter runs long, carry this exact chapter forward; do not skip ahead just because the target date passed.",
+    "source": "Boot.dev course catalogue checked 20 Oct 2026",
+    "workMode": "course-and-practice",
+    "failureRoute": "Stay inside this exact Boot.dev chapter. Use the lesson hints/docs when needed; if unfinished, continue this chapter before starting the next chapter. Do not replace it with a planner-written syllabus. If unfinished, it carries forward on Today and is marked Delayed; do not advance to the next Boot.dev module.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "weekly",
+    "cat": "product",
+    "week": 9,
+    "estMinutes": 60,
+    "criticality": "normal",
+    "deps": [
+      "AICODING-CH04"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-BOOTDEV"
+    ],
+    "subtasks": [
+      "Open Boot.dev Learn AI Coding · Ch 5 — Agents.",
+      "Complete the chapter in Boot.dev in published order, including its required lessons and exercises.",
+      "Do not mark this planner task done because the time estimate elapsed; mark it done only when the Boot.dev chapter is actually complete."
+    ],
+    "evidence": "Boot.dev chapter completion state.",
+    "stickyUntilDone": true,
+    "pullForwardOnDependency": false,
+    "courseModuleTask": true,
+    "courseFamily": "Boot.dev Learn AI Coding",
+    "courseOrdinal": 5,
+    "courseTotalModules": 13,
+    "plannedDate": "2026-11-17"
+  },
+  {
+    "id": "AICODING-CH06",
+    "title": "Boot.dev Learn AI Coding · Ch 6 — Context",
+    "description": "finish this exact published chapter and its required lessons/challenges. This exact Boot.dev module is sticky from its planned target date: it does not appear on Today early. If unfinished, it carries forward every day and is marked Delayed until completed. Completing it unlocks the next published module. If you finish early, the immediately next module in the SAME course may pull forward when today has spare capacity and that course has no overdue module; its original planned target date is never rewritten.",
+    "definitionOfDone": "Boot.dev marks this chapter complete and every required lesson/challenge in the chapter has been submitted/completed. If the chapter runs long, carry this exact chapter forward; do not skip ahead just because the target date passed.",
+    "source": "Boot.dev course catalogue checked 20 Oct 2026",
+    "workMode": "course-and-practice",
+    "failureRoute": "Stay inside this exact Boot.dev chapter. Use the lesson hints/docs when needed; if unfinished, continue this chapter before starting the next chapter. Do not replace it with a planner-written syllabus. If unfinished, it carries forward on Today and is marked Delayed; do not advance to the next Boot.dev module.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "weekly",
+    "cat": "product",
+    "week": 9,
+    "estMinutes": 60,
+    "criticality": "normal",
+    "deps": [
+      "AICODING-CH05"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-BOOTDEV"
+    ],
+    "subtasks": [
+      "Open Boot.dev Learn AI Coding · Ch 6 — Context.",
+      "Complete the chapter in Boot.dev in published order, including its required lessons and exercises.",
+      "Do not mark this planner task done because the time estimate elapsed; mark it done only when the Boot.dev chapter is actually complete."
+    ],
+    "evidence": "Boot.dev chapter completion state.",
+    "stickyUntilDone": true,
+    "pullForwardOnDependency": false,
+    "courseModuleTask": true,
+    "courseFamily": "Boot.dev Learn AI Coding",
+    "courseOrdinal": 6,
+    "courseTotalModules": 13,
+    "plannedDate": "2026-11-19"
+  },
+  {
+    "id": "AICODING-CH07",
+    "title": "Boot.dev Learn AI Coding · Ch 7 — Rules",
+    "description": "finish this exact published chapter and its required lessons/challenges. This exact Boot.dev module is sticky from its planned target date: it does not appear on Today early. If unfinished, it carries forward every day and is marked Delayed until completed. Completing it unlocks the next published module. If you finish early, the immediately next module in the SAME course may pull forward when today has spare capacity and that course has no overdue module; its original planned target date is never rewritten.",
+    "definitionOfDone": "Boot.dev marks this chapter complete and every required lesson/challenge in the chapter has been submitted/completed. If the chapter runs long, carry this exact chapter forward; do not skip ahead just because the target date passed.",
+    "source": "Boot.dev course catalogue checked 20 Oct 2026",
+    "workMode": "course-and-practice",
+    "failureRoute": "Stay inside this exact Boot.dev chapter. Use the lesson hints/docs when needed; if unfinished, continue this chapter before starting the next chapter. Do not replace it with a planner-written syllabus. If unfinished, it carries forward on Today and is marked Delayed; do not advance to the next Boot.dev module.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "weekly",
+    "cat": "product",
+    "week": 9,
+    "estMinutes": 60,
+    "criticality": "normal",
+    "deps": [
+      "AICODING-CH06"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-BOOTDEV"
+    ],
+    "subtasks": [
+      "Open Boot.dev Learn AI Coding · Ch 7 — Rules.",
+      "Complete the chapter in Boot.dev in published order, including its required lessons and exercises.",
+      "Do not mark this planner task done because the time estimate elapsed; mark it done only when the Boot.dev chapter is actually complete."
+    ],
+    "evidence": "Boot.dev chapter completion state.",
+    "stickyUntilDone": true,
+    "pullForwardOnDependency": false,
+    "courseModuleTask": true,
+    "courseFamily": "Boot.dev Learn AI Coding",
+    "courseOrdinal": 7,
+    "courseTotalModules": 13,
+    "plannedDate": "2026-11-21"
+  },
+  {
+    "id": "AICODING-CH08",
+    "title": "Boot.dev Learn AI Coding · Ch 8 — Feedback Loops",
+    "description": "finish this exact published chapter and its required lessons/challenges. This exact Boot.dev module is sticky from its planned target date: it does not appear on Today early. If unfinished, it carries forward every day and is marked Delayed until completed. Completing it unlocks the next published module. If you finish early, the immediately next module in the SAME course may pull forward when today has spare capacity and that course has no overdue module; its original planned target date is never rewritten.",
+    "definitionOfDone": "Boot.dev marks this chapter complete and every required lesson/challenge in the chapter has been submitted/completed. If the chapter runs long, carry this exact chapter forward; do not skip ahead just because the target date passed.",
+    "source": "Boot.dev course catalogue checked 20 Oct 2026",
+    "workMode": "course-and-practice",
+    "failureRoute": "Stay inside this exact Boot.dev chapter. Use the lesson hints/docs when needed; if unfinished, continue this chapter before starting the next chapter. Do not replace it with a planner-written syllabus. If unfinished, it carries forward on Today and is marked Delayed; do not advance to the next Boot.dev module.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "weekly",
+    "cat": "product",
+    "week": 9,
+    "estMinutes": 60,
+    "criticality": "normal",
+    "deps": [
+      "AICODING-CH07"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-BOOTDEV"
+    ],
+    "subtasks": [
+      "Open Boot.dev Learn AI Coding · Ch 8 — Feedback Loops.",
+      "Complete the chapter in Boot.dev in published order, including its required lessons and exercises.",
+      "Do not mark this planner task done because the time estimate elapsed; mark it done only when the Boot.dev chapter is actually complete."
+    ],
+    "evidence": "Boot.dev chapter completion state.",
+    "stickyUntilDone": true,
+    "pullForwardOnDependency": false,
+    "courseModuleTask": true,
+    "courseFamily": "Boot.dev Learn AI Coding",
+    "courseOrdinal": 8,
+    "courseTotalModules": 13,
+    "plannedDate": "2026-11-23"
+  },
+  {
+    "id": "AICODING-CH09",
+    "title": "Boot.dev Learn AI Coding · Ch 9 — Skills",
+    "description": "finish this exact published chapter and its required lessons/challenges. This exact Boot.dev module is sticky from its planned target date: it does not appear on Today early. If unfinished, it carries forward every day and is marked Delayed until completed. Completing it unlocks the next published module. If you finish early, the immediately next module in the SAME course may pull forward when today has spare capacity and that course has no overdue module; its original planned target date is never rewritten.",
+    "definitionOfDone": "Boot.dev marks this chapter complete and every required lesson/challenge in the chapter has been submitted/completed. If the chapter runs long, carry this exact chapter forward; do not skip ahead just because the target date passed.",
+    "source": "Boot.dev course catalogue checked 20 Oct 2026",
+    "workMode": "course-and-practice",
+    "failureRoute": "Stay inside this exact Boot.dev chapter. Use the lesson hints/docs when needed; if unfinished, continue this chapter before starting the next chapter. Do not replace it with a planner-written syllabus. If unfinished, it carries forward on Today and is marked Delayed; do not advance to the next Boot.dev module.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "weekly",
+    "cat": "product",
+    "week": 9,
+    "estMinutes": 60,
+    "criticality": "normal",
+    "deps": [
+      "AICODING-CH08"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-BOOTDEV"
+    ],
+    "subtasks": [
+      "Open Boot.dev Learn AI Coding · Ch 9 — Skills.",
+      "Complete the chapter in Boot.dev in published order, including its required lessons and exercises.",
+      "Do not mark this planner task done because the time estimate elapsed; mark it done only when the Boot.dev chapter is actually complete."
+    ],
+    "evidence": "Boot.dev chapter completion state.",
+    "stickyUntilDone": true,
+    "pullForwardOnDependency": false,
+    "courseModuleTask": true,
+    "courseFamily": "Boot.dev Learn AI Coding",
+    "courseOrdinal": 9,
+    "courseTotalModules": 13,
+    "plannedDate": "2026-11-25"
+  },
+  {
+    "id": "AICODING-CH10",
+    "title": "Boot.dev Learn AI Coding · Ch 10 — MCP",
+    "description": "finish this exact published chapter and its required lessons/challenges. This exact Boot.dev module is sticky from its planned target date: it does not appear on Today early. If unfinished, it carries forward every day and is marked Delayed until completed. Completing it unlocks the next published module. If you finish early, the immediately next module in the SAME course may pull forward when today has spare capacity and that course has no overdue module; its original planned target date is never rewritten.",
+    "definitionOfDone": "Boot.dev marks this chapter complete and every required lesson/challenge in the chapter has been submitted/completed. If the chapter runs long, carry this exact chapter forward; do not skip ahead just because the target date passed.",
+    "source": "Boot.dev course catalogue checked 20 Oct 2026",
+    "workMode": "course-and-practice",
+    "failureRoute": "Stay inside this exact Boot.dev chapter. Use the lesson hints/docs when needed; if unfinished, continue this chapter before starting the next chapter. Do not replace it with a planner-written syllabus. If unfinished, it carries forward on Today and is marked Delayed; do not advance to the next Boot.dev module.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "weekly",
+    "cat": "product",
+    "week": 9,
+    "estMinutes": 60,
+    "criticality": "normal",
+    "deps": [
+      "AICODING-CH09"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-BOOTDEV"
+    ],
+    "subtasks": [
+      "Open Boot.dev Learn AI Coding · Ch 10 — MCP.",
+      "Complete the chapter in Boot.dev in published order, including its required lessons and exercises.",
+      "Do not mark this planner task done because the time estimate elapsed; mark it done only when the Boot.dev chapter is actually complete."
+    ],
+    "evidence": "Boot.dev chapter completion state.",
+    "stickyUntilDone": true,
+    "pullForwardOnDependency": false,
+    "courseModuleTask": true,
+    "courseFamily": "Boot.dev Learn AI Coding",
+    "courseOrdinal": 10,
+    "courseTotalModules": 13,
+    "plannedDate": "2026-11-27"
+  },
+  {
+    "id": "AICODING-CH11",
+    "title": "Boot.dev Learn AI Coding · Ch 11 — Computer Use",
+    "description": "finish this exact published chapter and its required lessons/challenges. This exact Boot.dev module is sticky from its planned target date: it does not appear on Today early. If unfinished, it carries forward every day and is marked Delayed until completed. Completing it unlocks the next published module. If you finish early, the immediately next module in the SAME course may pull forward when today has spare capacity and that course has no overdue module; its original planned target date is never rewritten.",
+    "definitionOfDone": "Boot.dev marks this chapter complete and every required lesson/challenge in the chapter has been submitted/completed. If the chapter runs long, carry this exact chapter forward; do not skip ahead just because the target date passed.",
+    "source": "Boot.dev course catalogue checked 20 Oct 2026",
+    "workMode": "course-and-practice",
+    "failureRoute": "Stay inside this exact Boot.dev chapter. Use the lesson hints/docs when needed; if unfinished, continue this chapter before starting the next chapter. Do not replace it with a planner-written syllabus. If unfinished, it carries forward on Today and is marked Delayed; do not advance to the next Boot.dev module.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "weekly",
+    "cat": "product",
+    "week": 9,
+    "estMinutes": 60,
+    "criticality": "normal",
+    "deps": [
+      "AICODING-CH10"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-BOOTDEV"
+    ],
+    "subtasks": [
+      "Open Boot.dev Learn AI Coding · Ch 11 — Computer Use.",
+      "Complete the chapter in Boot.dev in published order, including its required lessons and exercises.",
+      "Do not mark this planner task done because the time estimate elapsed; mark it done only when the Boot.dev chapter is actually complete."
+    ],
+    "evidence": "Boot.dev chapter completion state.",
+    "stickyUntilDone": true,
+    "pullForwardOnDependency": false,
+    "courseModuleTask": true,
+    "courseFamily": "Boot.dev Learn AI Coding",
+    "courseOrdinal": 11,
+    "courseTotalModules": 13,
+    "plannedDate": "2026-11-29"
+  },
+  {
+    "id": "AICODING-CH12",
+    "title": "Boot.dev Learn AI Coding · Ch 12 — Plugins",
+    "description": "finish this exact published chapter and its required lessons/challenges. This exact Boot.dev module is sticky from its planned target date: it does not appear on Today early. If unfinished, it carries forward every day and is marked Delayed until completed. Completing it unlocks the next published module. If you finish early, the immediately next module in the SAME course may pull forward when today has spare capacity and that course has no overdue module; its original planned target date is never rewritten.",
+    "definitionOfDone": "Boot.dev marks this chapter complete and every required lesson/challenge in the chapter has been submitted/completed. If the chapter runs long, carry this exact chapter forward; do not skip ahead just because the target date passed.",
+    "source": "Boot.dev course catalogue checked 20 Oct 2026",
+    "workMode": "course-and-practice",
+    "failureRoute": "Stay inside this exact Boot.dev chapter. Use the lesson hints/docs when needed; if unfinished, continue this chapter before starting the next chapter. Do not replace it with a planner-written syllabus. If unfinished, it carries forward on Today and is marked Delayed; do not advance to the next Boot.dev module.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "weekly",
+    "cat": "product",
+    "week": 9,
+    "estMinutes": 60,
+    "criticality": "normal",
+    "deps": [
+      "AICODING-CH11"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-BOOTDEV"
+    ],
+    "subtasks": [
+      "Open Boot.dev Learn AI Coding · Ch 12 — Plugins.",
+      "Complete the chapter in Boot.dev in published order, including its required lessons and exercises.",
+      "Do not mark this planner task done because the time estimate elapsed; mark it done only when the Boot.dev chapter is actually complete."
+    ],
+    "evidence": "Boot.dev chapter completion state.",
+    "stickyUntilDone": true,
+    "pullForwardOnDependency": false,
+    "courseModuleTask": true,
+    "courseFamily": "Boot.dev Learn AI Coding",
+    "courseOrdinal": 12,
+    "courseTotalModules": 13,
+    "plannedDate": "2026-12-01"
+  },
+  {
+    "id": "AICODING-CH13",
+    "title": "Boot.dev Learn AI Coding · Ch 13 — Best Practices",
+    "description": "finish this exact published chapter and its required lessons/challenges. This exact Boot.dev module is sticky from its planned target date: it does not appear on Today early. If unfinished, it carries forward every day and is marked Delayed until completed. Completing it unlocks the next published module. If you finish early, the immediately next module in the SAME course may pull forward when today has spare capacity and that course has no overdue module; its original planned target date is never rewritten.",
+    "definitionOfDone": "Boot.dev marks this chapter complete and every required lesson/challenge in the chapter has been submitted/completed. If the chapter runs long, carry this exact chapter forward; do not skip ahead just because the target date passed.",
+    "source": "Boot.dev course catalogue checked 20 Oct 2026",
+    "workMode": "course-and-practice",
+    "failureRoute": "Stay inside this exact Boot.dev chapter. Use the lesson hints/docs when needed; if unfinished, continue this chapter before starting the next chapter. Do not replace it with a planner-written syllabus. If unfinished, it carries forward on Today and is marked Delayed; do not advance to the next Boot.dev module.",
+    "type": "learning",
+    "requirement": "required",
+    "dateMode": "weekly",
+    "cat": "product",
+    "week": 9,
+    "estMinutes": 60,
+    "criticality": "normal",
+    "deps": [
+      "AICODING-CH12"
+    ],
+    "workBlock": "build",
+    "gateIds": [],
+    "sourceRefs": [
+      "SRC-BOOTDEV"
+    ],
+    "subtasks": [
+      "Open Boot.dev Learn AI Coding · Ch 13 — Best Practices.",
+      "Complete the chapter in Boot.dev in published order, including its required lessons and exercises.",
+      "Do not mark this planner task done because the time estimate elapsed; mark it done only when the Boot.dev chapter is actually complete."
+    ],
+    "evidence": "Boot.dev chapter completion state.",
+    "stickyUntilDone": true,
+    "pullForwardOnDependency": false,
+    "courseModuleTask": true,
+    "courseFamily": "Boot.dev Learn AI Coding",
+    "courseOrdinal": 13,
+    "courseTotalModules": 13,
+    "plannedDate": "2026-12-03"
   }
 ];
 
