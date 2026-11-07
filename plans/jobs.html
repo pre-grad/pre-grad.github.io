@@ -1,0 +1,312 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>UAE Junior Search Links</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600&display=swap">
+<style>
+/* Layout: one 860px column. Header + legend, a short skip list, then two groups of lanes.
+   Each lane = name + CV chip, search rows (query + site buttons), a Hiring Cafe agent prompt, and board links. */
+:root {
+  --bg: #f3f5f6;
+  --panel: #ffffff;
+  --fg: #172026;
+  --muted: #5a6872;
+  --line: #d8dfe3;
+  --accent: #0f6b5c;
+  --accent-ink: #ffffff;
+  --chip: #e2efec;
+  --chip-ink: #0b5246;
+  --new: #fbefd9;
+  --new-ink: #7a4a05;
+  --btn: #eef2f4;
+  --btn-hover: #e1e8ec;
+  --well: #f6f8f9;
+  --display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11171b; --panel: #182127; --fg: #e6ecef; --muted: #98a6ae; --line: #2a363d;
+    --accent: #3fb59c; --accent-ink: #0b1513; --chip: #1d3a34; --chip-ink: #8fdcc8;
+    --new: #3a2c14; --new-ink: #f2c77e;
+    --btn: #212c33; --btn-hover: #2a3740; --well: #141b20; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11171b; --panel: #182127; --fg: #e6ecef; --muted: #98a6ae; --line: #2a363d;
+  --accent: #3fb59c; --accent-ink: #0b1513; --chip: #1d3a34; --chip-ink: #8fdcc8;
+  --new: #3a2c14; --new-ink: #f2c77e;
+  --btn: #212c33; --btn-hover: #2a3740; --well: #141b20; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 48px;
+}
+.wrap { max-width: 860px; margin: 0 auto; display: grid; gap: 20px; }
+h1 { font-family: var(--display); font-weight: 600; font-size: 1.9rem; margin: 0; text-wrap: balance; }
+.lede { color: var(--muted); margin: 4px 0 0; max-width: 65ch; }
+.legend { display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; margin: 12px 0 0; font-size: .84rem; }
+.legend dt { font-weight: 600; }
+.legend dd { margin: 0; color: var(--muted); min-width: 0; }
+.skip { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; font-size: .9rem; }
+.skip summary { cursor: pointer; font-weight: 600; }
+.skip ul { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 2px; }
+.group { display: grid; gap: 14px; }
+.group > h2 { font-family: var(--display); font-weight: 600; font-size: 1.35rem; margin: 8px 0 0; }
+.group > p { margin: -8px 0 0; color: var(--muted); font-size: .88rem; }
+.lane { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 12px; min-width: 0; }
+.lane-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.lane-head h3 { font-family: var(--display); font-weight: 600; font-size: 1.15rem; margin: 0; }
+.cv { background: var(--chip); color: var(--chip-ink); font-size: .74rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 99px; white-space: nowrap; }
+.cv.new { background: var(--new); color: var(--new-ink); }
+.row { display: grid; gap: 7px; padding-top: 12px; border-top: 1px solid var(--line); min-width: 0; }
+.lane-head + .row { border-top: 0; padding-top: 0; }
+.row code { font-family: var(--mono); font-size: .82rem; overflow-wrap: anywhere; min-width: 0; }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; }
+a.b, button.copy {
+  font: 500 .82rem/1 var(--body); color: var(--fg); background: var(--btn); border: 1px solid var(--line);
+  border-radius: 6px; padding: 7px 11px; text-decoration: none; cursor: pointer;
+}
+a.b:hover, button.copy:hover { background: var(--btn-hover); }
+a.b.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+a.b:focus-visible, button.copy:focus-visible, .skip summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.prompt { background: var(--well); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 6px; min-width: 0; }
+.prompt-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: .78rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.prompt p { margin: 0; font-size: .86rem; overflow-wrap: anywhere; }
+button.copy { padding: 5px 9px; font-size: .75rem; text-transform: none; letter-spacing: 0; }
+.boards { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: .8rem; color: var(--muted); }
+.boards span { margin-right: 2px; }
+.boards span + a { margin-right: 0; }
+.boards .sep { margin-left: 8px; }
+@media (max-width: 480px) { h1 { font-size: 1.55rem; } .lane { padding: 14px; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>UAE Junior Search Links</h1>
+    <p class="lede">Every button opens the search with the filters below already set. Apply to 1–2 roles a day with the CV shown on the lane.</p>
+    <dl class="legend">
+      <dt>Indeed</dt><dd>UAE · full-time · last 7 days · newest first</dd>
+      <dt>LinkedIn</dt><dd>UAE · entry level · full-time · past week · newest first</dd>
+      <dt>Hiring Cafe</dt><dd>UAE · no experience or entry level · full-time · added in the last 7 days</dd>
+      <dt>Bayt, GulfTalent</dt><dd>UAE keyword pages; sort by date on the site</dd>
+      <dt>Google</dt><dd>Jobs on companies' own hiring pages (Workable, Greenhouse, Lever, Ashby, SmartRecruiters) mentioning Dubai or UAE · past week. Apply on the company's page.</dd>
+    </dl>
+  </header>
+
+  <details class="skip" id="skip" open>
+    <summary>Skip the job if it shows</summary>
+    <ul>
+      <li>2+ years, or a Senior, Lead or Manager title</li>
+      <li>UAE nationals only, Emiratisation, or Arabic (or any other second language) required</li>
+      <li>Unpaid or "stipend", under AED 5,000, or an internship that isn't remote</li>
+      <li>A UAE driving licence, field work, heavy travel or rotations</li>
+      <li>A hard requirement for a stack you haven't used (.NET, Java Spring, mobile). Odoo or Dynamics is fine only on trainee roles that teach it.</li>
+      <li>AD, M365 or Exchange administration (service desk roles)</li>
+      <li>Hourly gigs, commission-only sales, or a "UAE" listing whose location is a city in another country</li>
+    </ul>
+  </details>
+
+  <section class="group" id="tech"><h2>Tech roles</h2></section>
+  <section class="group" id="adjacent">
+    <h2>Analyst &amp; customer roles</h2>
+    <p>Roles where a CS degree is an edge but coding isn't the job. Send CV 10 with the Analyst cover letter. Consulting graduate programmes and presales trainee roles are left out: in the UAE they were almost all nationals-only or Arabic-only.</p>
+  </section>
+  <section class="group" id="intern">
+    <h2>Remote internships</h2>
+    <p>Paid and remote only. These links switch the filters to internship, remote and posted in the last 7 days. Send the CV that matches the role.</p>
+  </section>
+</div>
+
+<script>
+const LANES = [
+  { group: "tech", name: "Support & integration", cv: "CV 08",
+    searches: [
+      { q: '("technical support" OR "application support" OR "product support") (API OR SaaS OR software)', cafe: "technical support engineer" },
+      { q: '"implementation engineer" OR "integration engineer" OR "integration support" OR "onboarding specialist"', cafe: "implementation engineer" }
+    ],
+    prompt: "Find full-time, entry-level technical support, application support, integration or implementation roles at software or SaaS companies in the UAE (Dubai preferred), onsite or hybrid. I'm a 2026 First Class Computer Science graduate with Python, SQL, REST APIs and API testing, and I hold a UAE Golden Visa. Skip roles that need 2+ years, Arabic, UAE nationals, field work, or are internships.",
+    bayt: ["technical-support-engineer", "application-support", "implementation-engineer"],
+    gt: ["technical-support-engineer", "application-support", "implementation-engineer"] },
+
+  { group: "tech", name: "Developer & QA", cv: "CV 02",
+    searches: [
+      { q: '("python developer" OR "backend developer" OR "odoo developer" OR "software engineer") (junior OR graduate OR "entry level")', cafe: "junior python developer" },
+      { q: '("QA engineer" OR "QA analyst" OR "test engineer" OR "software tester") (junior OR graduate)', cafe: "junior QA engineer" },
+      { q: '("graduate program" OR "graduate programme" OR "graduate trainee") (technology OR software OR IT)', cafe: "technology graduate program" }
+    ],
+    prompt: "Find full-time junior or graduate Python developer, backend developer, Odoo developer, QA or test engineer roles, and technology graduate programmes, in the UAE (Dubai preferred). I'm a 2026 First Class Computer Science graduate with Python, SQL, Flask, REST APIs and pytest, and I hold a UAE Golden Visa. Skip .NET, Java, mobile and front-end roles, roles that need 2+ years or Arabic, and internships.",
+    bayt: ["junior-python-developer", "odoo-developer", "qa-engineer"],
+    gt: ["python-developer", "odoo-developer", "qa-engineer"] },
+
+  { group: "tech", name: "Data & reporting", cv: "CV 09",
+    searches: [
+      { q: '"junior data analyst" OR "data analyst trainee" OR "reporting analyst" OR "MIS analyst"', cafe: "junior data analyst" }
+    ],
+    prompt: "Find full-time junior data analyst, reporting analyst or MIS analyst roles in the UAE where SQL is the main requirement and Excel or Power BI can be learned on the job. I'm a 2026 First Class Computer Science graduate with strong SQL and database design, and I hold a UAE Golden Visa. Skip data scientist and machine learning roles, roles that need 2+ years or Arabic, and internships.",
+    bayt: ["junior-data-analyst", "reporting-analyst"],
+    gt: ["data-analyst", "reporting-analyst"] },
+
+  { group: "tech", name: "Service desk", cv: "CV 07",
+    searches: [
+      { q: '("service desk analyst" OR "IT support analyst" OR "helpdesk analyst") (graduate OR junior)', cafe: "service desk analyst" }
+    ],
+    prompt: "Find full-time graduate or junior service desk, helpdesk or IT support analyst roles in Dubai or elsewhere in the UAE, office-based or hybrid. I'm a 2026 First Class Computer Science graduate with Linux, networking and account-security knowledge, and I hold a UAE Golden Visa. Skip roles that need Active Directory or M365 administration experience, field work, 2+ years or Arabic, and internships.",
+    bayt: ["service-desk-analyst"],
+    gt: ["service-desk-analyst"] },
+
+  { group: "adjacent", name: "Business analyst & project coordination", cv: "CV 10",
+    searches: [
+      { q: '("business analyst" OR "systems analyst" OR "associate business analyst") (junior OR graduate OR associate OR "entry level")', cafe: "associate business analyst" },
+      { q: '("project coordinator" OR "PMO coordinator" OR "process coordinator") (IT OR technology OR software)', cafe: "IT project coordinator" }
+    ],
+    prompt: "Find full-time junior or associate business analyst, systems analyst, IT project coordinator, PMO coordinator or business process coordinator roles in the UAE (Dubai preferred). I'm a 2026 First Class Computer Science graduate. In an IT internship I wrote the requirements specification for a seven-gate project approval process, with MoSCoW prioritisation and UML use-case and activity diagrams, and I know SQL. I hold a UAE Golden Visa and don't have a UAE driving licence. Skip roles that need 2+ years, Arabic, UAE nationality, a driving licence or heavy travel, and on-site internships.",
+    bayt: ["business-analyst", "project-coordinator", "pmo-coordinator"],
+    gt: ["business-analyst", "project-coordinator", "pmo-coordinator"] },
+
+  { group: "adjacent", name: "Implementation & ERP", cv: "CV 10",
+    searches: [
+      { q: '("implementation consultant" OR "functional consultant" OR "ERP consultant") (junior OR associate OR trainee OR graduate)', cafe: "junior implementation consultant" },
+      { q: '("Odoo" OR "Dynamics 365") (junior OR trainee OR "fresh graduate")', cafe: "Odoo trainee" }
+    ],
+    prompt: "Find full-time junior or trainee implementation, functional or ERP consultant roles (Odoo or Microsoft Dynamics 365) at software companies and implementation partners in the UAE that train graduates. I'm a 2026 First Class Computer Science graduate with requirements engineering, process modelling and SQL, and I hold a UAE Golden Visa. Skip roles that need prior certification, 2+ years, Arabic, UAE nationality or a driving licence, and on-site internships.",
+    bayt: ["implementation-consultant", "functional-consultant", "odoo-consultant"],
+    gt: ["implementation-consultant", "functional-consultant", "erp-consultant"] },
+
+  { group: "adjacent", name: "Customer success", cv: "CV 10",
+    searches: [
+      { q: '("customer success" OR "client success" OR "customer onboarding") (junior OR associate OR graduate OR "entry level")', cafe: "customer success associate" }
+    ],
+    prompt: "Find full-time junior or associate customer success, client success or customer onboarding roles at software or SaaS companies in Dubai or elsewhere in the UAE. I'm a 2026 First Class Computer Science graduate with a B2B sales internship and requirements-engineering experience, and I hold a UAE Golden Visa. I don't have a UAE driving licence. Skip roles that need 2+ years, Arabic or another second language, a driving licence, or commission-only pay.",
+    bayt: ["customer-success", "customer-onboarding"],
+    gt: ["customer-success", "client-success"] },
+
+  { group: "intern", name: "Paid remote internships", cv: "CV by role", mode: "intern",
+    searches: [
+      { q: '(python OR software OR backend OR QA) intern', cafe: "software engineering intern" },
+      { q: '("business analyst" OR "data analyst" OR "technical support") intern', cafe: "business analyst intern" }
+    ],
+    prompt: "Find paid, fully remote internships in software engineering, Python, QA, data analysis, business analysis or technical support that accept candidates based in Pakistan or the UAE. I'm a 2026 First Class Computer Science graduate from Heriot-Watt University Dubai with Python, SQL, REST APIs and requirements engineering. Skip unpaid or stipend-only internships, on-site or hybrid internships, and internships open only to current students.",
+    bayt: [], gt: [] }
+];
+
+const enc = encodeURIComponent;
+const UAE = "United Arab Emirates";
+
+const indeed = (q, lane) => lane.mode === "intern"
+  ? `https://ae.indeed.com/jobs?q=${enc(q + " remote")}&l=${enc(UAE)}&fromage=7&sort=date&sc=${enc("0kf:jt(internship);")}`
+  : `https://ae.indeed.com/jobs?q=${enc(q)}&l=${enc(UAE)}&fromage=7&sort=date&sc=${enc("0kf:jt(fulltime);")}`;
+
+const linkedin = (q, lane) => lane.mode === "intern"
+  ? `https://www.linkedin.com/jobs/search/?keywords=${enc(q)}&location=${enc(UAE)}&geoId=104305776&f_E=1&f_JT=I&f_WT=2&f_TPR=r604800&sortBy=DD`
+  : `https://www.linkedin.com/jobs/search/?keywords=${enc(q)}&location=${enc(UAE)}&geoId=104305776&f_E=2&f_JT=F&f_TPR=r604800&sortBy=DD`;
+
+const CAFE_FILTERS = {
+  locations: [{
+    formatted_address: UAE,
+    types: ["country"],
+    geometry: { location: { lat: "23.4241", lon: "53.8478" } },
+    id: "ae_country",
+    address_components: [{ long_name: UAE, short_name: "AE", types: ["country"] }],
+    options: { flexible_regions: [] }
+  }],
+  seniorityLevel: ["No Prior Experience Required", "Entry Level"],
+  commitmentTypes: ["Full Time"],
+  dateFetchedPastNDays: 7
+};
+const cafe = (words, lane) => {
+  const state = lane.mode === "intern"
+    ? { locations: CAFE_FILTERS.locations, commitmentTypes: ["Internship"], workplaceTypes: ["Remote"], dateFetchedPastNDays: 7, searchQuery: words }
+    : { ...CAFE_FILTERS, searchQuery: words };
+  return `https://hiring.cafe/?searchState=${enc(JSON.stringify(state))}`;
+};
+
+const bayt = s => `https://www.bayt.com/en/uae/jobs/${s}-jobs/`;
+const gulf = s => `https://www.gulftalent.com/uae/jobs/title/${s}`;
+const label = s => s.replace(/-/g, " ");
+
+const ATS = "(site:apply.workable.com OR site:job-boards.greenhouse.io OR site:boards.greenhouse.io OR site:jobs.lever.co OR site:jobs.ashbyhq.com OR site:jobs.smartrecruiters.com)";
+const GOOGLE = {
+  "Support & integration": '("technical support" OR "application support" OR "implementation engineer")',
+  "Developer & QA": '("python developer" OR "QA engineer" OR "software engineer") (junior OR graduate)',
+  "Data & reporting": '("data analyst" OR "reporting analyst") (junior OR graduate)',
+  "Service desk": '("service desk" OR "IT support") (junior OR graduate)',
+  "Business analyst & project coordination": '("business analyst" OR "systems analyst") (junior OR associate OR graduate)',
+  "Implementation & ERP": '("implementation consultant" OR "functional consultant" OR odoo) (junior OR trainee)',
+  "Customer success": '("customer success" OR "customer onboarding") (junior OR associate)',
+  "Paid remote internships": '(python OR software OR "data analyst" OR "business analyst") intern'
+};
+const google = (roles, lane) =>
+  `https://www.google.com/search?q=${enc(ATS + " " + roles + (lane.mode === "intern" ? ' remote ("UAE" OR "Dubai" OR "Pakistan" OR "Karachi")' : ' ("Dubai" OR "UAE")'))}&tbs=qdr:w`;
+
+function el(tag, attrs = {}, text) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  if (text != null) n.textContent = text;
+  return n;
+}
+function link(href, text, primary) {
+  return el("a", { href, class: primary ? "b primary" : "b", target: "_blank", rel: "noopener" }, text);
+}
+function copyButton(id, getText, target) {
+  const btn = el("button", { class: "copy", type: "button", id }, "Copy");
+  btn.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(getText()); btn.textContent = "Copied"; }
+    catch {
+      const r = document.createRange(); r.selectNodeContents(target);
+      const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      btn.textContent = "Selected";
+    }
+    setTimeout(() => (btn.textContent = "Copy"), 1500);
+  });
+  return btn;
+}
+
+LANES.forEach((lane, i) => {
+  const sec = el("section", { class: "lane", id: "lane-" + i });
+  const head = el("div", { class: "lane-head" });
+  head.append(el("h3", {}, lane.name), el("span", { class: lane.isNew ? "cv new" : "cv" }, lane.isNew ? lane.cv + " · new" : lane.cv));
+  sec.append(head);
+
+  lane.searches.forEach(s => {
+    const row = el("div", { class: "row" });
+    const btns = el("div", { class: "btns" });
+    btns.append(link(indeed(s.q, lane), "Indeed", true), link(linkedin(s.q, lane), "LinkedIn", true), link(cafe(s.cafe, lane), "Hiring Cafe", true));
+    row.append(el("code", {}, s.q), btns);
+    sec.append(row);
+  });
+
+  const g = GOOGLE[lane.name];
+  if (g) {
+    const grow = el("div", { class: "row" });
+    const gbtns = el("div", { class: "btns" });
+    gbtns.append(link(google(g, lane), "Google: company hiring pages", true));
+    grow.append(el("code", {}, g + (lane.mode === "intern" ? ' remote ("UAE" OR "Dubai" OR "Pakistan" OR "Karachi")' : ' ("Dubai" OR "UAE")')), gbtns);
+    sec.append(grow);
+  }
+
+  const pr = el("div", { class: "prompt" });
+  const text = el("p", {}, lane.prompt);
+  const ph = el("div", { class: "prompt-head" });
+  ph.append(el("span", {}, "Hiring Cafe AI agent prompt"), copyButton("copy-prompt-" + i, () => lane.prompt, text));
+  pr.append(ph, text);
+  sec.append(pr);
+
+  if (lane.bayt.length || lane.gt.length) {
+    const boards = el("div", { class: "boards" });
+    boards.append(el("span", {}, "Bayt"));
+    lane.bayt.forEach(s => boards.append(link(bayt(s), label(s))));
+    boards.append(el("span", { class: "sep" }, "GulfTalent"));
+    lane.gt.forEach(s => boards.append(link(gulf(s), label(s))));
+    sec.append(boards);
+  }
+
+  document.getElementById(lane.group).append(sec);
+});
+</script>
+
+</body></html>

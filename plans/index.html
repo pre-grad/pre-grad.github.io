@@ -1766,6 +1766,7 @@ select.input {
         <div id="t-coding-gym"></div>
         <div id="t-coding-fluency"></div>
         <div id="t-careem-prep"></div>
+        <div id="t-syntax-drill"></div>
         <div id="t-overdue"></div>
         <div id="t-today"></div>
         <div id="t-week"></div>
@@ -18984,6 +18985,312 @@ function toggleCareemPrep(id, dateISO) {
   save(); rerender();
   if (!wasDone && id === 'cp-apply') setTimeout(() => newApp({ company:'Careem', role:'Software Engineer I – Backend (NextGen)', source:'https://job-boards.greenhouse.io/careem/jobs/7107610002' }), 60);
 }
+/* ---------- Syntax Drill · one extra daily Training Grounds challenge (additive) ----------
+   Same format as the Training Grounds rows: exact Forge settings plus a prompt to paste.
+   It rotates through syntax topics for every language already learned (Python one day,
+   another language the next); later languages join automatically when their course task is done. */
+const SYNTAX_DRILL_MINUTES = 15;
+const SYNTAX_SHEETS = [
+  { lang:'Python', icon:'🐍', sections:[
+    { id:'py-ops', title:'Variables and operators', tg:'python operators', items:[
+      ['py-ops-1','Add 1 to x','x += 1'],
+      ['py-ops-2','Set x to positive 1 (the typo that looks like +=)','x = +1   # NOT the same as x += 1'],
+      ['py-ops-3','Whole-number division: 7 by 2','7 // 2   # 3'],
+      ['py-ops-4','Remainder of 7 by 2','7 % 2    # 1'],
+      ['py-ops-5','Normal division: 7 by 2','7 / 2    # 3.5 in Python 3 (Python 2 gives 3)'],
+      ['py-ops-6','2 to the power 3','2 ** 3   # 8'],
+      ['py-ops-7','"not equal", "and", "or", "not"','!=   and   or   not'],
+      ['py-ops-8','Swap a and b in one line','a, b = b, a'] ] },
+    { id:'py-strings', title:'Strings', tg:'python strings', items:[
+      ['py-str-1','Put variables inside a string','f"{name} is {age}"'],
+      ['py-str-2','Last character / first 3 characters / reversed','s[-1]    s[:3]    s[::-1]'],
+      ['py-str-3','Split "a b c" into a list of words','s.split()          # ["a", "b", "c"]'],
+      ['py-str-4','Join a list of strings with spaces','" ".join(words)'],
+      ['py-str-5','Lowercase / remove spaces at both ends','s.lower()    s.strip()'],
+      ['py-str-6','Is it all letters? all digits?','s.isalpha()    s.isdigit()'],
+      ['py-str-7','Does "cat" appear in s?','"cat" in s'],
+      ['py-str-8','Character to number and back','ord("a")   # 97      chr(97)   # "a"'] ] },
+    { id:'py-lists', title:'Lists', tg:'python lists', items:[
+      ['py-list-1','Add to the end / remove and return the last item','xs.append(x)    xs.pop()'],
+      ['py-list-2','Sort in place / get a sorted copy','xs.sort()    ys = sorted(xs)'],
+      ['py-list-3','Sort pairs by their second value, biggest first','sorted(pairs, key=lambda p: p[1], reverse=True)'],
+      ['py-list-4','New list: doubles of the positive numbers in xs','[x * 2 for x in xs if x > 0]'],
+      ['py-list-5','A list of n zeros','[0] * n'],
+      ['py-list-6','A rows × cols grid of zeros (the safe way)','[[0] * cols for _ in range(rows)]   # NOT [[0]*cols]*rows'],
+      ['py-list-7','Index and value together in a loop','for i, x in enumerate(xs):'],
+      ['py-list-8','Biggest, smallest, total','max(xs)    min(xs)    sum(xs)'] ] },
+    { id:'py-dicts', title:'Dictionaries', tg:'python dictionaries', items:[
+      ['py-dict-1','Empty dict; set key "a" to 1','d = {}    d["a"] = 1'],
+      ['py-dict-2','Read a key, 0 if it is missing','d.get(key, 0)'],
+      ['py-dict-3','Count one more of c','d[c] = d.get(c, 0) + 1'],
+      ['py-dict-4','Is key in the dict?','key in d'],
+      ['py-dict-5','Remove a key','del d[key]        # or d.pop(key, None) if it might be missing'],
+      ['py-dict-6','Loop over keys and values','for k, v in d.items():'],
+      ['py-dict-7','Number of keys','len(d)'],
+      ['py-dict-8','Build {word: length} from a list','{w: len(w) for w in words}'] ] },
+    { id:'py-sets', title:'Sets', tg:'python sets', items:[
+      ['py-set-1','Empty set (not {})','s = set()'],
+      ['py-set-2','Add / remove (error if missing) / remove (no error)','s.add(x)    s.remove(x)    s.discard(x)'],
+      ['py-set-3','Is x in the set? (fast)','x in s'],
+      ['py-set-4','Unique values of a list','set(xs)'],
+      ['py-set-5','In both / in either / in a but not b','a & b    a | b    a - b'] ] },
+    { id:'py-loops', title:'Loops and ranges', tg:'python loops', items:[
+      ['py-loop-1','Loop 0 to n-1','for i in range(n):'],
+      ['py-loop-2','Count down from n-1 to 0','for i in range(n - 1, -1, -1):'],
+      ['py-loop-3','Loop over two lists side by side','for a, b in zip(xs, ys):'],
+      ['py-loop-4','Loop while a condition holds','while left < right:'],
+      ['py-loop-5','Leave the loop / skip to the next round','break    continue'],
+      ['py-loop-6','Check a condition for every item','all(x > 0 for x in xs)    any(x > 0 for x in xs)'] ] },
+    { id:'py-functions', title:'Functions', tg:'python functions', items:[
+      ['py-fn-1','Function with a default argument','def greet(name, greeting="hi"):'],
+      ['py-fn-2','Return two values and unpack them','return a, b      x, y = f()'],
+      ['py-fn-3','A one-line function for sorting keys','lambda p: p[1]'],
+      ['py-fn-4','Change an outer variable from a nested function','nonlocal count'],
+      ['py-fn-5','Type hints on a function','def f(xs: list[int], k: int) -> float:'] ] },
+    { id:'py-classes', title:'Classes', tg:'python classes', items:[
+      ['py-cls-1','Class with a constructor storing name','class User:\n    def __init__(self, name):\n        self.name = name'],
+      ['py-cls-2','A method that uses the object','def greet(self):\n    return f"hi {self.name}"'],
+      ['py-cls-3','Create an object and call its method','u = User("Hamza")    u.greet()'],
+      ['py-cls-4','Inherit and call the parent constructor','class Admin(User):\n    def __init__(self, name):\n        super().__init__(name)'],
+      ['py-cls-5','Control how it prints','def __repr__(self):\n    return f"User({self.name})"'] ] },
+    { id:'py-errors', title:'Errors', tg:'python exceptions', items:[
+      ['py-err-1','Catch a ValueError and keep the message','try:\n    n = int(s)\nexcept ValueError as e:\n    print(e)'],
+      ['py-err-2','Run cleanup whether or not it failed','finally:'],
+      ['py-err-3','Raise your own error','raise ValueError("age must be positive")'],
+      ['py-err-4','What error does d["missing"] raise? xs[99]?','KeyError    IndexError'] ] },
+    { id:'py-dsa', title:'Problem-solving tools', tg:'python collections heapq', items:[
+      ['py-dsa-1','Count every character of s in one line','from collections import Counter\nCounter(s)'],
+      ['py-dsa-2','Dict whose missing keys start as empty lists','from collections import defaultdict\nd = defaultdict(list)'],
+      ['py-dsa-3','Queue: add right, remove from the left (fast)','from collections import deque\nq = deque()    q.append(x)    q.popleft()'],
+      ['py-dsa-4','Min-heap: push, pop smallest','import heapq\nheapq.heappush(h, x)    heapq.heappop(h)'],
+      ['py-dsa-5','Max-heap with heapq','heapq.heappush(h, -x)    -heapq.heappop(h)'],
+      ['py-dsa-6','Smaller / bigger than any number','float("-inf")    float("inf")'],
+      ['py-dsa-7','Stack: push / pop / look at the top','st.append(x)    st.pop()    st[-1]'] ] },
+  ]},
+  { lang:'FastAPI', icon:'⚡', gate:'FASTAPI-D6-ROUTERS', sections:[
+    { id:'fa-basics', title:'Routes and parameters', tg:'fastapi path query parameters', items:[
+      ['fa-b-1','Create the app','from fastapi import FastAPI\napp = FastAPI()'],
+      ['fa-b-2','GET route with an id in the path','@app.get("/items/{item_id}")\ndef read_item(item_id: int):'],
+      ['fa-b-3','Optional query parameter q','def read_items(q: str | None = None):'],
+      ['fa-b-4','Request body model','from pydantic import BaseModel\nclass Item(BaseModel):\n    name: str\n    price: float'],
+      ['fa-b-5','POST route that returns 201','@app.post("/items", status_code=201)\ndef create(item: Item):'],
+      ['fa-b-6','Return 404 with a message','from fastapi import HTTPException\nraise HTTPException(status_code=404, detail="Item not found")'],
+      ['fa-b-7','Run the server with reload','uvicorn main:app --reload'] ] },
+    { id:'fa-structure', title:'Routers, validation, dependencies, database', tg:'fastapi apirouter depends', items:[
+      ['fa-s-1','A router with a prefix','from fastapi import APIRouter\nrouter = APIRouter(prefix="/items", tags=["items"])'],
+      ['fa-s-2','Add the router to the app','app.include_router(router)'],
+      ['fa-s-3','id must be > 0; q at least 3 characters','from fastapi import Path, Query\nitem_id: int = Path(gt=0)\nq: str = Query(min_length=3)'],
+      ['fa-s-4','A database-session dependency','def get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()'],
+      ['fa-s-5','Use the dependency in a route','def read(db: Session = Depends(get_db)):'],
+      ['fa-s-6','SQLAlchemy: get one row by id','db.query(Item).filter(Item.id == item_id).first()'],
+      ['fa-s-7','SQLAlchemy: save a new row','db.add(item)\ndb.commit()\ndb.refresh(item)'] ] },
+  ]},
+  { lang:'SQL (PostgreSQL)', icon:'🗄️', gate:'SQL-COURSE-1', sections:[
+    { id:'sql-tables', title:'Tables and constraints', tg:'sql create table constraints', items:[
+      ['sql-t-1','Table with an auto id, required unique email, age ≥ 0','CREATE TABLE users (\n  id SERIAL PRIMARY KEY,\n  email TEXT NOT NULL UNIQUE,\n  age INTEGER CHECK (age >= 0)\n);'],
+      ['sql-t-2','Column defaulting to the current time','created_at TIMESTAMP DEFAULT NOW()'],
+      ['sql-t-3','Foreign key that deletes children with the parent','user_id INTEGER REFERENCES users(id) ON DELETE CASCADE'],
+      ['sql-t-4','Add a column to an existing table','ALTER TABLE users ADD COLUMN name TEXT;'],
+      ['sql-t-5','Delete a table if it exists','DROP TABLE IF EXISTS users;'] ] },
+    { id:'sql-crud', title:'Insert, select, update, delete', tg:'sql insert update delete', items:[
+      ['sql-c-1','Insert one row','INSERT INTO users (email, age) VALUES (\'a@b.com\', 30);'],
+      ['sql-c-2','Insert and get the new id back (Postgres)','INSERT INTO users (email) VALUES (\'a@b.com\') RETURNING id;'],
+      ['sql-c-3','Change one row','UPDATE users SET age = 31 WHERE id = 1;'],
+      ['sql-c-4','Delete one row','DELETE FROM users WHERE id = 1;'],
+      ['sql-c-5','What happens if you forget WHERE on UPDATE/DELETE?','Every row is changed/deleted'] ] },
+    { id:'sql-filter', title:'Filtering and sorting', tg:'sql where order by', items:[
+      ['sql-f-1','Ages 18 to 30 inclusive','WHERE age BETWEEN 18 AND 30'],
+      ['sql-f-2','Status is one of a list','WHERE status IN (\'new\', \'open\')'],
+      ['sql-f-3','Name starts with A','WHERE name LIKE \'A%\''],
+      ['sql-f-4','Email is missing (not = NULL)','WHERE email IS NULL'],
+      ['sql-f-5','Oldest first, rows 21–30','ORDER BY age DESC LIMIT 10 OFFSET 20'],
+      ['sql-f-6','Unique cities only','SELECT DISTINCT city FROM users;'] ] },
+    { id:'sql-agg', title:'Aggregations', tg:'sql group by having', items:[
+      ['sql-a-1','Number of rows','SELECT COUNT(*) FROM users;'],
+      ['sql-a-2','Average age per city','SELECT city, AVG(age) FROM users GROUP BY city;'],
+      ['sql-a-3','Only cities with more than 5 users','GROUP BY city HAVING COUNT(*) > 5'],
+      ['sql-a-4','WHERE vs HAVING','WHERE filters rows before grouping; HAVING filters groups after'] ] },
+    { id:'sql-joins', title:'Joins and subqueries', tg:'sql joins', items:[
+      ['sql-j-1','Users with their orders','SELECT u.email, o.total\nFROM users u\nJOIN orders o ON o.user_id = u.id;'],
+      ['sql-j-2','All users, orders or not','FROM users u LEFT JOIN orders o ON o.user_id = u.id'],
+      ['sql-j-3','Users with no orders','LEFT JOIN orders o ON o.user_id = u.id\nWHERE o.id IS NULL'],
+      ['sql-j-4','Users who have an order over 100 (subquery)','WHERE id IN (SELECT user_id FROM orders WHERE total > 100)'] ] },
+    { id:'sql-perf', title:'Indexes and query plans', tg:'postgres index explain', gate:'POSTGRES-GRIDER-B4-PERFORMANCE', items:[
+      ['sql-p-1','Index on users.email','CREATE INDEX idx_users_email ON users (email);'],
+      ['sql-p-2','See the real plan and timing of a query','EXPLAIN ANALYZE SELECT * FROM users WHERE email = \'a@b.com\';'],
+      ['sql-p-3','What "Seq Scan" in a plan means','The whole table was read row by row (no index used)'] ] },
+    { id:'sql-tx', title:'Transactions', tg:'postgres transactions', gate:'POSTGRES-GRIDER-B5-TRANSACTIONS', items:[
+      ['sql-x-1','Start, save, or undo a transaction','BEGIN;   ...   COMMIT;      or   ROLLBACK;'],
+      ['sql-x-2','Lock a row you are about to update','SELECT * FROM accounts WHERE id = 1 FOR UPDATE;'] ] },
+  ]},
+  { lang:'Shell (Linux)', icon:'🐧', sections:[
+    { id:'sh-files', title:'Files and folders', tg:'linux files directories', items:[
+      ['sh-f-1','Where am I / list everything with details','pwd    ls -la'],
+      ['sh-f-2','Go up one / go home','cd ..    cd ~'],
+      ['sh-f-3','Make nested folders in one go','mkdir -p a/b/c'],
+      ['sh-f-4','Copy a folder / move or rename / delete a folder','cp -r src dst    mv old new    rm -r dir'],
+      ['sh-f-5','First 5 lines / follow a log as it grows','head -n 5 file    tail -f app.log'],
+      ['sh-f-6','Find all .py files under here','find . -name "*.py"'] ] },
+    { id:'sh-io', title:'Input, output and pipes', tg:'linux pipes redirection', items:[
+      ['sh-io-1','Write output to a file (overwrite / append)','cmd > out.txt    cmd >> out.txt'],
+      ['sh-io-2','Send errors to a file','cmd 2> err.txt'],
+      ['sh-io-3','Feed one command into another','cmd1 | cmd2'],
+      ['sh-io-4','Search for text in a folder, ignoring case','grep -ri "text" dir/'],
+      ['sh-io-5','Count lines','wc -l file'],
+      ['sh-io-6','Count how often each line appears','sort file | uniq -c'] ] },
+    { id:'sh-perms', title:'Permissions, programs and processes', tg:'linux permissions processes', items:[
+      ['sh-p-1','Make a script runnable, then run it','chmod +x run.sh    ./run.sh'],
+      ['sh-p-2','Owner read/write, everyone else read','chmod 644 file'],
+      ['sh-p-3','Which program runs for "python3"? what is PATH?','which python3    echo $PATH'],
+      ['sh-p-4','Set an environment variable for this shell','export API_KEY=abc123'],
+      ['sh-p-5','List processes / stop one','ps aux    kill PID'],
+      ['sh-p-6','Install a package (Ubuntu)','sudo apt install curl'] ] },
+  ]},
+  { lang:'Git', icon:'🌿', sections:[
+    { id:'git-core', title:'Everyday commits', tg:'git commit', items:[
+      ['git-c-1','What changed? (working tree / staged)','git status    git diff    git diff --staged'],
+      ['git-c-2','Stage everything and commit','git add .\ngit commit -m "message"'],
+      ['git-c-3','Short history','git log --oneline'],
+      ['git-c-4','Unstage a file / throw away its changes','git restore --staged f    git restore f'] ] },
+    { id:'git-branch', title:'Branches and remotes', tg:'git branch merge rebase', items:[
+      ['git-b-1','Create and switch to a new branch','git switch -c feature'],
+      ['git-b-2','Merge feature into main','git switch main\ngit merge feature'],
+      ['git-b-3','Replay your branch on top of main','git rebase main'],
+      ['git-b-4','First push of a new branch','git push -u origin feature'],
+      ['git-b-5','Get remote changes without merging / with merging','git fetch    git pull'],
+      ['git-b-6','Track the original repo of a fork','git remote add upstream URL'] ] },
+    { id:'git-undo', title:'Undo and recovery', tg:'git reset revert reflog', items:[
+      ['git-u-1','Undo the last commit, keep the changes staged','git reset --soft HEAD~1'],
+      ['git-u-2','Undo the last commit and delete its changes','git reset --hard HEAD~1'],
+      ['git-u-3','Undo a pushed commit safely','git revert <sha>'],
+      ['git-u-4','Find a commit you "lost"','git reflog'] ] },
+    { id:'git-tools', title:'Stash, cherry-pick, bisect, worktrees', tg:'git stash cherry-pick bisect', gate:'GIT2-CH10', items:[
+      ['git-t-1','Park changes / bring them back / list','git stash    git stash pop    git stash list'],
+      ['git-t-2','Copy one commit onto this branch','git cherry-pick <sha>'],
+      ['git-t-3','Find the commit that broke things','git bisect start\ngit bisect bad\ngit bisect good <sha>\n...\ngit bisect reset'],
+      ['git-t-4','Second working folder for another branch','git worktree add ../hotfix hotfix-branch'],
+      ['git-t-5','Squash the last 3 commits','git rebase -i HEAD~3   # mark later ones "squash"'] ] },
+  ]},
+  { lang:'pytest', icon:'🧪', gate:'PYTEST-COURSE', sections:[
+    { id:'pt-core', title:'Tests and fixtures', tg:'pytest fixtures', items:[
+      ['pt-1','A test function','def test_add():\n    assert add(2, 3) == 5'],
+      ['pt-2','Expect an error','with pytest.raises(ValueError):\n    parse("x")'],
+      ['pt-3','Run verbosely / only tests matching "login"','pytest -v    pytest -k login'],
+      ['pt-4','A fixture and a test that uses it','@pytest.fixture\ndef client():\n    return TestClient(app)\n\ndef test_home(client):'],
+      ['pt-5','Run one test with several inputs','@pytest.mark.parametrize("a,b", [(1, 2), (3, 4)])'] ] },
+  ]},
+  { lang:'Docker', icon:'🐳', gate:'DOCKER-CH02', sections:[
+    { id:'dk-cli', title:'Containers', tg:'docker containers', items:[
+      ['dk-c-1','Run in the background, port 8000 → 80, named web','docker run -d -p 8000:80 --name web IMAGE'],
+      ['dk-c-2','Running containers / all containers','docker ps    docker ps -a'],
+      ['dk-c-3','Stop and delete it','docker stop web    docker rm web'],
+      ['dk-c-4','Open a shell inside it','docker exec -it web sh'],
+      ['dk-c-5','Follow its logs','docker logs -f web'] ] },
+    { id:'dk-file', title:'Dockerfiles and images', tg:'dockerfile', gate:'DOCKER-CH06', items:[
+      ['dk-f-1','Dockerfile for a FastAPI app','FROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install -r requirements.txt\nCOPY . .\nCMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]'],
+      ['dk-f-2','Why copy requirements.txt before the rest?','So the pip install layer is cached when only code changes'],
+      ['dk-f-3','Build and tag an image','docker build -t myapp .'],
+      ['dk-f-4','Keep Postgres data in a named volume','-v pgdata:/var/lib/postgresql/data'] ] },
+  ]},
+  { lang:'GitHub Actions', icon:'⚙️', gate:'GITHUB-ACTIONS-SKILLS', sections:[
+    { id:'gha-ci', title:'A test workflow', tg:'github actions workflow', items:[
+      ['gha-1','Where workflow files live','.github/workflows/ci.yml'],
+      ['gha-2','Run on every push and pull request','on: [push, pull_request]'],
+      ['gha-3','A job on Ubuntu','jobs:\n  test:\n    runs-on: ubuntu-latest'],
+      ['gha-4','Steps: checkout, Python, install, test','steps:\n  - uses: actions/checkout@v4\n  - uses: actions/setup-python@v5\n    with:\n      python-version: "3.12"\n  - run: pip install -r requirements.txt\n  - run: pytest'] ] },
+  ]},
+  { lang:'AWS', icon:'☁️', gate:'AWS-CH03', sections:[
+    { id:'aws-core', title:'CLI and servers', tg:'aws ec2 s3', items:[
+      ['aws-1','Set up the CLI with your keys','aws configure'],
+      ['aws-2','Make a key file usable for SSH, then connect','chmod 400 key.pem\nssh -i key.pem ubuntu@PUBLIC_IP'],
+      ['aws-3','List buckets / copy a file up','aws s3 ls    aws s3 cp file.txt s3://my-bucket/'] ] },
+  ]},
+];
+function syntaxGateOpen(gate) { if (!gate) return true; const t = taskByStableId(gate); return !!t && t.status === 'done'; }
+function syntaxAllSections() {
+  const out = [];
+  SYNTAX_SHEETS.forEach((g, gi) => g.sections.forEach((sec, si) => out.push({ ...sec, lang:g.lang, icon:g.icon, order:gi * 100 + si,
+    unlocked:syntaxGateOpen(g.gate) && syntaxGateOpen(sec.gate) })));
+  return out;
+}
+function syntaxPickFor(dateISO) {
+  state.syntaxDrill = state.syntaxDrill || {};
+  const all = syntaxAllSections();
+  const stored = state.syntaxDrill[dateISO];
+  if (stored && all.some(s => s.id === stored.sectionId)) return all.find(s => s.id === stored.sectionId);
+  const unlocked = all.filter(s => s.unlocked);
+  if (!unlocked.length) return null;
+  const last = {};
+  for (const [d, e] of Object.entries(state.syntaxDrill)) if (d < dateISO && e && e.sectionId && (!last[e.sectionId] || d > last[e.sectionId])) last[e.sectionId] = d;
+  const prevDates = Object.keys(state.syntaxDrill).filter(d => d < dateISO).sort();
+  const prev = prevDates.length ? all.find(s => s.id === state.syntaxDrill[prevDates[prevDates.length - 1]].sectionId) : null;
+  const wantPython = !prev || prev.lang !== 'Python';
+  let pool = unlocked.filter(s => (s.lang === 'Python') === wantPython);
+  if (!pool.length) pool = unlocked;
+  pool.sort((a, b) => (last[a.id] || '').localeCompare(last[b.id] || '') || a.order - b.order);
+  const pick = pool[0];
+  if (dateISO <= todayISO()) { state.syntaxDrill[dateISO] = { sectionId:pick.id, done:false }; save(); }
+  return pick;
+}
+function syntaxDrillPart(dateISO) {
+  const sec = syntaxPickFor(dateISO);
+  if (!sec) return null;
+  const runs = Object.entries(state.syntaxDrill || {}).filter(([d, e]) => d < dateISO && e.sectionId === sec.id && e.done).length;
+  const difficulty = Math.min(5, 3 + runs);
+  const tgLang = ['Python', 'FastAPI', 'pytest'].includes(sec.lang) ? 'Python' : (sec.lang.startsWith('SQL') ? 'SQL' : 'Auto');
+  const isCode = tgLang !== 'Auto';
+  const challengeType = isCode ? 'Code' : 'Quiz';
+  const codeStyle = isCode ? tgCodeStyle(dateISO, 0) : '';
+  const list = sec.items.map(it => it[1]).join('; ');
+  const prompt = isCode
+    ? `Create one ${codeStyle.toLowerCase()} challenge that drills ${sec.lang} syntax, not algorithms. Topic: ${sec.title}. ${codeStyle === 'Fix the bug' ? 'The bugs should be in' : 'It must make me write, from memory,'} these: ${list}. Keep the logic simple (difficulty ${difficulty}/10) so the only hard part is writing the syntax correctly. Use only standard ${sec.lang} I have already learned. ${codeStyle === 'Fix the bug' ? 'Give me code with syntax and usage mistakes in these areas plus failing tests/expected behavior; do not point out the mistakes or show the fix.' : 'Include tests/expected behavior; do not show the solution or remind me of the syntax.'}`
+    : `Generate a focused quiz on ${sec.lang} syntax. Topic: ${sec.title}. 5–6 questions where I have to give the exact command or syntax for: ${list}. Target difficulty ${difficulty}/10, with plausible distractors. Only explain each answer after I submit it.`;
+  return {
+    title:`${sec.lang} · ${sec.title}`, icon:'🔤', platform:'Boot.dev Training Grounds', minutes:SYNTAX_DRILL_MINUTES, url:TRAINING_GROUNDS_URL,
+    settings:[['Difficulty', `${difficulty}/10`], ['Language', tgLang], ['Challenge type', challengeType], ...(codeStyle ? [['Code style', codeStyle]] : []),
+      ['Syntax topic', `${sec.lang} · ${sec.title}`], ['Covers', list], ['Rotation', 'Python one day, another language you have learned the next'], ['Timebox', `${SYNTAX_DRILL_MINUTES} min`]],
+    prompt,
+    method:'Open Training Grounds → Forge a custom challenge. Set the exact Difficulty, Language and Challenge type shown above, paste the custom prompt, generate, and attempt it cold. No AI and no notes; if the syntax won’t come, write your best guess and read the error.',
+    doneWhen:`The syntax challenge was genuinely attempted for the full ${SYNTAX_DRILL_MINUTES} minutes.`,
+  };
+}
+function renderSyntaxDrill(dateISO) {
+  if (dateISO > todayISO()) return '';
+  const part = syntaxDrillPart(dateISO);
+  if (!part) return '';
+  const done = !!(state.syntaxDrill || {})[dateISO]?.done;
+  return `<div class="block todo practice-row ${done ? 'done' : ''}">
+    <div class="checkbox ${done ? 'checked' : ''}" data-action="syntax-toggle" data-date="${escapeHTML(dateISO)}" aria-label="Mark today's syntax drill done"></div>
+    <div style="flex:1;min-width:0">
+      <div class="todo-text" data-action="syntax-open" data-date="${escapeHTML(dateISO)}" style="cursor:pointer">🔤 Training Grounds · syntax drill · ${escapeHTML(part.title)}</div>
+      <div class="todo-row-meta"><span class="tag blue">Syntax drill</span><span class="tag ${done ? 'green' : 'gray'}">${done ? 'Done' : 'Ready'}</span><span class="tag gray">${SYNTAX_DRILL_MINUTES} min</span></div>
+      <div class="todo-row-meta"><span class="tag gray">Daily · one custom Training Grounds challenge on syntax</span></div>
+    </div></div>`;
+}
+function toggleSyntaxDrill(dateISO) {
+  if (!dateISO || dateISO > todayISO()) return;
+  const sec = syntaxPickFor(dateISO);
+  if (!sec) return;
+  const e = state.syntaxDrill[dateISO] || { sectionId:sec.id };
+  e.done = !e.done;
+  state.syntaxDrill[dateISO] = e;
+  save(); rerender();
+}
+function openSyntaxDrawer(dateISO) {
+  const date = dateISO || todayISO();
+  const part = syntaxDrillPart(date);
+  if (!part) return;
+  const done = !!(state.syntaxDrill || {})[date]?.done;
+  const body = `<div class="block callout info"><div class="callout-icon">🔤</div><div class="callout-body"><strong>The syntax drill is its own daily task.</strong> One extra Training Grounds challenge aimed at writing syntax from memory, on languages you have already learned. It adds ${SYNTAX_DRILL_MINUTES} minutes and doesn’t replace the two retention challenges or the focus block.</div></div>
+    ${practicePartHTML(`Syntax drill · Training Grounds · ${SYNTAX_DRILL_MINUTES} min`, part)}
+    <div class="block callout success" style="margin-top:14px"><div class="callout-icon">✓</div><div class="callout-body"><strong>Mark it done after the challenge.</strong> Tomorrow switches language.</div></div>`;
+  $('#drawerBody').innerHTML = `<div class="ph-emoji">🔤</div><h1 class="ph-title">Training Grounds · syntax drill · ${escapeHTML(part.title)}</h1>
+    <div class="ph-meta"><div class="ph-meta-row"><div class="label">● Status</div><div><span class="tag ${done ? 'green' : 'blue'} lg">${done ? 'Done' : 'Ready'}</span></div></div><div class="ph-meta-row"><div class="label">📅 Session</div><div>${escapeHTML(fmtDateLong(date))}</div></div><div class="ph-meta-row"><div class="label">⏱ Total</div><div>${SYNTAX_DRILL_MINUTES} min</div></div><div class="ph-meta-row"><div class="label">↻ Cadence</div><div>Daily · alternates Python with your other learned languages</div></div></div>
+    <div class="page-divider"></div>${body}`;
+  $('#drawer').classList.add('open'); $('#drawerBg').classList.add('open'); $('#drawer').dataset.taskId = ''; $('#drawer').dataset.practiceKind = ''; $('#drawer').dataset.practiceDate = date;
+  const del = document.getElementById('drawerDelete'); if (del) del.style.display = 'none';
+}
+
 /* state shape + persistence migration */
 function seedMilestoneAnchor(seed) {
   if (!seed?.anchor || !MILESTONE_ANCHORS[seed.anchor]) return null;
@@ -20966,6 +21273,7 @@ function renderToday() {
   $('#t-coding-gym').innerHTML = viewingDow===0 ? renderSundayCodingGymCatchup(viewing) : (trainingGroundsSession ? renderCodingGymCard(trainingGroundsSession, viewing) : '');
   $('#t-coding-fluency').innerHTML = viewingDow===0 ? '' : (focusedPracticeSession ? renderCodingFluencyRow(focusedPracticeSession, viewing) : '');
   { const cp = document.getElementById('t-careem-prep'); if (cp) cp.innerHTML = renderCareemPrep(viewing); }
+  { const sd = document.getElementById('t-syntax-drill'); if (sd) sd.innerHTML = renderSyntaxDrill(viewing); }
   if (isToday) {
     // v27.17/18: main work is a decision screen (Build / Career / Skills). The Coding Gym
     // below it is untouched. No overdue backlog, no fixed checklist.
@@ -22764,6 +23072,8 @@ document.addEventListener('click', (e) => {
     const id = action.dataset.id;
     if (a && a.startsWith('ce-') && ceHandleAction(a, action)) return;
     if (a === 'careem-toggle') { toggleCareemPrep(action.dataset.id, action.dataset.date); return; }
+    if (a === 'syntax-toggle') { toggleSyntaxDrill(action.dataset.date); return; }
+    if (a === 'syntax-open') { openSyntaxDrawer(action.dataset.date); return; }
     if (a === 'careem-open') { openCareemDrawer(action.dataset.id, action.dataset.date); return; }
     switch (a) {
       case 'toggle': toggleTask(id); break;
